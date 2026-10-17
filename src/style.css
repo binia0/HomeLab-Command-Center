@@ -95,3 +95,8 @@ body{background:#060d15;color:#e2f5fa}
 .hcc-delete-dialog .editor-danger{background:#7a263b;border:1px solid #da6881;color:#fff;padding:10px 13px;border-radius:6px;display:flex;align-items:center;gap:7px}
 .item-tail button{position:relative;z-index:3;min-width:34px;min-height:34px;display:grid;place-items:center}
 .item-tail button:focus-visible,.editor-danger:focus-visible{outline:2px solid #7be9e8;outline-offset:3px}
+
+.new-kind-selector{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:2px 0 16px}
+.new-kind-selector button{display:flex;align-items:center;justify-content:center;gap:10px;padding:15px 10px;border:1px solid #35596a;border-radius:9px;background:#122733;color:#a8cad6;font-weight:700;letter-spacing:.06em}
+.new-kind-selector button.active{border-color:#63e2d0;background:linear-gradient(145deg,#184e57,#12353f);color:#e5fffa;box-shadow:0 0 18px #29baa72a}
+.new-kind-selector button:focus-visible{outline:2px solid #7be9e8;outline-offset:2px}
