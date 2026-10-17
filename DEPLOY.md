@@ -1,20 +1,26 @@
-# Raspberry Pi preview, port 8080
+# Installation on low-memory Raspberry Pi (1 GB supported)
 
-The existing RackVisual installation on port 80 is not modified. The new app has a separate Compose project and does not share its database or Docker volumes.
+**No npm, Vite, TypeScript or Docker image compilation on the Raspberry Pi.**
 
-After cloning the repository, or for subsequent updates:
+The GitHub Actions pipeline builds frontend assets on GitHub's hosted runner and pushes them to the automatically generated `static` branch. The Pi only downloads those files and starts a small, ready-made Nginx image.
+
+## First installation / updating
 
 ```bash
-cd /home/pi/HomeLab-Command-Center
+cd ~/HomeLab-Command-Center
 git pull --ff-only
-sudo docker compose -f docker-compose.yml up -d --build
+sh deploy-pi.sh
 ```
 
-Open `http://<SERVER-IP>:8080/` or `http://your-hostname:8080/`, replacing `<SERVER-IP>` with **your own host's IP address**. Port 8080 must be free. The project never requires a specific LAN subnet, IP or hostname.
+The first deploy requires a successful GitHub Actions run that published the `static` branch. You can check this on the repository's Actions tab. The script stops with a clear message if assets do not exist yet.
 
-Stop only this preview with `sudo docker compose -f docker-compose.yml down`.
+Open **http://<SERVER-IP>:8080/**, replacing `<SERVER-IP>` with the actual address of **your** server. No fixed subnet or address is required. Ensure port 8080 is available.
 
-**Status: experimental preview, not production-ready.** First build requires npm packages and may be memory-intensive on Raspberry Pi hardware. Browser-based rendering runs on the client. This preview stores configuration in browser localStorage; GLB is a session-only import. Live Netdata, durable database migrations, model licensing search, exact surface-raycast port editing and user authentication are not yet implemented. Never publish your actual private inventory in this repository.
+## Stop only the new preview
 
+```bash
+cd ~/HomeLab-Command-Center
+sudo docker compose down
+```
 
-Every installation has its own IP addresses, subnet, DNS names and device endpoints. Example addresses are illustrative only; do not hardcode the original developer's LAN address into application logic.
+RackVisual on port 80 is never changed. This preview is experimental, stores demo data in browser storage, and isn't production ready. Private inventory and real IPs must not be committed.
