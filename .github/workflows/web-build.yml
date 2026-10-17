@@ -1,14 +1,16 @@
-name: Web Preview CI
+name: Build and publish web preview
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: publish-static
+  cancel-in-progress: true
 jobs:
-  build:
+  web:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -16,5 +18,13 @@ jobs:
           node-version: '22'
       - name: Install dependencies
         run: npm install --no-audit --no-fund
-      - name: Typecheck and build
+      - name: Compile web app
         run: npm run build
+      - name: Publish static branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: static
+          publish_dir: ./dist
+          force_orphan: true
+          enable_jekyll: false
