@@ -15,7 +15,7 @@ cd HomeLab-Command-Center
 sudo docker compose up -d --build
 ```
 
-Then open **http://192.168.1.211:8080/** on the development host. More details in [DEPLOY.md](DEPLOY.md).
+Then open **http://<SERVER-IP>:8080/** (replace `<SERVER-IP>` with the IP address or hostname of *your* host; there is no fixed or required IP address). using your own Raspberry Pi or server IP address. More details in [DEPLOY.md](DEPLOY.md).
 
 If already cloned:
 
@@ -62,3 +62,6 @@ Do not commit IP addresses, real device inventory, passwords, imported database 
 ## License
 
 MIT, see [LICENSE](LICENSE).
+
+
+Every installation has its own IP addresses, subnet, DNS names and device endpoints. Example addresses are illustrative only; do not hardcode the original developer's LAN address into application logic.
