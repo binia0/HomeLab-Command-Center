@@ -44,6 +44,11 @@ This is the regression checklist for the new HomeLab Command Center. Features be
 - [ ] Public repository contains sample data only, with secrets/real LAN data never published
 - [ ] Test each milestone in live GUI with user before proceeding; no repeated untested cosmetic patches
 
+## Current preview delivery — 2026-10-17
+- Add/Edit Device dialog, including name, U location, height, panel finish, RJ45, USB-A, USB-C, HDMI, power and port deletion, committed. **Prototype only**: no real GLB positional raycast, no persistent backend.
+- Rack render improvements: deeper metal chassis, mount screws, ventilation, plinth and distinct connector renderings, committed. Quality must be reviewed in browser after successful GitHub Actions build.
+- Full acceptance checklist items above remain unchecked until the user verifies complete behavior.
+
 ## Immediate priority
 1. Durable GLB model library / persistent uploads in private application storage (no private models in public git).
 2. Exact GLB scale/orientation with in-GUI connector editor.
