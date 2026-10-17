@@ -21,3 +21,11 @@
 .editor-actions button{display:inline-flex;align-items:center;gap:6px;padding:12px 15px;background:#1a3540;border:1px solid #41616c;color:#d4e9ed;border-radius:5px}
 .editor-actions .editor-primary{background:#29736b;border-color:#4f9a8d;color:#fff;font-weight:700}
 .editor-actions .editor-danger{margin-right:auto;color:#efadb2;border-color:#754d57;background:#36252d}
+
+/* Unified device identity and service editor */
+.editor-service{display:grid;grid-template-columns:minmax(90px,1fr) minmax(160px,1.6fr) 38px;gap:7px;align-items:center}
+.editor-service button{height:39px;border:1px solid #5d3d46;background:#38262e;color:#edb0b5;border-radius:5px}
+.ip-label{color:#79d7c8!important;font-weight:700;margin-top:5px!important}
+.editor-scroll>.secondary{margin:0}
+.editor-scroll .hint{margin:2px 0 8px}
+@media(max-width:520px){.editor-service{grid-template-columns:1fr 36px}.editor-service input:nth-child(2){grid-column:1;grid-row:2}.editor-service button{grid-column:2;grid-row:1/3;height:100%}}
