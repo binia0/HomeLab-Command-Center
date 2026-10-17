@@ -1,0 +1,8 @@
+name: homelab-command-center
+services:
+  web:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    mem_limit: 256m
