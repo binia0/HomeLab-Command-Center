@@ -45,3 +45,40 @@
 .holder-slot-top label{display:flex;align-items:center;gap:8px;font-size:11px}
 .holder-slot-top input{width:auto;min-width:0;accent-color:#63d8ba}
 .slot-clear{border:1px solid #764e59;background:#37242e;color:#e9a5ac;padding:7px;border-radius:5px;font-size:10px}
+
+/* Premium command center visual pass — actual React/Babylon preview */
+:root{--hcc-cyan:#75eaf5;--hcc-teal:#50d8b7;--hcc-edge:#355266;--hcc-ink:#081019}
+body{background:#060d15;color:#e2f5fa}
+.header{background:linear-gradient(90deg,#09151e 0%,#101a25 55%,#0a171f 100%);border-color:#365263;box-shadow:0 1px 20px #020b10aa}
+.logo{background:linear-gradient(135deg,#164c5a,#0c252e);color:#9bf5e4;border-color:#54938f;box-shadow:0 0 22px #26b3af24}
+.brand em{color:#7aebd6}
+.left,.right{background:linear-gradient(165deg,#0c1822,#08141b 60%,#09151f);border-color:#29485a}
+.rack-card{background:linear-gradient(135deg,#193945,#102732 55%,#0c1924);box-shadow:inset 0 1px #97fff518,0 10px 26px #0004;border-color:#42677a}
+.section{color:#a5d8e3;border-color:#244354}
+.section span{color:#7ba9b9}
+.stage{background:radial-gradient(ellipse at 50% 36%,#254453 0%,#142b3b 43%,#081720 75%,#07111b 100%);border:1px solid #547788;box-shadow:inset 0 0 85px #05131a,0 0 35px #1a6f9820,0 16px 40px #0008}
+.stage::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 30%,#adf7ff12,transparent 43%),repeating-linear-gradient(0deg,transparent 0px,transparent 39px,#8bb6bf05 40px),repeating-linear-gradient(90deg,transparent 0px,transparent 39px,#8bb6bf05 40px)}
+.stage canvas{position:relative;z-index:1}
+.stage-label,.stage-note,.stage-bottom{z-index:2}
+.stage-label{color:#b4f8f5}
+.stage-note{color:#99bfce}
+.stage-note strong{color:#80ecda}
+.heading small{color:#75dccc}
+.heading h1{font-size:clamp(30px,2.5vw,43px);letter-spacing:.01em}
+.heading p{color:#a6c7d3}
+.seg{border-color:#365a68;background:#091b25ec}
+.seg button.active{background:linear-gradient(135deg,#23625f,#1c4d65);color:#e6fffc;box-shadow:inset 0 1px #b8fffa27}
+.item.chosen,.item:hover{border-color:#3d827a;background:#17323a}
+.item-select>span{background:#224653;color:#99eacb}
+.metric{background:linear-gradient(135deg,#1b3541,#10232e);border-color:#365764}
+.metric strong{color:#ecfaff}
+.inspector .icon{background:linear-gradient(135deg,#1a5956,#1b3649);border-color:#4c988b}
+.state{background:#142c36}
+.details input:focus,.details select:focus,.editor-scroll input:focus,.editor-scroll select:focus{outline:1px solid #5fd9cb;border-color:#6cc9ce}
+.port{background:#142d39;border-color:#365c69}
+.port-head span{color:#8eebd8}
+.editor-modal{background:linear-gradient(140deg,#1d3945,#0b1a25);border-color:#4a9092}
+.editor-header small{color:#8ae9d2}
+.editor-scroll{scrollbar-color:#376b77 transparent}
+.holder-slot{background:#102d36;border-color:#437280}
+@media(max-width:850px){.stage{margin:0 10px}.heading h1{font-size:30px}}
