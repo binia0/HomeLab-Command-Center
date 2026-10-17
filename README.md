@@ -12,17 +12,17 @@ The first preview runs **separately on port 8080**. It does not change RackVisua
 cd /home/pi
 git clone https://github.com/binia0/HomeLab-Command-Center.git
 cd HomeLab-Command-Center
-sudo docker compose up -d --build
+sh deploy-pi.sh
 ```
 
 Then open **http://<SERVER-IP>:8080/** (replace `<SERVER-IP>` with the IP address or hostname of *your* host; there is no fixed or required IP address). using your own Raspberry Pi or server IP address. More details in [DEPLOY.md](DEPLOY.md).
 
-If already cloned:
+If already cloned (the Pi only downloads prebuilt files, no Node.js build):
 
 ```bash
 cd /home/pi/HomeLab-Command-Center
 git pull --ff-only
-sudo docker compose up -d --build
+sh deploy-pi.sh
 ```
 
 ## Available in preview 0.1
@@ -65,3 +65,8 @@ MIT, see [LICENSE](LICENSE).
 
 
 Every installation has its own IP addresses, subnet, DNS names and device endpoints. Example addresses are illustrative only; do not hardcode the original developer's LAN address into application logic.
+
+
+### Raspberry Pi 3 / 1 GB RAM
+
+**Do not run `docker compose build`.** GitHub Actions builds the frontend and publishes the `static` branch. `sh deploy-pi.sh` downloads the finished website and starts Nginx with no JavaScript compilation. Wait until the latest Actions run succeeds before the first deploy.
