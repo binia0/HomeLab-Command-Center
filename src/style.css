@@ -82,3 +82,7 @@ body{background:#060d15;color:#e2f5fa}
 .editor-scroll{scrollbar-color:#376b77 transparent}
 .holder-slot{background:#102d36;border-color:#437280}
 @media(max-width:850px){.stage{margin:0 10px}.heading h1{font-size:30px}}
+
+/* Cable selection: port list stays actionable when precise 3D hit areas are small */
+.port-pick{background:#143b44;border:1px solid #426f78;color:#b8f7ed;cursor:pointer;border-radius:5px;padding:6px 10px;font-weight:700}
+.port-pick:hover,.port-pick.active{background:#196c65;border-color:#6eead4;color:#fff;box-shadow:0 0 0 2px #4ed8b348}
