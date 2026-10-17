@@ -18,6 +18,8 @@ jobs:
           node-version: '22'
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+      - name: Validate rack logic
+        run: node --experimental-strip-types --test tests/*.test.mjs
       - name: Compile web app
         run: npm run build
       - name: Publish static branch
