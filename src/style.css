@@ -334,3 +334,10 @@ main{background:#020603!important;min-width:0}
 .palette-shortcuts button:hover{transform:translateX(2px)}
 .rack-overview-inspector .overview-row{background:linear-gradient(120deg,#0c1b13,#0b1612);border-color:#273a31}
 .workspace-section-head strong{font-family:monospace;letter-spacing:1.1px;font-size:10px}
+
+.rack-capacity{margin:9px 0 3px;padding:12px;background:#0c1811;border:1px solid #27432d;border-radius:5px}
+.rack-capacity-head{display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#8dc39c;font-weight:800;letter-spacing:.5px}
+.rack-capacity-head strong{color:#73f29e;font-size:13px}
+.rack-capacity-track{height:6px;background:#1a2b20;border:1px solid #294733;border-radius:99px;overflow:hidden;margin:9px 0 7px}
+.rack-capacity-track i{display:block;height:100%;background:linear-gradient(90deg,#2a9f58,#7ce6a0);box-shadow:0 0 9px #55e28d70;border-radius:99px}
+.rack-capacity small{font-size:9px;letter-spacing:0;color:#729d7d}
