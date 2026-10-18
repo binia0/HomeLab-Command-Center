@@ -33,7 +33,7 @@ export function drawEquipmentDetail(scene:Scene,root:TransformNode,category:stri
   draw('network status',.004,.004,.009,-width*.41,height*.26,-.081,led,root,id);
   for(let v=0;v<5;v++)draw('switch fine cooling slit '+v,width*.07,.001,.009,-width*.40,-height*.06-v*height*.069,-.079,dark,root,id);
 
-  const xs=networkPortXs.length?networkPortXs.slice(0,24).map(x=>x*width*.87):Array.from({length:8},(_,i)=>(i-3.5)*width*.102);
+  const xs=networkPortXs.slice(0,24).map(x=>x*width*.87);
   for(let i=0;i<xs.length;i++){
    const x=xs[i],portW=Math.min(.022,width*.057);
    draw('8P switch recessed RJ45 shell '+i,portW,height*.48,.009,x,0,-.073,metal,root,id);
