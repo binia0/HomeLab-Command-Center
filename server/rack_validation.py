@@ -1,0 +1,66 @@
+"""Validation of rack documents before persistent storage.
+
+Strict on topology/identifiers, tolerant of optional legacy presentation fields.
+"""
+import math
+
+def valid_rack_document(payload):
+    if not isinstance(payload,dict):
+        return False
+    rack=payload.get('rack')
+    if not isinstance(rack,dict) or type(rack.get('width')) is not int or rack['width'] not in (10,19):
+        return False
+    units=rack.get('units')
+    if type(units) is not int or not 4<=units<=42:
+        return False
+    depth=rack.get('depthMm',600)
+    if type(depth) not in (int,float) or not math.isfinite(depth) or not 250<=depth<=1500:
+        return False
+    devices=rack.get('devices')
+    cables=payload.get('cables')
+    services=payload.get('services')
+    if not isinstance(devices,list) or len(devices)>500 or not isinstance(cables,list) or len(cables)>5000 or not isinstance(services,dict):
+        return False
+    ids=set()
+    ports=set()
+    for device in devices:
+        if not isinstance(device,dict):
+            return False
+        device_id=device.get('id')
+        if not isinstance(device_id,str) or not 1<=len(device_id)<=128 or '/' in device_id or device_id in ids:
+            return False
+        ids.add(device_id)
+        u=device.get('u'); height=device.get('height')
+        if type(u) is not int or type(height) is not int or u<1 or height<1 or u+height-1>units:
+            return False
+        if not isinstance(device.get('name'),str) or not device['name'].strip():
+            return False
+        device_ports=device.get('ports')
+        if not isinstance(device_ports,list) or len(device_ports)>200:
+            return False
+        seen=set()
+        for port in device_ports:
+            if not isinstance(port,dict) or not isinstance(port.get('id'),str) or not port['id'] or '/' in port['id'] or port['id'] in seen:
+                return False
+            seen.add(port['id'])
+            if not isinstance(port.get('type'),str) or not port['type']:
+                return False
+            if any(type(port.get(k)) not in (int,float) or not math.isfinite(port[k]) or not -1<=port[k]<=1 for k in ('x','y','z')):
+                return False
+            ports.add(device_id+'/'+port['id'])
+    occupied=set()
+    for link in cables:
+        if not isinstance(link,dict) or not isinstance(link.get('a'),str) or not isinstance(link.get('b'),str):
+            return False
+        if link['a']==link['b'] or link['a'] not in ports or link['b'] not in ports or link['a'] in occupied or link['b'] in occupied:
+            return False
+        if link['a'].split('/')[0]==link['b'].split('/')[0]:
+            return False
+        occupied.update((link['a'],link['b']))
+    for key, entries in services.items():
+        if key not in ids or not isinstance(entries,list) or len(entries)>50:
+            return False
+        for item in entries:
+            if not isinstance(item,dict) or not isinstance(item.get('name'),str) or not isinstance(item.get('url'),str) or len(item['url'])>2048:
+                return False
+    return True
