@@ -4,6 +4,7 @@ import {routeRackCable,softenCablePath} from './3d/CableRouter';
 import {builtInNas} from './3d/built-in-nas';
 import {loadModelAsset,saveModelAsset} from './lib/model-assets';
 import {renderSingleBoardComputer} from './3d/SingleBoardComputer';
+import {renderPiCluster} from './3d/PiCluster';
 import {drawEquipmentDetail} from './3d/DeviceDetails';
 import {addPrecisionRackFixtures} from './3d/RackDetails';
 import {CameraController} from './3d/CameraController';
@@ -51,6 +52,7 @@ if(!d.slots?.length&&!['sbc','display','lcd-pi'].includes(d.category||'')){for(l
 if(d.category==='switch'||d.category==='network'){mk('network status strip',W*.15,.006,.006,W*.3,h*.24,-.036,tag,root,d.id)}
 for(const display of d.displays||[]){const dw=Math.max(.015,Math.min(W*.87,display.widthMm/1000));const dh=Math.max(.012,Math.min(h*.86,display.heightMm/1000));const dx=Math.max(-W*.35,Math.min(W*.35,display.offsetXmm/1000));const dy=Math.max(-h*.3,Math.min(h*.3,display.offsetYmm/1000));const bezel=material('display bezel '+display.id,'#283d48');const glass=material('display glass '+display.id,'#0e3242');glass.emissiveColor=color('#0b4c56');mk('display mount '+display.id,dw+.006,dh+.006,.008,dx,dy,-.055,bezel,root,d.id);mk('display screen '+display.id,dw,dh,.003,dx,dy,-.062,glass,root,d.id);mk('display status bar '+display.id,dw*.67,.002,.002,dx,dy+dh*.27,-.064,accent,root,d.id)}
 if(d.category==='lcd-pi')renderLcdPi(scene,root,d.id,W,h);
+if(d.category==='pi-cluster')renderPiCluster(scene,root,d.id,W,h);
 if(d.imageData?.startsWith('data:image/')){const front=MeshBuilder.CreatePlane('device photo '+d.id,{width:W*.72,height:h*.56,sideOrientation:Mesh.DOUBLESIDE},scene);front.position.set(0,0,-.069);front.parent=root;front.metadata={id:d.id};const photo=new StandardMaterial('device photo material '+d.id,scene);photo.diffuseTexture=new Texture(d.imageData,scene);photo.emissiveColor=color('#59646a');photo.backFaceCulling=false;front.material=photo}
 const led=material('led '+d.id,'#24cba7');led.emissiveColor=color('#0b7a66');mk('LED',.008,.008,.006,-W*.39,0,-.032,led,root,d.id);
 for(const p of d.ports){const px=Math.max(-W*.44,Math.min(W*.44,p.x*W*.87)),py=Math.max(-h*.37,Math.min(h*.37,p.y*h)),pz=p.z>0?Math.min(enclosureDepth-.025,Math.max(-.105,p.z*enclosureDepth)):-.105;const isUsb=p.type.startsWith('USB'),isPower=p.type==='POWER',isHdmi=p.type==='HDMI'||p.type==='DisplayPort';const pw=isUsb?.012:isPower?.014:isHdmi?.019:.017,ph=isUsb?.008:isPower?.014:isHdmi?.008:.017;mk('connector rim '+p.type+' '+p.id,pw+.004,ph+.004,.009,px,py,pz,isUsb?blue:isPower?pale:trim,root,d.id,p.id);mk('connector cavity '+p.id,pw,ph,.003,px,py,pz-.006,shadow,root,d.id,p.id);if(isUsb){mk('usb contact '+p.id,pw*.65,.002,.003,px,py-.001,pz-.010,isUsb?blue:accent,root,d.id,p.id)}else if(p.type==='RJ45'){mk('rj45 tab '+p.id,pw*.45,.002,.003,px,py+ph*.28,pz-.010,steel,root,d.id,p.id)}else if(isPower){mk('power socket '+p.id,pw*.42,ph*.42,.003,px,py,pz-.011,black,root,d.id,p.id)}}
