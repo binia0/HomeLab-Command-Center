@@ -4,7 +4,7 @@ from http.cookies import SimpleCookie
 from urllib.parse import urlparse
 from pathlib import Path
 from urllib.request import urlopen
-from urllib.parse import urlencode
+from urllib.parse import urlencode, parse_qs
 
 DB=Path(os.getenv('HCC_DB','/data/hcc.sqlite3')); DB.parent.mkdir(parents=True,exist_ok=True)
 LOCK=threading.RLock()
@@ -85,7 +85,7 @@ class Handler(BaseHTTPRequestHandler):
      self.send_response(200);self.send_header('Set-Cookie','rack_session=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0');self.send_header('Content-Length','2');self.end_headers();self.wfile.write(b'{}');return
     if path=='/api/telemetry' and method=='GET':
      # Only administrator-configured targets can be contacted. Never proxy arbitrary URLs.
-     host=(urlparse(self.path).query.split('host=',1)[1].split('&',1)[0] if 'host=' in urlparse(self.path).query else '')
+     host=parse_qs(urlparse(self.path).query).get('host',[''])[0]
      try:sources=json.loads(os.getenv('HCC_NETDATA_SOURCES','{}'))
      except (ValueError,TypeError):sources={}
      if not isinstance(sources,dict) or host not in sources or not isinstance(sources[host],str):
