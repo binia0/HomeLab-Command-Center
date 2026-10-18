@@ -43,6 +43,12 @@ class RackValidationTest(unittest.TestCase):
         obj['rack']['devices'][0]['hostDeviceId']='pi'
         obj['rack']['devices'][1]['hostDeviceId']='switch'
         self.assertFalse(valid_rack_document(obj))
+    def test_invalid_service_protocol(self):
+        obj=rack();obj['services']={'pi':[{'name':'Broken','url':'javascript:alert(1)'}]}
+        self.assertFalse(valid_rack_document(obj))
+    def test_valid_service_url(self):
+        obj=rack();obj['services']={'pi':[{'name':'Panel','url':'https://example.local:8443/dashboard'}]}
+        self.assertTrue(valid_rack_document(obj))
     def test_invalid_coordinate(self):
         obj=rack();obj['rack']['devices'][0]['ports'][0]['x']=float('nan')
         self.assertFalse(valid_rack_document(obj))
