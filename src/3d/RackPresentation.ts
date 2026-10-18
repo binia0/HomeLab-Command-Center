@@ -8,6 +8,21 @@ export function addRackPresentation(scene:Scene,parent:TransformNode,w:number,h:
  const part=(name:string,x:number,y:number,z:number,width:number,height:number,depthValue:number,mat:StandardMaterial)=>{
   const m=MeshBuilder.CreateBox(name,{width,height,depth:depthValue},scene);m.parent=parent;m.position.set(x,y,z);m.material=mat;m.isPickable=false;return m
  };
+ // Recessed blue datacenter lighting: strips live behind the face and cannot steal input.
+ const rimBlue=make('recessed blue LED wash','#1764b5',true);
+ const blackTrim=make('anodized structural extrusion','#131f2b');
+ const gold=make('warm service bay accent','#a66b35',true);
+ for(const side of [-1,1]){
+  part('rear interior LED strip '+side,side*(w/2+.015),h/2,-depth/2+.065,.003,h*.94,.006,rimBlue);
+  part('polished front rail edge '+side,side*(w/2+.023),h/2,-depth/2-.078,.003,h*.99,.005,trim);
+  for(let level=0;level<units;level+=2){
+   const yy=(level+.5)*h/units;
+   part('rail bay cutout '+side+' '+level,side*(w/2+.024),yy,-depth/2-.081,.013,.009,.004,blackTrim);
+  }
+ }
+ for(const zz of [-1,1]){
+  part('illuminated top recess '+zz,0,h-.012,zz*depth*.25,w*.79,.004,.006,zz===1?gold:rimBlue);
+ }
  // Decorative internal roof structure and side panel perforations, never obstructing device picking.
  const enclosure=make('rack inner wall','#0a111d'),edge=make('brushed rack edge','#344357');
  for(const side of [-1,1]){
