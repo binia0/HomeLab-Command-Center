@@ -24,3 +24,26 @@ sudo docker compose down
 ```
 
 RackVisual on port 80 is never changed. This preview is experimental, stores demo data in browser storage, and isn't production ready. Private inventory and real IPs must not be committed.
+
+## Netdata integration (opt-in)
+
+The server performs all requests. The browser cannot request arbitrary external hosts.
+Configure only trusted Netdata agents using an environment variable; the map keys must match
+the device IP/host entered in the rack editor.
+
+Create a `.env` file next to `docker-compose.yml` (keep it private and out of Git):
+
+```dotenv
+HCC_NETDATA_SOURCES={"sample-host.local":"http://sample-host.local:19999"}
+```
+
+Replace both occurrences of `sample-host.local` with the host you actually use.
+For an actual machine, enter that same host/IP in the device editor. This mapping is **not**
+automatically inferred from the device's IP; only entries in the explicit allowlist can
+be polled. The configured Netdata address must be reachable *from inside the API container*.
+After changing configuration, apply `sudo docker compose up -d`.
+
+The inspector polls every 15 seconds and displays verified CPU and RAM percentage readings
+when the respective Netdata charts are available. Disk and network data remain unavailable,
+rather than showing invented values. Netdata query format is the API v1 JSON response.
+Do not expose Netdata or this service to untrusted networks. Avoid proxy URLs and redirects.
