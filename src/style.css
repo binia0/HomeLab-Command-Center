@@ -341,3 +341,8 @@ main{background:#020603!important;min-width:0}
 .rack-capacity-track{height:6px;background:#1a2b20;border:1px solid #294733;border-radius:99px;overflow:hidden;margin:9px 0 7px}
 .rack-capacity-track i{display:block;height:100%;background:linear-gradient(90deg,#2a9f58,#7ce6a0);box-shadow:0 0 9px #55e28d70;border-radius:99px}
 .rack-capacity small{font-size:9px;letter-spacing:0;color:#729d7d}
+
+/* Keep viewport action controls over the canvas; the cinematic chrome must not displace them. */
+.stage .stage-bottom{position:absolute!important;bottom:15px!important;left:16px!important;right:16px!important;z-index:6!important;pointer-events:none;display:flex}
+.stage .stage-bottom button,.stage .stage-bottom .seg{pointer-events:auto}
+.stage .camera-home{position:relative;z-index:7}
