@@ -83,7 +83,7 @@ async function importGLB(file:File,id:string,persist:boolean){
  try{
   const result=await SceneLoader.ImportMeshAsync('','',url,scene,undefined,'.glb');
   if(instances.get(id)!==root){for(const m of result.meshes)m.dispose();return}
-  for(const child of root.getChildMeshes(false))child.isVisible=false;
+  for(const child of root.getChildMeshes(false)){if(!child.metadata?.port)child.isVisible=false;}
   const node=new TransformNode('real-GLB '+id,scene);node.parent=root;
   for(const mesh of result.meshes){if(!mesh.parent)mesh.parent=node;mesh.metadata={...mesh.metadata,id}}
   const bounds=node.getHierarchyBoundingVectors(true),ext=bounds.max.subtract(bounds.min);
