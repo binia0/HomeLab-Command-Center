@@ -2,6 +2,7 @@ import json, os, secrets, sqlite3, hashlib, hmac, time, threading
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from http.cookies import SimpleCookie
 from urllib.parse import urlparse
+from rack_validation import valid_rack_document
 from pathlib import Path
 from urllib.request import urlopen
 from urllib.parse import urlencode, parse_qs
@@ -137,7 +138,7 @@ class Handler(BaseHTTPRequestHandler):
      return self.send(200,{'builds':[dict(v) for v in rows]})
     if path=='/api/builds' and method=='POST':
      name=str(data.get('name','')).strip()[:100];payload=data.get('data')
-     if not name or not isinstance(payload,dict):return self.send(400,{'error':'Rackname und Rackdaten erforderlich'})
+     if not name or not valid_rack_document(payload):return self.send(400,{'error':'Ungültige Rackdaten oder ungültige Verbindungen'})
      record_id=secrets.token_hex(16);c.execute('INSERT INTO builds(id,user_id,name,data,updated) VALUES(?,?,?,?,?)',(record_id,current['id'],name,json.dumps(payload),int(time.time())))
      return self.send(201,{'id':record_id})
     if path.startswith('/api/builds/'):
@@ -146,7 +147,7 @@ class Handler(BaseHTTPRequestHandler):
      if method=='GET':return self.send(200,{'id':bid,'name':row['name'],'data':json.loads(row['data'])})
      if method=='PUT':
       payload=data.get('data');name=str(data.get('name',row['name'])).strip()[:100]
-      if not name or not isinstance(payload,dict):return self.send(400,{'error':'Ungültige Rackdaten'})
+      if not name or not valid_rack_document(payload):return self.send(400,{'error':'Ungültige Rackdaten oder ungültige Verbindungen'})
       c.execute('INSERT INTO build_revisions(build_id,user_id,name,data,saved_at) VALUES(?,?,?,?,?)',(bid,current['id'],row['name'],row['data'],int(time.time())))
       c.execute('DELETE FROM build_revisions WHERE build_id=? AND user_id=? AND id NOT IN (SELECT id FROM build_revisions WHERE build_id=? AND user_id=? ORDER BY id DESC LIMIT 20)',(bid,current['id'],bid,current['id']))
       c.execute('UPDATE builds SET name=?,data=?,updated=? WHERE id=? AND user_id=?',(name,json.dumps(payload),int(time.time()),bid,current['id']))
