@@ -210,3 +210,16 @@ main{display:flex;flex-direction:column;background:#0b101a;min-height:0}
 .assembly-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:15px 20px;background:#11202f;border-bottom:1px solid #3b5b6a}
 .assembly-steps span{font-size:10px;font-weight:800;color:#c5e6e8;text-align:center}
 .assembly-dialog{width:min(540px,96vw)}
+
+.account-manager{position:relative;z-index:40}
+.account-open{white-space:nowrap;background:#225c61;color:#ecfffd;border:1px solid #6be0d0;border-radius:8px;padding:10px 13px;font-weight:800;font-size:11px}
+.account-popover{position:absolute;right:0;top:calc(100% + 9px);width:min(355px,93vw);background:#152433;border:1px solid #668596;box-shadow:0 20px 55px #000b;border-radius:12px;padding:17px;display:flex;flex-direction:column;gap:10px;color:#f1fbfe}
+.account-popover input{width:100%;border:1px solid #486879;background:#0e1c2a;color:#fff;border-radius:7px;padding:10px}
+.account-popover label{font-size:11px;display:grid;gap:6px;color:#c6deea}
+.account-popover button{background:#234c5b;border:1px solid #59899a;color:#e9fafb;border-radius:7px;padding:9px 11px;font-size:11px;font-weight:750}
+.account-popover button:hover{background:#2c6c79}
+.account-row{display:flex;gap:8px}
+.account-builds{display:grid;gap:6px;max-height:230px;overflow:auto}
+.account-build{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px;align-items:center;border:1px solid #3d5b6b;border-radius:7px;padding:7px}
+.account-build span{font-size:11px;overflow:hidden;text-overflow:ellipsis}
+.account-popover p{font-size:11px;line-height:1.4;color:#abe6df}
