@@ -2,10 +2,19 @@ import {Scene,TransformNode,MeshBuilder,PBRMaterial,StandardMaterial,Color3,Mesh
 /** Front rack trim and service-cable guides. Pure geometry; never blocks device picking. */
 export function addRackPresentation(scene:Scene,parent:TransformNode,w:number,h:number,depth:number,units:number){
  const make=(name:string,c:string,emissive=false)=>{const m=new StandardMaterial(name,scene);m.diffuseColor=Color3.FromHexString(c);m.specularColor=Color3.FromHexString('#35463d');if(emissive)m.emissiveColor=Color3.FromHexString(c).scale(.7);return m};
+ // Thin metallic rails and non-pickable illumination, without front glass obscuring sockets.
+ const electric=make('indicator cyan','#48d49c',true);
  const frame=make('rack graphite trim','#101915'),trim=make('rack silver screws','#68796d'),glow=make('rack green guide lights','#338a57',true),warm=make('warm power cable guide','#ef6a37',true),slots=make('rack vent slits','#020804');
  const part=(name:string,x:number,y:number,z:number,width:number,height:number,depthValue:number,mat:StandardMaterial)=>{
   const m=MeshBuilder.CreateBox(name,{width,height,depth:depthValue},scene);m.parent=parent;m.position.set(x,y,z);m.material=mat;m.isPickable=false;return m
  };
+ for(const side of [-1,1]){
+  // Paired rows of rack-mounted device bay ticks remain visible when the frame is populated.
+  for(let u=0;u<units;u++){
+   const yy=(u+.5)*h/units;
+   part('unit tick '+side+' '+u,side*(w/2+.032),yy,-depth/2-.09,.003,.003,.003,u%5===0?electric:trim);
+  }
+ }
  for(const side of [-1,1]){
   const x=side*(w/2+.084);
   part('front vertical cable management enclosure',x,h/2,-depth/2-.045,.038,h*.98,.045,frame);
