@@ -115,7 +115,7 @@ function updateCables(connections:{a:string;b:string}[]){
   const endpoint=(key:string)=>{const separator=key.indexOf('/');if(separator<0)return null;const id=key.slice(0,separator),portid=key.slice(separator+1),device=cfg.devices.find(d=>d.id===id),root=instances.get(id),port=device?.ports.find(p=>p.id===portid);if(!device||!root||!port)return null;
    root.computeWorldMatrix(true);const w=spacing(cfg.width),h=device.height*U-.006;
    const point=Vector3.TransformCoordinates(new Vector3(Math.max(-w*.44,Math.min(w*.44,port.x*w*.87)),Math.max(-h*.37,Math.min(h*.37,port.y*h)),port.z>0?Math.min(Math.min(depth-.05,Math.max(.035,(device.depthMm??180)/1000))-.025,port.z*Math.min(depth-.05,Math.max(.035,(device.depthMm??180)/1000))):-.105),root.getWorldMatrix());
-   return{point,face:device.mount==='rear'?'rear' as const:'front' as const,type:port.type};
+   return{point,face:((device.mount==='rear')!==(port.z>0)?'rear':'front') as 'rear'|'front',type:port.type};
   };
   const a=endpoint(link.a),b=endpoint(link.b);if(!a||!b)continue;
   const routing=routeRackCable(a,b,spacing(cfg.width),depth,i%5);
