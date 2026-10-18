@@ -66,6 +66,21 @@ class ApiSmoke(unittest.TestCase):
         if response.getheader("Content-Type","").startswith("application/json"):
             return status,json.loads(data)
         return status,data
+    def test_legacy_account_password_upgrade(self):
+        self.cookie=None
+        code,body=self.request("POST","/api/select-user",{"username":"upgrade_test"})
+        self.assertEqual(code,200)
+        code,body=self.request("POST","/api/set-password",{"password":"a-long-new-test-password"})
+        self.assertEqual(code,200)
+        self.assertTrue(body["secured"])
+        self.cookie=None
+        code,_=self.request("POST","/api/select-user",{"username":"upgrade_test"})
+        self.assertEqual(code,403)
+        code,_=self.request("POST","/api/login",{"username":"upgrade_test","password":"wrong-password-123"})
+        self.assertEqual(code,401)
+        code,body=self.request("POST","/api/login",{"username":"upgrade_test","password":"a-long-new-test-password"})
+        self.assertEqual(code,200)
+        self.assertEqual(body["username"],"upgrade_test")
     def test_revisions_and_glb(self):
         self.cookie=None
         status,_=self.request("POST","/api/select-user",{"username":"smoketest"})
