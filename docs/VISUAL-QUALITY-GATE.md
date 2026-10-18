@@ -1,6 +1,6 @@
-# Visual quality gate — Silicon-Pirates-inspired rack editor
+# Visual quality standards for HomeLab Command Center
 
-User-approved reference: the user's Silicon Pirates rack-simulation screenshot and interface. It is a **design benchmark**, not permission to copy proprietary models/assets or claim visual equivalence.
+Goal: a professional, detailed, interactive rack editor with crisp hardware geometry, realistic cables, intuitive camera focus, and clearly organized device controls. Do not copy proprietary models or assets.
 
 ## Non-negotiable visual characteristics
 - Photorealistic / physically believable hardware proportions: rails, chassis, real switch faces, ventilation, fasteners, proper material response, textured plastic, metal, PCB details.
