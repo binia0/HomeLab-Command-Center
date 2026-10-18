@@ -1,5 +1,5 @@
 import {chromium} from 'playwright';
-import {mkdir} from 'node:fs/promises';
+import {mkdir,writeFile} from 'node:fs/promises';
 const browser=await chromium.launch({headless:true,args:['--enable-webgl','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
 try{
  const page=await browser.newPage({viewport:{width:1720,height:900},deviceScaleFactor:1});
@@ -37,5 +37,6 @@ try{
  }catch(e){failures.push('LCD/Pi mounting smoke check: '+String(e))}
 
  if(!size||size.width<150||size.height<200)failures.push('Missing rack viewport');
+ await writeFile('visual-artifacts/qa-status.json',JSON.stringify({commit:process.env.GITHUB_SHA,passed:failures.length===0,errors:failures,viewport:size},null,2));
  if(failures.length)throw Error('Browser errors: '+failures.join('; '));
 }finally{await browser.close()}
