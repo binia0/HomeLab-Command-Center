@@ -108,3 +108,48 @@ body{background:#060d15;color:#e2f5fa}
 .slot-transform-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
 .slot-transform-controls label{font-size:10px;color:#a8ccda}
 .slot-transform-controls input{width:100%;min-width:0}
+
+
+/* 2026 dashboard refresh: crisp control-room look rather than foggy glass UI */
+:root{font-family:Inter,'DM Sans',system-ui,sans-serif;color:#eaf3fa;background:#080e16}
+body{background:#080e16;color:#eaf3fa}
+.app{background:#0a111a;grid-template-columns:260px minmax(400px,1fr) 335px}
+.header{background:#101923;border-color:#344456}
+.brand strong{font-family:Inter,'DM Sans',system-ui,sans-serif;font-size:18px;letter-spacing:-.35px;font-weight:800}
+.brand small,.header-meta,.rack-card small,.item small,.inspector small{color:#a4b8c9}
+.logo{background:#102f36;border-color:#48c9bd;color:#80e5dc}
+aside{background:#111c28}
+.left,.right{border-color:#354658}
+.section{color:#ecf3fa;border-color:#344658;font-size:11px;letter-spacing:.8px}
+.section span{color:#a6bac9;font-size:10px}
+.rack-card{background:#192a38;border:1px solid #4a6375;border-radius:9px;box-shadow:none}
+.rack-card h2{font-family:Inter,'DM Sans',sans-serif;color:#fff;font-weight:800}
+.rack-card p,.settings label,.inspector p{color:#b0c4d2}
+.settings label{font-size:11px}
+.seg{background:#0b1520;border:1px solid #3d5364}
+.seg button{color:#c2d0dc;font-size:11px}
+.seg button.active,.seg button.act{background:#205c62;color:#fff}
+.items{padding:10px}
+.item{background:#172331;border:1px solid #2c4152;border-radius:8px;margin-bottom:7px;color:#d3e0ea}
+.item:hover{background:#203747;border-color:#4d7783}
+.item.chosen{background:#1b3d47;border-color:#57cbbb;box-shadow:inset 3px 0 #63dfcb}
+.item strong{font-family:Inter,'DM Sans',sans-serif;font-size:12px;line-height:1.4;color:#f2f7fb;font-weight:750;letter-spacing:0}
+.item small{font-size:10px}
+.secondary,.save,.port-pick{background:#173843;color:#d9fff8;border-color:#4b9291;border-radius:7px;box-shadow:none}
+.secondary:hover,.save:hover,.port-pick:hover{background:#205461;border-color:#77e4d6}
+.heading h1{font-family:Inter,'DM Sans',sans-serif;font-size:clamp(23px,2vw,32px);font-weight:800;letter-spacing:-.75px;color:#f3f7fc}
+.heading p{color:#b0c0ce;font-size:12px}
+.heading small{color:#7de4d8}
+.stage{background:#101a26!important;border:1px solid #53687a;box-shadow:none!important;border-radius:9px}
+.stage::before{background:repeating-linear-gradient(0deg,transparent 0px,transparent 39px,#aec0d808 40px),repeating-linear-gradient(90deg,transparent 0px,transparent 39px,#aec0d808 40px)!important}
+.stage-label,.stage-note{color:#d9e8f4}
+.stage-label small,.stage-note strong{color:#7de4d8}
+.inspector{background:#172331;border-bottom:1px solid #344759}
+.inspector h2{font-family:Inter,'DM Sans',sans-serif;font-size:16px;font-weight:800}
+.inspector-footer{background:#111c28;border-color:#344759}
+.editor-overlay{background:#050912ed;backdrop-filter:none}
+.editor-modal{background:#142331;border:1px solid #5b7387;border-radius:11px;box-shadow:0 25px 65px #000b;color:#f0f7fa}
+.editor-header{background:#1b2e3e}
+input,select,textarea{color-scheme:dark}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #76e7d9;outline-offset:2px}
+@media(max-width:1100px){.app{grid-template-columns:230px minmax(300px,1fr) 290px}}
