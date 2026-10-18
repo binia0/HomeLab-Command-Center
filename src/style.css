@@ -301,3 +301,25 @@ main{background:#030805}
 .showcase-launch{margin:9px 12px 12px;width:calc(100% - 24px);display:flex;align-items:center;gap:8px;background:#124527;border:1px solid #52c477;border-radius:6px;color:#e6ffed;font-size:11px;font-weight:900;padding:12px 11px}
 .showcase-launch:hover{background:#1c6839;box-shadow:0 0 0 2px #46b76d23}
 .showcase-launch>span{display:block;font-size:8px;color:#9edcaf;font-weight:700;letter-spacing:.3px;margin-left:auto}
+
+/* v4 reference-first composition: rack becomes a front-view hero instead of a grey CAD stage */
+html,body,#root{height:100%;min-height:100%;background:#020603!important}
+.app{background:#020603!important}
+.header{height:46px;min-height:46px;background:#030805!important;border-bottom:1px solid #172b1d!important}
+.left,.right,aside{background:#030a05!important}
+main{background:#020603!important;min-width:0}
+.heading{padding-top:9px;padding-bottom:5px}
+.heading h1{font-size:18px;color:#bfffcf}
+.heading p{display:none}
+.workspace-section-head{height:27px;margin:0;padding-top:3px}
+.stage{background:#020503!important;box-shadow:none!important;border-color:#193321!important;overflow:hidden!important;min-height:560px}
+.stage::before{display:none!important}
+.viewport-ambient{background:radial-gradient(ellipse at 50% 44%,#11301a40,transparent 44%),linear-gradient(180deg,#030a0588,#010301)!important}
+.stage-note{opacity:.65}
+.stage-label{opacity:.76}
+.inspector{background:#061009!important}
+.right .section{background:#05110a}
+.palette-shortcuts button{background:#07120a}
+.palette-shortcuts button:hover{background:#142c1a}
+.showcase-launch{background:#0a3619}
+@media(min-width:1500px){.app{grid-template-columns:260px minmax(520px,1fr) 290px!important}.stage{min-height:calc(100vh - 165px)}}
