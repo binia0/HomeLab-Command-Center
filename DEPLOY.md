@@ -47,3 +47,24 @@ The inspector polls every 15 seconds and displays verified CPU and RAM percentag
 when the respective Netdata charts are available. Disk and network data remain unavailable,
 rather than showing invented values. Netdata query format is the API v1 JSON response.
 Do not expose Netdata or this service to untrusted networks. Avoid proxy URLs and redirects.
+
+## Consistent SQLite backup (rack data, versions, GLB assets)
+
+The API stores saved racks, revisions and uploaded GLBs in the named Docker volume
+`rack_data`. Before updates or hardware maintenance, make a consistent backup:
+
+```sh
+cd ~/HomeLab-Command-Center
+sudo docker compose exec api python /app/backup.py /data/backups
+```
+
+Backups remain in the Docker volume by default; **copy them to another drive/host**.
+A backup that stays on the same Pi/SD card does not protect against disk failure.
+
+To restore manually, stop Command Center first, preserve the existing database,
+replace `/data/hcc.sqlite3` with the desired backup and then restart the API.
+Restore must be tested on a disposable copy before production use; do not overwrite
+the live rack database without a second external backup.
+
+The included command verifies SQLite integrity but is not a complete, automated
+off-device disaster recovery system.
