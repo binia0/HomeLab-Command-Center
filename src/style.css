@@ -205,3 +205,8 @@ main{display:flex;flex-direction:column;background:#0b101a;min-height:0}
 .hcc-error-actions button{background:#20616a;border:1px solid #70cbd0;border-radius:8px;padding:11px 14px;color:#fff;font-weight:700}
 @media(max-width:1130px){.header-meta{display:none}}
 @media(max-width:700px){.header-actions{gap:5px}.export-action{font-size:0;padding:9px}.export-action svg{width:18px;height:18px}.brand strong{font-size:15px}}
+
+.assembly-quick{margin:0 12px 12px;width:calc(100% - 24px);background:#134c50;border-color:#60ccbf;color:#e2fffa}
+.assembly-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:15px 20px;background:#11202f;border-bottom:1px solid #3b5b6a}
+.assembly-steps span{font-size:10px;font-weight:800;color:#c5e6e8;text-align:center}
+.assembly-dialog{width:min(540px,96vw)}
