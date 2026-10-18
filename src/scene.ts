@@ -94,6 +94,9 @@ async function importGLB(file:File,id:string,persist:boolean){
     node.scaling.scaleInPlace(scale);
   }
   node.position.z=-.058;
+  // The supplied 4U NAS asset has its detailed drive bays on local +Z.
+  // Babylon's rack front points toward -Z, so face the bays toward the viewer.
+  if(!persist&&device?.templateId==='rack-nas-4u')node.rotation.y=Math.PI;
   if(persist)await saveModelAsset(id,file);
  }finally{URL.revokeObjectURL(url)}
 }
