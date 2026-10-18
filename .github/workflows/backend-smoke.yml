@@ -1,0 +1,27 @@
+name: Backend Smoke Tests
+
+on:
+  push:
+    paths:
+      - 'server/**'
+      - '.github/workflows/backend-smoke.yml'
+  pull_request:
+    paths:
+      - 'server/**'
+      - '.github/workflows/backend-smoke.yml'
+  workflow_dispatch:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check Python syntax
+        run: python -m compileall -q server
+      - name: API integration tests
+        run: python -m unittest discover -s server/tests -v
