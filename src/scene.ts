@@ -1,3 +1,4 @@
+import {builtInNas} from './3d/built-in-nas';
 import {loadModelAsset,saveModelAsset} from './lib/model-assets';
 import {renderSingleBoardComputer} from './3d/SingleBoardComputer';
 import {addHardwareFace} from './3d/HardwareFace';
@@ -58,8 +59,41 @@ if(d.category!=='display'&&d.category!=='sbc'&&!d.imageData&&!d.slots?.length)ad
 if(d.category==='ai'||d.category==='kvm')for(const s of [-1,1])mk('module',W*.34,h*.7,.012,s*W*.23,0,-.037,steel,root,d.id);
 }cam.setTarget(new Vector3(0,H/2,0));cam.radius=Math.max(.92,H*1.42)}
 
-async function restoreModels(){const current=[...cfg.devices];for(const device of current){try{const asset=await loadModelAsset(device.id);if(asset&&instances.has(device.id)){const upload=new File([asset],device.id+'.glb',{type:'model/gltf-binary'});await importGLB(upload,device.id,false)}}catch(error){console.warn('GLB restore failed',device.id,error)}}}
-async function importGLB(file:File,id:string,persist:boolean){const root=instances.get(id);if(!root)throw Error('No device selected');const url=URL.createObjectURL(file);try{const r=await SceneLoader.ImportMeshAsync('','',url,scene,undefined,'.glb');const node=new TransformNode('real-GLB '+id,scene);node.parent=root;for(const m of r.meshes){if(!m.parent)m.parent=node;m.metadata={...m.metadata,id}}const b=node.getHierarchyBoundingVectors(true),ext=b.max.subtract(b.min),dev=cfg.devices.find(x=>x.id===id)!;if(ext.x>0&&ext.y>0&&ext.z>0){const scale=Math.min(spacing(cfg.width)*.77/ext.x,dev.height*U*.7/ext.y,.08/ext.z);node.scaling.scaleInPlace(scale)}node.position.z=-.09;if(persist)await saveModelAsset(id,file)}finally{URL.revokeObjectURL(url)}}
+let restoreRevision=0;
+async function restoreModels(){
+ const revision=++restoreRevision;
+ for(const device of [...cfg.devices]){
+  try{
+   let asset=await loadModelAsset(device.id);
+   if(!asset&&device.templateId==='rack-nas-4u')asset=await builtInNas();
+   if(revision!==restoreRevision)return;
+   if(asset&&instances.has(device.id)){
+    const upload=new File([asset],device.id+'.glb',{type:'model/gltf-binary'});
+    await importGLB(upload,device.id,false);
+   }
+  }catch(error){console.warn('3D model restore failed',device.id,error)}
+ }
+}
+async function importGLB(file:File,id:string,persist:boolean){
+ const root=instances.get(id);if(!root)throw Error('No device selected');
+ const url=URL.createObjectURL(file);
+ try{
+  const result=await SceneLoader.ImportMeshAsync('','',url,scene,undefined,'.glb');
+  if(instances.get(id)!==root){for(const m of result.meshes)m.dispose();return}
+  for(const child of root.getChildMeshes(false))child.isVisible=false;
+  const node=new TransformNode('real-GLB '+id,scene);node.parent=root;
+  for(const mesh of result.meshes){if(!mesh.parent)mesh.parent=node;mesh.metadata={...mesh.metadata,id}}
+  const bounds=node.getHierarchyBoundingVectors(true),ext=bounds.max.subtract(bounds.min);
+  const device=cfg.devices.find(d=>d.id===id);
+  if(device&&ext.x>.00001&&ext.y>.00001&&ext.z>.00001){
+    const depth=Math.max(.04,(device.depthMm??280)/1000);
+    const scale=Math.min(spacing(cfg.width)*.89/ext.x,device.height*U*.88/ext.y,depth*.9/ext.z);
+    node.scaling.scaleInPlace(scale);
+  }
+  node.position.z=-.058;
+  if(persist)await saveModelAsset(id,file);
+ }finally{URL.revokeObjectURL(url)}
+}
 let cableMeshes:Mesh[]=[];
 function updateCables(connections:{a:string;b:string}[]){
  for(const mesh of cableMeshes)mesh.dispose();cableMeshes=[];
