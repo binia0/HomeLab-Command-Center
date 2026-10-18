@@ -1,13 +1,25 @@
 import {Scene,TransformNode,MeshBuilder,PBRMaterial,StandardMaterial,Color3,Mesh} from '@babylonjs/core';
 /** Front rack trim and service-cable guides. Pure geometry; never blocks device picking. */
 export function addRackPresentation(scene:Scene,parent:TransformNode,w:number,h:number,depth:number,units:number){
- const make=(name:string,c:string,emissive=false)=>{const m=new StandardMaterial(name,scene);m.diffuseColor=Color3.FromHexString(c);m.specularColor=Color3.FromHexString('#35463d');if(emissive)m.emissiveColor=Color3.FromHexString(c).scale(.7);return m};
+ const make=(name:string,c:string,emissive=false)=>{const m=new StandardMaterial(name,scene);m.diffuseColor=Color3.FromHexString(c);m.specularColor=Color3.FromHexString('#354a61');if(emissive)m.emissiveColor=Color3.FromHexString(c).scale(.7);return m};
  // Thin metallic rails and non-pickable illumination, without front glass obscuring sockets.
- const electric=make('indicator cyan','#48d49c',true);
- const frame=make('rack graphite trim','#101915'),trim=make('rack silver screws','#68796d'),glow=make('rack green guide lights','#338a57',true),warm=make('warm power cable guide','#ef6a37',true),slots=make('rack vent slits','#020804');
+ const electric=make('indicator cyan','#379bff',true);
+ const frame=make('rack graphite trim','#111a27'),trim=make('rack silver screws','#77889a'),glow=make('rack green guide lights','#146fc6',true),warm=make('warm power cable guide','#d48e42',true),slots=make('rack vent slits','#020711');
  const part=(name:string,x:number,y:number,z:number,width:number,height:number,depthValue:number,mat:StandardMaterial)=>{
   const m=MeshBuilder.CreateBox(name,{width,height,depth:depthValue},scene);m.parent=parent;m.position.set(x,y,z);m.material=mat;m.isPickable=false;return m
  };
+ // Decorative internal roof structure and side panel perforations, never obstructing device picking.
+ const enclosure=make('rack inner wall','#0a111d'),edge=make('brushed rack edge','#344357');
+ for(const side of [-1,1]){
+  const x=side*(w/2+.059);
+  for(let u=0;u<units;u++){
+   const y=(u+.5)*h/units;
+   for(let row=0;row<3;row++){
+    part('side cage vent '+side+' '+u+' '+row,x,y+(row-1)*h/units*.22,-depth*.16,.0026,.003,depth*.16,row===1?enclosure:edge);
+   }
+  }
+ }
+ for(const z of [-1,1])part('roof shadow lattice',0,h+.036,z*depth*.22,w*.91,.004,depth*.16,enclosure);
  for(const side of [-1,1]){
   // Paired rows of rack-mounted device bay ticks remain visible when the frame is populated.
   for(let u=0;u<units;u++){
@@ -34,8 +46,8 @@ export function addRackPresentation(scene:Scene,parent:TransformNode,w:number,h:
   for(const side of [-1,1])part('corner post fastener',side*(w/2+.042),y,-depth/2-.060,.008,.008,.006,trim);
  } 
  // Dense hardware-rack details: inset rail strips, segmented LEDs and visible U engravings.
- const brass=make('rack amber signaling','#d48448',true);
- const plate=make('rack mounting shadow','#09120d');
+ const brass=make('rack amber signaling','#e9a34a',true);
+ const plate=make('rack mounting shadow','#07111b');
  for(const side of [-1,1]){
   const xx=side*(w/2+.049);
   part('front black aluminium extrusion',xx,h/2,-depth/2-.083,.013,h*.985,.013,plate);
