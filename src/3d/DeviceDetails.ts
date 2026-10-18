@@ -12,6 +12,15 @@ export function drawEquipmentDetail(scene:Scene,root:TransformNode,category:stri
    draw('cartridge latch '+x+'-'+y,width*.07,.002,.009,px,py-height*.073,-.082,metal,root,id);
   }
  }
+ if(category==='server'){
+   for(let j=0;j<2;j++){
+    const x=(j?1:-1)*width*.41;
+    draw('server exhaust grill '+j,width*.045,height*.55,.006,x,0,-.079,dark,root,id);
+    for(let k=0;k<5;k++)draw('server grill horizontal '+j+' '+k,width*.04,.0016,.007,x,(k-2)*height*.085,-.084,metal,root,id);
+   }
+   draw('server control module',width*.10,height*.43,.007,width*.31,0,-.078,dark,root,id);
+   for(let j=0;j<3;j++)draw('server drive status '+j,.004,.003,.009,width*.29+j*.008,height*.11,-.085,j===2?orange:led,root,id);
+ }
  if(category==='switch'||category==='network'||category==='patch'){
   for(let i=0;i<12;i++){
    const x=(i-5.5)*width*.065;
