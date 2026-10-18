@@ -1,3 +1,4 @@
+import {renderSingleBoardComputer} from './3d/SingleBoardComputer';
 import {addHardwareFace} from './3d/HardwareFace';
 import {drawEquipmentDetail} from './3d/DeviceDetails';
 import {addPrecisionRackFixtures} from './3d/RackDetails';
@@ -33,7 +34,7 @@ mk(d.name,W+.062,h,.04,0,0,0,face,root,d.id);mk('front',W+.052,h-.008,.006,0,0,-
 for(const sx of [-1,1]){mk('rack fastener recessed '+d.id+' '+sx,.009,.009,.004,sx*(W/2+.027),h*.29,-.042,shadow,root,d.id);mk('rack fastener head '+d.id+' '+sx,.004,.004,.006,sx*(W/2+.027),h*.29,-.048,screw,root,d.id)}
 
 const trim=material('metal trim '+d.id,'#91a4ac');const blue=material('usb blue '+d.id,'#2264b0');const green=material('PCB '+d.id,'#216d50');const copper=material('PCB copper '+d.id,'#b68b52');const pale=material('connector '+d.id,'#a9b9bf');const tag=material('status '+d.id,'#e6c464');
-if(d.category==='sbc'&&!d.slots?.length){mk('visible PCB',W*.83,h*.73,.008,0,0,-.039,green,root,d.id);for(let j=0;j<7;j++){const xx=-W*.34+j*W*.11;mk('board connector '+j,.011,.014,.009,xx,h*.12,-.048,j%2?trim:copper,root,d.id)}mk('processor',W*.15,h*.34,.009,-W*.04,-h*.09,-.052,black,root,d.id);mk('GPIO pins',W*.5,.006,.007,0,h*.29,-.048,copper,root,d.id)}
+if(d.category==='sbc'&&!d.slots?.length){renderSingleBoardComputer(scene,root,d.id,W,h)}
 if(d.category==='server'){const bays=d.height>=2?8:4;for(let j=0;j<bays;j++){const cols=d.height>=2?4:4,row=Math.floor(j/cols),col=j%cols;const xx=(col-1.5)*W*.205,yy=d.height>=2?(row===0?h*.19:-h*.19):0;mk('hot swap bay '+d.id+' '+j,W*.165,d.height>=2?h*.3:h*.52,.012,xx,yy,-.044,steel,root,d.id);mk('bay release '+d.id+' '+j,W*.115,.003,.015,xx,yy-h*.07,-.055,titanium,root,d.id)}mk('server diagnostics '+d.id,W*.09,.008,.008,W*.34,-h*.28,-.049,accent,root,d.id)}
 if(d.category==='storage'){for(let j=0;j<4;j++){mk('drive bay '+j,W*.17,h*.67,.008,(j-1.5)*W*.215,0,-.044,steel,root,d.id);mk('drive bay handle '+j,W*.12,h*.065,.01,(j-1.5)*W*.215,-h*.18,-.052,trim,root,d.id)}}
 /* Perforated metal ventilation, meaningful status lights and dedicated device detail. */
