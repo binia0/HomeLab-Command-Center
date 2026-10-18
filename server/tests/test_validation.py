@@ -49,6 +49,15 @@ class RackValidationTest(unittest.TestCase):
     def test_valid_service_url(self):
         obj=rack();obj['services']={'pi':[{'name':'Panel','url':'https://example.local:8443/dashboard'}]}
         self.assertTrue(valid_rack_document(obj))
+    def test_rack_face_overlap(self):
+        obj=rack()
+        obj['rack']['devices'][1]['u']=2
+        self.assertFalse(valid_rack_document(obj))
+    def test_opposite_faces_may_share_unit(self):
+        obj=rack()
+        obj['rack']['devices'][1]['u']=2
+        obj['rack']['devices'][1]['mount']='rear'
+        self.assertTrue(valid_rack_document(obj))
     def test_invalid_coordinate(self):
         obj=rack();obj['rack']['devices'][0]['ports'][0]['x']=float('nan')
         self.assertFalse(valid_rack_document(obj))
