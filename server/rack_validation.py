@@ -3,6 +3,7 @@
 Strict on topology/identifiers, tolerant of optional legacy presentation fields.
 """
 import math
+from urllib.parse import urlparse
 
 def valid_rack_document(payload):
     if not isinstance(payload,dict):
@@ -90,5 +91,8 @@ def valid_rack_document(payload):
             return False
         for item in entries:
             if not isinstance(item,dict) or not isinstance(item.get('name'),str) or not isinstance(item.get('url'),str) or len(item['url'])>2048:
+                return False
+            parsed=urlparse(item['url'])
+            if parsed.scheme not in ('http','https') or not parsed.netloc or not parsed.hostname or parsed.username or parsed.password:
                 return False
     return True
