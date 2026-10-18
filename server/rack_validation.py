@@ -73,6 +73,14 @@ def valid_rack_document(payload):
             if ancestor in visited or ancestor not in by_id:return False
             visited.add(ancestor)
             current=by_id[ancestor]
+    # Free-standing equipment must not overlap on the same rack face.
+    mounted=[d for d in devices if not d.get('hostDeviceId') and not d.get('panelId')]
+    for i,left in enumerate(mounted):
+        for right in mounted[i+1:]:
+            if (left.get('mount') or 'front')!=(right.get('mount') or 'front'):
+                continue
+            if left['u']<=right['u']+right['height']-1 and right['u']<=left['u']+left['height']-1:
+                return False
     occupied=set()
     port_types={}
     for device in devices:
