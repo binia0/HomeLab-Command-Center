@@ -22,6 +22,14 @@ export function drawEquipmentDetail(scene:Scene,root:TransformNode,category:stri
    for(let j=0;j<3;j++)draw('server drive status '+j,.004,.003,.009,width*.29+j*.008,height*.11,-.085,j===2?orange:led,root,id);
  }
  if(category==='switch'||category==='network'||category==='patch'){
+  const darkMetal=mat('switch chassis','#111b17'),accent=mat('switch identification','#45b96d');
+  draw('full network module dark face',width*.91,height*.86,.006,0,0,-.063,darkMetal,root,id);
+  draw('network module service stripe',width*.88,height*.035,.007,0,height*.41,-.069,accent,root,id);
+  draw('network SFP cage',width*.090,height*.41,.009,width*.40,-height*.02,-.075,metal,root,id);
+  draw('network SFP socket',width*.069,height*.29,.010,width*.40,-height*.02,-.081,dark,root,id);
+  draw('network status',.004,.004,.009,-width*.41,height*.26,-.081,led,root,id);
+  for(let v=0;v<5;v++)draw('switch fine cooling slit '+v,width*.07,.001,.009,-width*.40,-height*.06-v*height*.069,-.079,dark,root,id);
+
   const xs=networkPortXs.length?networkPortXs.slice(0,24).map(x=>x*width*.87):Array.from({length:8},(_,i)=>(i-3.5)*width*.102);
   for(let i=0;i<xs.length;i++){
    const x=xs[i],portW=Math.min(.022,width*.057);
