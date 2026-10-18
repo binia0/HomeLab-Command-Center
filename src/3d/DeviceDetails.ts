@@ -56,22 +56,6 @@ export function drawEquipmentDetail(scene:Scene,root:TransformNode,category:stri
   draw('service label accent',width*.26,.002,.011,-width*.12,height*.18,-.084,trim,root,id);
   for(let i=0;i<3;i++)draw('device indicator '+i,.0045,.0045,.011,width*.16+i*.012,-height*.17,-.085,i===2?orange:led,root,id);
  }
- if(category==='sbc'){
-  const pcb=mat('sbc pcb','#126349'),tracks=mat('sbc routed traces','#357d62'),chip=mat('sbc integrated circuits','#11191d'),copper=mat('sbc pins','#c8a86a');
-  draw('single board computer circuit board',width*.60,height*.68,.012,0,0,-.072,pcb,root,id);
-  for(let i=0;i<12;i++){
-   draw('GPIO copper contact '+i,.003,.006,.004,-width*.235+i*width*.041,height*.26,-.081,copper,root,id);
-   if(i<7)draw('traces '+i,width*.12,.001,.003,-width*.16+i*width*.052,-height*.15+i*height*.04,-.081,tracks,root,id);
-  }
-  draw('processor package',width*.17,height*.33,.014,-width*.04,0,-.084,chip,root,id);
-  draw('processor heat spreader',width*.14,height*.25,.004,-width*.04,0,-.093,metal,root,id);
-  for(let i=0;i<5;i++)draw('soc heatsink fin '+i,width*.12,.002,.007,-width*.04,(i-2)*height*.042,-.098,dark,root,id);
-  for(let i=0;i<2;i++){
-   draw('usb stacked connector casing '+i,width*.095,height*.19,.024,width*.23,(i?1:-1)*height*.16,-.092,metal,root,id);
-   draw('usb receptacle '+i,width*.066,height*.12,.004,width*.23,(i?1:-1)*height*.16,-.105,dark,root,id);
-  }
-  draw('board activity diode',.005,.005,.008,-width*.20,-height*.21,-.083,led,root,id);
- }
  if(category==='display'){
   // Layered industrial monitor: a projecting aluminium case, black glass and a legible
   // status-dashboard silhouette. All dimensions are relative to the assigned rack bay.
