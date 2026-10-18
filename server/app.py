@@ -4,7 +4,7 @@ from http.cookies import SimpleCookie
 from urllib.parse import urlparse
 from rack_validation import valid_rack_document
 from pathlib import Path
-from urllib.request import urlopen
+from urllib.request import build_opener, HTTPRedirectHandler
 from urllib.parse import urlencode, parse_qs
 
 DB=Path(os.getenv('HCC_DB','/data/hcc.sqlite3')); DB.parent.mkdir(parents=True,exist_ok=True)
@@ -97,7 +97,7 @@ class Handler(BaseHTTPRequestHandler):
       return self.send(400,{'error':'Ungültige Netdata-Quellkonfiguration'})
      def chart(name):
       url=base+'/api/v1/data?'+urlencode({'chart':name,'after':-15,'points':1,'format':'json'})
-      with urlopen(url,timeout=2) as response:
+      with build_opener(type('NoRedirect',(HTTPRedirectHandler,),{'redirect_request':lambda self,*args:None})()).open(url,timeout=2) as response:
        if response.status!=200:return None
        result=json.loads(response.read(120000))
       labels=result.get('labels',[])
