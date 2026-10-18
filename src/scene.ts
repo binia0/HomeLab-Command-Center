@@ -21,7 +21,7 @@ const material=(n:string,c:string)=>{const m=new PBRMaterial(n,scene);m.albedoCo
 const mk=(n:string,w:number,h:number,d:number,x:number,y:number,z:number,mat:PBRMaterial,parent:TransformNode,id?:string,port?:string)=>{const b=MeshBuilder.CreateBox(n,{width:w,height:h,depth:d},scene);b.position.set(x,y,z);b.material=mat;b.parent=parent;b.receiveShadows=true;if(/^(enclosure body|top frame|bottom frame|front steel rail|rear steel rail|side panel|plinth|chassis handle)/.test(n))rackShadows.addShadowCaster(b);if(id)b.metadata={id,port};return b};
 function redraw(c:Config){cfg=c;if(rack)rack.dispose(false,true);for(const mesh of cableMeshes)mesh.dispose();cableMeshes=[];rack=new TransformNode('rack',scene);instances=new Map();const W=spacing(c.width),H=c.units*U,D=Math.max(.25,Math.min(1.5,(c.depthMm??(c.width===10?450:800))/1000)),x=W/2+.024;
 mk('plinth',W+.17,.038,D+.12,0,-.031,0,steel,rack);mk('plinth insert',W+.12,.008,D+.08,0,-.008,0,black,rack);
-for(const s of [-1,1]){mk('front steel rail',.032,H,.038,s*x,H/2,-D/2,steel,rack);mk('rear steel rail',.032,H,.038,s*x,H/2,D/2,steel,rack);mk('side panel',.012,H,D,s*(x+.025),H/2,0,black,rack);mk('edge glow',.004,H*.95,.008,s*(x+.038),H/2,-D/2-.021,accent,rack);mk('machined edge',.006,H,.015,s*(x+.034),H/2,-D/2-.011,titanium,rack);for(let i=0;i<c.units;i++){const sy=(i+.5)*U;mk('mount hole front '+i,.008,.008,.004,s*x,sy,-D/2-.023,shadow,rack);mk('mount screw front '+i,.0035,.0035,.005,s*x,sy,-D/2-.027,screw,rack);mk('mount hole back '+i,.008,.008,.004,s*x,sy,D/2+.024,shadow,rack)}for(let j=0;j<13;j++){const sy=(j+.5)*H/13;mk('vent'+j,.002,.018,D*.43,s*(x+.033),sy,0,steel,rack)}}
+for(const s of [-1,1]){mk('front steel rail',.032,H,.038,s*x,H/2,-D/2,steel,rack);mk('rear steel rail',.032,H,.038,s*x,H/2,D/2,steel,rack);mk('side frame upper spar',.016,.020,D,s*(x+.025),H-.032,0,steel,rack);mk('side frame lower spar',.016,.020,D,s*(x+.025),.032,0,steel,rack);mk('edge glow',.004,H*.95,.008,s*(x+.038),H/2,-D/2-.021,accent,rack);mk('machined edge',.006,H,.015,s*(x+.034),H/2,-D/2-.011,titanium,rack);for(let i=0;i<c.units;i++){const sy=(i+.5)*U;mk('mount hole front '+i,.008,.008,.004,s*x,sy,-D/2-.023,shadow,rack);mk('mount screw front '+i,.0035,.0035,.005,s*x,sy,-D/2-.027,screw,rack);mk('mount hole back '+i,.008,.008,.004,s*x,sy,D/2+.024,shadow,rack)}for(let j=0;j<13;j++){const sy=(j+.5)*H/13;mk('vent'+j,.002,.018,D*.43,s*(x+.033),sy,0,steel,rack)}}
 /* Visible depth supports, cable management channels and crossbars — real geometry. */
 for(const side of [-1,1]){mk('vertical cable duct '+side,.026,H*.95,.043,side*(W/2+.073),H/2,0,steel,rack);for(let i=0;i<Math.max(5,c.units);i++){const yy=(i+.5)*H/Math.max(5,c.units);mk('cable duct opening '+side+' '+i,.010,.010,.046,side*(W/2+.073),yy,0,shadow,rack)}}
 for(const level of [0,Math.floor(c.units/2),c.units]){const yy=level*U;mk('rear structural crossmember '+level,W+.10,.012,.035,0,yy,D/2-.032,titanium,rack)}
@@ -60,7 +60,7 @@ if(d.slots?.length){const count=d.slots.length;const columns=Math.max(1,Math.min
 drawEquipmentDetail(scene,root,d.category,d.id,W,h,mk,d.ports.filter(p=>p.type==='RJ45').map(p=>p.x));
 
 if(d.category==='ai'||d.category==='kvm')for(const s of [-1,1])mk('module',W*.34,h*.7,.012,s*W*.23,0,-.037,steel,root,d.id);
-}cam.setTarget(new Vector3(0,H/2,0));cam.radius=Math.max(1.25,D/2+H*1.58)}
+}cam.setTarget(new Vector3(0,H/2,0));cam.radius=Math.max(1.03,D/2+H*1.4)}
 
 let restoreRevision=0;
 async function restoreModels(){
