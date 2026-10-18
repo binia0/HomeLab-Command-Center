@@ -62,8 +62,8 @@ function updateCables(connections:{a:string;b:string}[]){
   const gutterX=side*(spacing(cfg.width)/2+.10);
   const steps=[a,a.add(new Vector3(0,0,(rear?1:-1)*.065)),new Vector3(gutterX,a.y-.045,routeZ),new Vector3(gutterX,Math.min(a.y,b.y)-.075,routeZ),new Vector3(gutterX,b.y-.045,routeZ),b.add(new Vector3(0,0,(rear?1:-1)*.065)),b];
   const material=new StandardMaterial('cable insulation '+i,scene);material.diffuseColor=color(cablePalette[i%cablePalette.length]);material.specularColor=color('#93a8a1');material.emissiveColor=color('#07170f');
-  const curved=Vector3.CatmullRom(a,steps[1],steps[2],.5);
-  const smooth=Vector3.CatmullRom(steps[2],steps[3],steps[4],.5);
+  const curved=Vector3.CatmullRom(a,steps[1],steps[2],steps[3],.5);
+  const smooth=Vector3.CatmullRom(steps[2],steps[3],steps[4],steps[5],.5);
   const path=[a,curved,steps[2],smooth,steps[4],steps[5],b];
   const tube=MeshBuilder.CreateTube('cable '+i,{path,radius:.0026,tessellation:9,cap:3},scene);tube.material=material;tube.isPickable=false;cableMeshes.push(tube);
   const plugMaterial=new StandardMaterial('cable plug '+i,scene);plugMaterial.diffuseColor=color('#242d2a');
