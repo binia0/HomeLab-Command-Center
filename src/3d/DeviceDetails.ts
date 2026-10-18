@@ -40,6 +40,35 @@ export function drawEquipmentDetail(scene:Scene,root:TransformNode,category:stri
    draw('link activity LED '+i,.003,.003,.006,x,height*.34,-.091,i%3?led:orange,root,id);
   }
  }
+ // Physical front panel elements on otherwise generic hardware: vents, fasteners,
+ // recessed diagnostic display and grouped service indicators.
+ if(!['server','storage','switch','network','patch','display','sbc'].includes(category||'')){
+  const face=mat('anodized front plate','#242e35'),trim=mat('precision milled outline','#6c7a83'),recess=mat('ventilation darkness','#080e14');
+  draw('anodized removable front plate',width*.81,height*.72,.008,0,0,-.068,face,root,id);
+  for(const side of [-1,1]){
+   draw('countersunk mounting bezel '+side,.012,height*.54,.010,side*width*.375,0,-.075,trim,root,id);
+   for(let n=0;n<3;n++)draw('vertical intake '+side+' '+n,.004,height*.12,.012,side*width*.29,(n-1)*height*.18,-.079,recess,root,id);
+  }
+  draw('service information label',width*.28,height*.19,.009,-width*.12,height*.11,-.077,recess,root,id);
+  draw('service label accent',width*.26,.002,.011,-width*.12,height*.18,-.084,trim,root,id);
+  for(let i=0;i<3;i++)draw('device indicator '+i,.0045,.0045,.011,width*.16+i*.012,-height*.17,-.085,i===2?orange:led,root,id);
+ }
+ if(category==='sbc'){
+  const pcb=mat('sbc pcb','#15533c'),tracks=mat('sbc routed traces','#357d62'),chip=mat('sbc integrated circuits','#11191d'),copper=mat('sbc pins','#c8a86a');
+  draw('single board computer circuit board',width*.60,height*.68,.012,0,0,-.072,pcb,root,id);
+  for(let i=0;i<12;i++){
+   draw('GPIO copper contact '+i,.003,.006,.004,-width*.235+i*width*.041,height*.26,-.081,copper,root,id);
+   if(i<7)draw('traces '+i,width*.12,.001,.003,-width*.16+i*width*.052,-height*.15+i*height*.04,-.081,tracks,root,id);
+  }
+  draw('processor package',width*.17,height*.33,.014,-width*.04,0,-.084,chip,root,id);
+  draw('processor heat spreader',width*.14,height*.25,.004,-width*.04,0,-.093,metal,root,id);
+  for(let i=0;i<5;i++)draw('soc heatsink fin '+i,width*.12,.002,.007,-width*.04,(i-2)*height*.042,-.098,dark,root,id);
+  for(let i=0;i<2;i++){
+   draw('usb stacked connector casing '+i,width*.095,height*.19,.024,width*.23,(i?1:-1)*height*.16,-.092,metal,root,id);
+   draw('usb receptacle '+i,width*.066,height*.12,.004,width*.23,(i?1:-1)*height*.16,-.105,dark,root,id);
+  }
+  draw('board activity diode',.005,.005,.008,-width*.20,-height*.21,-.083,led,root,id);
+ }
  if(category==='display'){
   draw('glass interactive display',width*.72,height*.7,.004,0,0,-.077,glass,root,id);draw('screen title strip',width*.64,height*.05,.005,0,height*.25,-.083,led,root,id);for(let line=0;line<4;line++)draw('screen metric '+line,width*(.32+line*.07),height*.022,.006,-width*.1,height*(.12-line*.1),-.084,line%2?metal:led,root,id);
   draw('screen bottom bezel',width*.74,height*.06,.006,0,-height*.38,-.081,dark,root,id);
