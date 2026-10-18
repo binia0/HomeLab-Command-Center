@@ -9,7 +9,7 @@ LOCK=threading.RLock()
 def connect():
  c=sqlite3.connect(DB,timeout=20); c.row_factory=sqlite3.Row
  c.execute('PRAGMA journal_mode=WAL')
- c.executescript('CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, username TEXT NOT NULL UNIQUE, salt TEXT NOT NULL, secret TEXT NOT NULL);CREATE TABLE IF NOT EXISTS sessions(token_hash TEXT PRIMARY KEY, user_id INTEGER NOT NULL, expires INTEGER NOT NULL);CREATE TABLE IF NOT EXISTS builds(id TEXT PRIMARY KEY, user_id INTEGER NOT NULL, name TEXT NOT NULL, data TEXT NOT NULL, updated INTEGER NOT NULL);')
+ c.executescript('CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, username TEXT NOT NULL UNIQUE, salt TEXT NOT NULL, secret TEXT NOT NULL);CREATE TABLE IF NOT EXISTS sessions(token_hash TEXT PRIMARY KEY, user_id INTEGER NOT NULL, expires INTEGER NOT NULL);CREATE TABLE IF NOT EXISTS builds(id TEXT PRIMARY KEY, user_id INTEGER NOT NULL, name TEXT NOT NULL, data TEXT NOT NULL, updated INTEGER NOT NULL);CREATE TABLE IF NOT EXISTS build_revisions(id INTEGER PRIMARY KEY AUTOINCREMENT, build_id TEXT NOT NULL, user_id INTEGER NOT NULL, name TEXT NOT NULL, data TEXT NOT NULL, saved_at INTEGER NOT NULL);CREATE INDEX IF NOT EXISTS idx_build_revisions ON build_revisions(build_id,user_id,id DESC);')
  return c
 with connect() as c: pass
 def hash_pass(password,salt):return hashlib.scrypt(password.encode(),salt=bytes.fromhex(salt),n=16384,r=8,p=1,dklen=32).hex()
@@ -96,11 +96,27 @@ class Handler(BaseHTTPRequestHandler):
      if method=='PUT':
       payload=data.get('data');name=str(data.get('name',row['name'])).strip()[:100]
       if not name or not isinstance(payload,dict):return self.send(400,{'error':'Ungültige Rackdaten'})
+      c.execute('INSERT INTO build_revisions(build_id,user_id,name,data,saved_at) VALUES(?,?,?,?,?)',(bid,current['id'],row['name'],row['data'],int(time.time())))
+      c.execute('DELETE FROM build_revisions WHERE build_id=? AND user_id=? AND id NOT IN (SELECT id FROM build_revisions WHERE build_id=? AND user_id=? ORDER BY id DESC LIMIT 20)',(bid,current['id'],bid,current['id']))
       c.execute('UPDATE builds SET name=?,data=?,updated=? WHERE id=? AND user_id=?',(name,json.dumps(payload),int(time.time()),bid,current['id']))
       return self.send(200,{'id':bid})
      if method=='DELETE':
       c.execute('DELETE FROM builds WHERE id=? AND user_id=?',(bid,current['id']))
       return self.send(200,{'deleted':True})
+    if path.startswith('/api/revisions/') and method=='GET':
+     parts=path.split('/')
+     if len(parts) not in (4,5):return self.send(404,{'error':'Not found'})
+     bid=parts[3]
+     existing=c.execute('SELECT id FROM builds WHERE id=? AND user_id=?',(bid,current['id'])).fetchone()
+     if not existing:return self.send(404,{'error':'Rack nicht gefunden'})
+     if len(parts)==4:
+      rows=c.execute('SELECT id,name,saved_at FROM build_revisions WHERE build_id=? AND user_id=? ORDER BY id DESC LIMIT 20',(bid,current['id'])).fetchall()
+      return self.send(200,{'revisions':[dict(v) for v in rows]})
+     try:rid=int(parts[4])
+     except ValueError:return self.send(404,{'error':'Version nicht gefunden'})
+     version=c.execute('SELECT id,name,data,saved_at FROM build_revisions WHERE id=? AND build_id=? AND user_id=?',(rid,bid,current['id'])).fetchone()
+     if not version:return self.send(404,{'error':'Version nicht gefunden'})
+     return self.send(200,{'id':version['id'],'name':version['name'],'saved_at':version['saved_at'],'data':json.loads(version['data'])})
     return self.send(404,{'error':'Not found'})
   except Exception:
    return self.send(500,{'error':'Serverfehler'})
