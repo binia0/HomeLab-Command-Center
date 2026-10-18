@@ -3,6 +3,8 @@ from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from http.cookies import SimpleCookie
 from urllib.parse import urlparse
 from pathlib import Path
+from urllib.request import urlopen
+from urllib.parse import urlencode
 
 DB=Path(os.getenv('HCC_DB','/data/hcc.sqlite3')); DB.parent.mkdir(parents=True,exist_ok=True)
 LOCK=threading.RLock()
@@ -81,6 +83,34 @@ class Handler(BaseHTTPRequestHandler):
      jar=SimpleCookie();jar.load(self.headers.get('Cookie',''));token=jar.get('rack_session')
      if token:c.execute('DELETE FROM sessions WHERE token_hash=?',(hashlib.sha256(token.value.encode()).hexdigest(),))
      self.send_response(200);self.send_header('Set-Cookie','rack_session=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0');self.send_header('Content-Length','2');self.end_headers();self.wfile.write(b'{}');return
+    if path=='/api/telemetry' and method=='GET':
+     # Only administrator-configured targets can be contacted. Never proxy arbitrary URLs.
+     host=(urlparse(self.path).query.split('host=',1)[1].split('&',1)[0] if 'host=' in urlparse(self.path).query else '')
+     try:sources=json.loads(os.getenv('HCC_NETDATA_SOURCES','{}'))
+     except (ValueError,TypeError):sources={}
+     if not isinstance(sources,dict) or host not in sources or not isinstance(sources[host],str):
+      return self.send(404,{'error':'Keine Netdata-Quelle für dieses Gerät konfiguriert'})
+     base=sources[host].rstrip('/')
+     parsed=urlparse(base)
+     if parsed.scheme!='http' or not parsed.hostname or parsed.username or parsed.password or parsed.query or parsed.fragment or parsed.path not in ('','/'):
+      return self.send(400,{'error':'Ungültige Netdata-Quellkonfiguration'})
+     def chart(name):
+      url=base+'/api/v1/data?'+urlencode({'chart':name,'after':-15,'points':1,'format':'json'})
+      with urlopen(url,timeout=2) as response:
+       if response.status!=200:return None
+       result=json.loads(response.read(120000))
+      labels=result.get('labels',[])
+      rows=result.get('data',[])
+      if not rows or not labels:return None
+      return {str(label):value for label,value in zip(labels[1:],rows[0][1:]) if isinstance(value,(int,float))}
+     try:
+      cpu=chart('system.cpu')
+      ram=chart('system.ram')
+      cpu_percent=round(sum(v for k,v in cpu.items() if k!='idle'),1) if cpu else None
+      ram_used=round(100*ram['used']/sum(v for k,v in ram.items() if k in ('used','free','cached','buffers')),1) if ram and 'used' in ram and sum(v for k,v in ram.items() if k in ('used','free','cached','buffers'))>0 else None
+      return self.send(200,{'source':'Netdata','available':bool(cpu or ram),'cpu_percent':cpu_percent,'ram_percent':ram_used,'timestamp':int(time.time())})
+     except Exception:
+      return self.send(200,{'source':'Netdata','available':False,'cpu_percent':None,'ram_percent':None,'timestamp':int(time.time())})
     if path.startswith('/api/models/'):
      device_id=path[len('/api/models/'):]
      if not (1<=len(device_id)<=128 and all(ch.isalnum() or ch in '-_' for ch in device_id)):
