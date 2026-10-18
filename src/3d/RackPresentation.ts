@@ -23,5 +23,21 @@ export function addRackPresentation(scene:Scene,parent:TransformNode,w:number,h:
  }
  for(const y of [.016,h-.015]){
   for(const side of [-1,1])part('corner post fastener',side*(w/2+.042),y,-depth/2-.060,.008,.008,.006,trim);
+ } 
+ // Dense hardware-rack details: inset rail strips, segmented LEDs and visible U engravings.
+ const brass=make('rack amber signaling','#d48448',true);
+ const plate=make('rack mounting shadow','#09120d');
+ for(const side of [-1,1]){
+  const xx=side*(w/2+.049);
+  part('front black aluminium extrusion',xx,h/2,-depth/2-.083,.013,h*.985,.013,plate);
+  for(let u=0;u<units;u++){
+   const cy=(u+.5)*(h/units);
+   part('front rack precise U line '+u+' '+side,xx,cy,-depth/2-.092,.009,.0012,.002,trim);
+   if(u%4===0)part('rail green service LED '+u+' '+side,side*(w/2+.097),cy,-depth/2-.095,.004,.005,.003,side===-1?brass:glow);
+   for(let n=-1;n<=1;n++){
+    part('rail punched U hole '+u+' '+n+' '+side,xx,cy+n*(h/units)*.27,-depth/2-.094,.003,.003,.002,slots);
+   }
+  }
  }
+
 }
