@@ -4,7 +4,7 @@ on:
     branches: [main]
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
 jobs:
   screenshot:
     runs-on: ubuntu-latest
@@ -32,3 +32,11 @@ jobs:
           path: visual-artifacts/*.png
           if-no-files-found: warn
           retention-days: 14
+      - name: Publish visual screenshot branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: visual-preview
+          publish_dir: ./visual-artifacts
+          force_orphan: true
+          enable_jekyll: false
