@@ -62,6 +62,18 @@ class Handler(BaseHTTPRequestHandler):
       uid=record['id']
      token=issue_token();c.execute('INSERT INTO sessions(token_hash,user_id,expires) VALUES(?,?,?)',(hashlib.sha256(token.encode()).hexdigest(),uid,int(time.time())+86400*14))
      self.send_response(200);body=json.dumps({'username':user},ensure_ascii=False).encode();self.send_header('Content-Type','application/json');self.send_header('Cache-Control','no-store');self.send_header('Set-Cookie','rack_session='+token+'; HttpOnly; SameSite=Strict; Path=/; Max-Age=1209600');self.send_header('Content-Length',str(len(body)));self.end_headers();self.wfile.write(body);return
+    if path=='/api/select-user' and method=='POST':
+     user=str(data.get('username','')).strip().lower()
+     if len(user)<2 or len(user)>40 or not all(ch.isalnum() or ch in '_-' for ch in user):return self.send(400,{'error':'Benutzername: 2–40 Buchstaben, Zahlen, _ oder -'})
+     record=c.execute('SELECT id FROM users WHERE username=?',(user,)).fetchone()
+     if record:uid=record['id']
+     else:
+      salt=secrets.token_hex(16)
+      uid=c.execute('INSERT INTO users(username,salt,secret) VALUES(?,?,?)',(user,salt,'username-only')).lastrowid
+     token=issue_token()
+     c.execute('INSERT INTO sessions(token_hash,user_id,expires) VALUES(?,?,?)',(hashlib.sha256(token.encode()).hexdigest(),uid,int(time.time())+86400*14))
+     body=json.dumps({'username':user},ensure_ascii=False).encode()
+     self.send_response(200);self.send_header('Content-Type','application/json');self.send_header('Cache-Control','no-store');self.send_header('Set-Cookie','rack_session='+token+'; HttpOnly; SameSite=Strict; Path=/; Max-Age=1209600');self.send_header('Content-Length',str(len(body)));self.end_headers();self.wfile.write(body);return
     current=self.current(c)
     if path=='/api/me' and method=='GET':return self.send(200,{'username':current['username'] if current else None})
     if not current:return self.send(401,{'error':'Bitte anmelden'})
