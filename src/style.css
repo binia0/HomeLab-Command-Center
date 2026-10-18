@@ -187,3 +187,21 @@ main{display:flex;flex-direction:column;background:#0b101a;min-height:0}
 .item-select{min-width:0}
 @media(max-width:1190px){.workspace-stats{grid-template-columns:repeat(3,1fr)}.workspace-cta{grid-column:1/-1;min-height:40px}.app{grid-template-columns:238px minmax(360px,1fr) 290px}}
 @media(max-width:850px){.workspace-stats{padding:0 14px 13px}.workspace-section-head{padding:0 14px 9px}.stage{margin:0 14px}.notice{margin:10px 14px}}
+
+/* Polished rack-only command center, data safety and crash recovery */
+.header-actions{display:flex;align-items:center;gap:9px}
+.export-action{display:flex;align-items:center;justify-content:center;gap:8px;border-radius:8px;padding:10px 12px;border:1px solid #58728a;color:#e1eff9;background:#1b3043;font-size:11px;font-weight:750}
+.export-action:hover{border-color:#7ae9d8;background:#234b56}
+.save{min-height:38px;padding:10px 14px;font-size:11px}
+.header{gap:14px}
+.header-meta{white-space:nowrap}
+.hcc-error-screen{min-height:100vh;display:grid;place-items:center;background:#0b1421;color:#edf8fb;padding:24px;font-family:Inter,'DM Sans',system-ui,sans-serif}
+.hcc-error-panel{width:min(560px,100%);background:#172739;border:1px solid #70889c;border-radius:16px;padding:30px;box-shadow:0 25px 80px #0009}
+.hcc-error-panel small{color:#71dfd2;letter-spacing:1px;font-weight:800}
+.hcc-error-panel h1{font-size:28px;margin:14px 0}
+.hcc-error-panel p{line-height:1.6;color:#d1e0e9}
+.hcc-error-panel pre{white-space:pre-wrap;overflow-wrap:anywhere;padding:13px;background:#101e2c;border:1px solid #3c5368;border-radius:8px;color:#ffc1c6}
+.hcc-error-actions{display:flex;gap:10px;flex-wrap:wrap}
+.hcc-error-actions button{background:#20616a;border:1px solid #70cbd0;border-radius:8px;padding:11px 14px;color:#fff;font-weight:700}
+@media(max-width:1130px){.header-meta{display:none}}
+@media(max-width:700px){.header-actions{gap:5px}.export-action{font-size:0;padding:9px}.export-action svg{width:18px;height:18px}.brand strong{font-size:15px}}
