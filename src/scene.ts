@@ -59,7 +59,7 @@ if(d.slots?.length){const count=d.slots.length;const columns=Math.max(1,Math.min
 drawEquipmentDetail(scene,root,d.category,d.id,W,h,mk,d.ports.filter(p=>p.type==='RJ45').map(p=>p.x));
 
 if(d.category==='ai'||d.category==='kvm')for(const s of [-1,1])mk('module',W*.34,h*.7,.012,s*W*.23,0,-.037,steel,root,d.id);
-}cam.setTarget(new Vector3(0,H/2,0));cam.radius=Math.max(1.03,D/2+H*1.4)}
+}cam.setTarget(new Vector3(0,H/2,0));cam.radius=Math.max(.64,D/2+.22,H/(2*Math.tan(cam.fov/2)*.76))}
 
 let restoreRevision=0;
 async function restoreModels(){
