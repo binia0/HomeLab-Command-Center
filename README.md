@@ -34,15 +34,15 @@ sh deploy-pi.sh
 - Per-instance RJ45 definitions (identical switches do not share occupied ports)
 - Basic RJ45/USB/HDMI/power port editing and in-app cable connect/disconnect at a port
 - Device inspector and named full HTTP/HTTPS service URLs behind collapsible settings
-- Session-only .glb upload preview for a selected device
+- GLB imports cached locally in IndexedDB and synchronised to the authenticated backend when available (maximum 20 MB per model)
 - Local browser persistence for demo settings and cable records
 - Missing telemetry shown as unavailable, **not** as made-up data
 
 ## Next milestones
 
-- Durable backend inventory storage, schema, validation and backup/restore
+- Full server-side rack schema validation, external backup export and disaster-recovery testing (version history is implemented)
 - Real model library and surface-raycast connector placement with fine 3D gizmos
-- Backend GLB persistence, license-aware optional model search and download
+- License-aware optional model search/download and model removal in the UI
 - Full actual devices, rack subslots and passthrough patch-panel connector pairing
 - Real front/back cables with routed 3D cable geometry
 - Netdata live telemetry with source/availability indicators
@@ -54,6 +54,14 @@ sh deploy-pi.sh
 React + TypeScript + Babylon.js frontend, ASP.NET Core service layer, relational database and Docker Compose.
 
 See [architecture](docs/ARCHITECTURE.md), [roadmap](docs/ROADMAP.md) and [real GLB/port specification](docs/3D-ASSETS-AND-PORTS.md).
+
+## Storage and recovery status (October 2026)
+
+- Saved racks use the SQLite backend and retain the last 20 previous versions when overwritten. Use **Versionen** under the rack account menu to load an older version, then save it as the current rack.
+- Imported GLB files are cached in the browser and uploaded to the authenticated API if a user session exists. Without a successful server upload they remain **local to that browser**. A different browser can fetch a model by the same device ID when authenticated as the same user.
+- GitHub source commits do not automatically update a running Pi. Deploy only after the frontend build has succeeded and take an external backup of the Docker rack data volume.
+- The current username-only profile selector does **not provide secure authentication**. Restrict port 8080 to your trusted private LAN; do not forward it to the internet.
+- Not yet completed: live Netdata telemetry, reliable RackVisual import with rollback, production-ready external backup/restore, raycast/drag gizmos, license-aware remote asset catalog, and comprehensive automated tests.
 
 ## Privacy
 
