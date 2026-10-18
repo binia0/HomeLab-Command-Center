@@ -111,7 +111,7 @@ async function importGLB(file:File,id:string,persist:boolean){
 let cableMeshes:Mesh[]=[];
 function updateCables(connections:{a:string;b:string}[]){
  for(const mesh of cableMeshes)mesh.dispose();cableMeshes=[];
- const colors:{[kind:string]:string}={RJ45:'#38e4a0',POWER:'#f0a85e',HDMI:'#8d9dff',DisplayPort:'#8d9dff','USB-C':'#7fd0f1',USB:'#7fd0f1'};
+ const colors:{[kind:string]:string}={RJ45:'#248ee9',POWER:'#ec5a47',HDMI:'#b38cff',DisplayPort:'#b38cff','USB-C':'#33b8ee',USB:'#33b8ee'};
  const depth=Math.max(.25,Math.min(1.5,(cfg.depthMm??(cfg.width===10?450:800))/1000));
  for(const [i,link] of connections.entries()){
   const endpoint=(key:string)=>{const separator=key.indexOf('/');if(separator<0)return null;const id=key.slice(0,separator),portid=key.slice(separator+1),device=cfg.devices.find(d=>d.id===id),root=instances.get(id),port=device?.ports.find(p=>p.id===portid);if(!device||!root||!port)return null;
@@ -122,8 +122,8 @@ function updateCables(connections:{a:string;b:string}[]){
   const a=endpoint(link.a),b=endpoint(link.b);if(!a||!b)continue;
   const routing=routeRackCable(a,b,spacing(cfg.width),depth,i%5);
   const points=softenCablePath(routing,.012);
-  const material=new StandardMaterial('insulated cable '+i,scene);const shade=a.type==='RJ45'?['#49dfa0','#ebc554','#a5e38b','#d87057'][i%4]:(colors[a.type]||colors[b.type]||'#54bcd8');material.diffuseColor=color(shade);material.emissiveColor=color(shade).scale(.12);
-  const tube=MeshBuilder.CreateTube('routed cable '+i,{path:points,radius:.0028,tessellation:10,cap:3},scene);tube.material=material;tube.isPickable=false;cableMeshes.push(tube);
+  const material=new StandardMaterial('insulated cable '+i,scene);const shade=a.type==='RJ45'?['#178fec','#e05a4d','#35bd87','#f2b73f'][i%4]:(colors[a.type]||colors[b.type]||'#54bcd8');material.diffuseColor=color(shade);material.emissiveColor=color(shade).scale(.2);
+  const tube=MeshBuilder.CreateTube('routed cable '+i,{path:points,radius:.0035,tessellation:12,cap:3},scene);tube.material=material;tube.isPickable=false;cableMeshes.push(tube);
   const plugMat=new StandardMaterial('connector shell '+i,scene);plugMat.diffuseColor=color('#23332a');
   for(const [n,end] of [a,b].entries()){
    const plug=MeshBuilder.CreateBox('cable plug '+i+'/'+n,{width:.011,height:.010,depth:.022},scene);
