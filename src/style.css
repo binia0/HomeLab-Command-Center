@@ -346,3 +346,53 @@ main{background:#020603!important;min-width:0}
 .stage .stage-bottom{position:absolute!important;bottom:15px!important;left:16px!important;right:16px!important;z-index:6!important;pointer-events:none;display:flex}
 .stage .stage-bottom button,.stage .stage-bottom .seg{pointer-events:auto}
 .stage .camera-home{position:relative;z-index:7}
+
+/* Reference-image redesign v1: deep navy control room, blue accents, photoreal rack hero. */
+:root{color-scheme:dark;font-family:'DM Sans',sans-serif;background:#07111e!important;color:#dce8f5}
+html,body,#root,.app{background:#07111e!important}
+.app{grid-template-rows:60px minmax(0,1fr);grid-template-columns:206px minmax(410px,1fr) 344px;background:#07111e!important}
+.header{height:60px!important;min-height:60px!important;padding:0 22px!important;background:linear-gradient(110deg,#080f1b,#0e1b2a)!important;border-bottom:1px solid #22354b!important}
+.header .brand strong{font-family:'DM Sans',sans-serif;font-size:18px;letter-spacing:-.4px}
+.header .brand em,.header .logo{color:#2397ff!important}
+.header .logo{background:#0d2138;border-color:#153b62}
+.header .brand small{color:#6f8196}
+.header-meta{color:#718399;font-size:10px}
+.header-actions .save{background:#133d63;border-color:#286ca8;color:#d0ebff}
+.left,.right,aside{background:#0b1422!important;border-color:#1b2b3e!important}
+.left{overflow-y:auto}
+.reference-nav{padding:12px 8px 16px;display:flex;flex-direction:column;gap:3px;border-bottom:1px solid #243448;flex-shrink:0}
+.reference-nav button{width:100%;padding:12px 13px;display:flex;align-items:center;gap:13px;border:0;border-radius:7px;background:transparent;color:#a7b5ca;text-align:left;font-size:13px}
+.reference-nav button:hover,.reference-nav button:focus-visible{background:#102942;color:#f0f8ff}
+.reference-nav .reference-nav-active{background:linear-gradient(100deg,#103b65,#142b46);color:#46aaff;font-weight:700}
+.section{color:#b7c8dd;border-color:#20334b}
+.section span{color:#597a9d}
+.rack-card,.rack-capacity,.rack-overview-inspector .overview-row{background:#101e30!important;border-color:#233e57!important}
+.palette-shortcuts button{background:#101c2d!important;border-color:#26384a;color:#aabed4}
+.settings,.items{color:#a8b9ce}
+.item.chosen{background:#112b47;border-color:#216caa}
+.item>span{background:#193957;color:#55adf8}
+.secondary{background:#102d49;color:#c7e7ff;border-color:#315778}
+main{background:linear-gradient(135deg,#091521,#0b1829 45%,#060d17)!important}
+.heading{padding:15px 22px 9px}
+.heading h1{font-family:'DM Sans',sans-serif;font-size:19px;color:#e5f3ff;margin:3px 0!important}
+.heading small{color:#45aaff}
+.heading p{display:block;color:#7799b6}
+.stage{min-height:0!important;margin:0 12px;border:1px solid #1c314a!important;border-radius:5px!important;background:radial-gradient(ellipse at 50% 36%,#172d48 0%,#071323 60%,#050c15 100%)!important;box-shadow:inset 0 0 100px #020811,0 0 18px #02101d!important}
+.stage::after{background:linear-gradient(90deg,#04091488,transparent 20%,transparent 80%,#04091488)!important}
+.viewport-ambient{background:radial-gradient(ellipse at 50% 48%,#164b823c,transparent 62%)!important}
+.stage-label{color:#9cc8e9}.stage-note{color:#7598b8}
+.dark{background:#0e1f33ef!important}
+.seg{background:#0c1c2e;border-color:#24435f}
+.seg button.active{background:#1265a4!important;color:white!important}
+.notice{color:#93b1d0}
+.right .section,.inspector{background:#0e1929!important}
+.right .inspector{margin:9px;border:1px solid #223449;border-radius:8px}
+.inspector .icon{background:#112d47;border-color:#2b6390;color:#66baff}
+.inspector h2{font-family:'DM Sans',sans-serif;font-size:17px}
+.tabs button.active{color:#50aaff;border-color:#238ff5}
+.details{padding:12px}
+.details .section-inner{color:#b8d1e9}
+.right .state{background:#10263d;border-color:#294666}
+.quick-cable-editor{background:#0c1e32!important;border-color:#264763!important}
+@media(max-width:1150px){.app{grid-template-columns:195px minmax(320px,1fr) 300px}}
+@media(max-width:900px){.app{grid-template-columns:185px minmax(350px,1fr);height:auto;min-height:100vh}.header{grid-column:1/3}.right{grid-column:1/3;min-height:350px}.stage{height:66vh;min-height:420px!important}}
