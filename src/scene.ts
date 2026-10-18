@@ -30,7 +30,12 @@ for(const d of c.devices){const h=d.height*U-.006,y=(d.u-1)*U+h/2+.008;if(y>H||y
 const enclosureDepth=Math.min(D-.05,Math.max(.035,(d.depthMm??(d.category==='server'?650:d.category==='storage'?450:180))/1000));const sideBody=material('chassis '+d.id,'#273744');
 mk('enclosure body '+d.id,Math.min(W*.88,(d.widthMm||W*880)/1000),h*.83,enclosureDepth,0,0,enclosureDepth*.5+.005,sideBody,root,d.id);
 for(const side of [-1,1]){mk('chassis handle '+side+' '+d.id,.012,Math.max(.012,h*.42),.022,side*W*.37,0,-.045,titanium,root,d.id)}
-mk(d.name,W+.062,h,.04,0,0,0,face,root,d.id);mk('front',W+.052,h-.008,.006,0,0,-.024,black,root,d.id);mk('cyan stripe',W*.76,.002,.007,0,h/2-.013,-.031,accent,root,d.id);for(const edge of [-1,1]){mk('ear '+edge,.018,h,.007,edge*(W/2+.025),0,-.034,titanium,root,d.id);mk('ear screw '+edge,.004,.004,.009,edge*(W/2+.026),0,-.04,screw,root,d.id)}mk('trim top',W*.93,.002,.004,0,h/2-.005,-.029,steel,root,d.id);mk('trim bottom',W*.93,.002,.004,0,-h/2+.005,-.029,steel,root,d.id);
+if(d.category==='sbc'&&!d.slots?.length){
+  mk('open single board computer mounting tray',W*.57,h*.86,.008,0,0,-.023,steel,root,d.id);
+  for(const side of [-1,1]){mk('SBC side mounting rail',.009,h*.9,.026,side*W*.30,0,-.028,titanium,root,d.id)}
+  mk('mounting tray lower lip',W*.6,.006,.02,0,-h*.43,-.033,steel,root,d.id);
+}else{mk(d.name,W+.062,h,.04,0,0,0,face,root,d.id);mk('front',W+.052,h-.008,.006,0,0,-.024,black,root,d.id);mk('cyan stripe',W*.76,.002,.007,0,h/2-.013,-.031,accent,root,d.id);for(const edge of [-1,1]){mk('ear '+edge,.018,h,.007,edge*(W/2+.025),0,-.034,titanium,root,d.id);mk('ear screw '+edge,.004,.004,.009,edge*(W/2+.026),0,-.04,screw,root,d.id)}mk('trim top',W*.93,.002,.004,0,h/2-.005,-.029,steel,root,d.id);mk('trim bottom',W*.93,.002,.004,0,-h/2+.005,-.029,steel,root,d.id);
+}
 for(const sx of [-1,1]){mk('rack fastener recessed '+d.id+' '+sx,.009,.009,.004,sx*(W/2+.027),h*.29,-.042,shadow,root,d.id);mk('rack fastener head '+d.id+' '+sx,.004,.004,.006,sx*(W/2+.027),h*.29,-.048,screw,root,d.id)}
 
 const trim=material('metal trim '+d.id,'#91a4ac');const blue=material('usb blue '+d.id,'#2264b0');const green=material('PCB '+d.id,'#216d50');const copper=material('PCB copper '+d.id,'#b68b52');const pale=material('connector '+d.id,'#a9b9bf');const tag=material('status '+d.id,'#e6c464');
