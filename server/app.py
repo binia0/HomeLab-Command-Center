@@ -9,7 +9,7 @@ LOCK=threading.RLock()
 def connect():
  c=sqlite3.connect(DB,timeout=20); c.row_factory=sqlite3.Row
  c.execute('PRAGMA journal_mode=WAL')
- c.executescript('CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, username TEXT NOT NULL UNIQUE, salt TEXT NOT NULL, secret TEXT NOT NULL);CREATE TABLE IF NOT EXISTS sessions(token_hash TEXT PRIMARY KEY, user_id INTEGER NOT NULL, expires INTEGER NOT NULL);CREATE TABLE IF NOT EXISTS builds(id TEXT PRIMARY KEY, user_id INTEGER NOT NULL, name TEXT NOT NULL, data TEXT NOT NULL, updated INTEGER NOT NULL);CREATE TABLE IF NOT EXISTS build_revisions(id INTEGER PRIMARY KEY AUTOINCREMENT, build_id TEXT NOT NULL, user_id INTEGER NOT NULL, name TEXT NOT NULL, data TEXT NOT NULL, saved_at INTEGER NOT NULL);CREATE INDEX IF NOT EXISTS idx_build_revisions ON build_revisions(build_id,user_id,id DESC);')
+ c.executescript('CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, username TEXT NOT NULL UNIQUE, salt TEXT NOT NULL, secret TEXT NOT NULL);CREATE TABLE IF NOT EXISTS sessions(token_hash TEXT PRIMARY KEY, user_id INTEGER NOT NULL, expires INTEGER NOT NULL);CREATE TABLE IF NOT EXISTS builds(id TEXT PRIMARY KEY, user_id INTEGER NOT NULL, name TEXT NOT NULL, data TEXT NOT NULL, updated INTEGER NOT NULL);CREATE TABLE IF NOT EXISTS build_revisions(id INTEGER PRIMARY KEY AUTOINCREMENT, build_id TEXT NOT NULL, user_id INTEGER NOT NULL, name TEXT NOT NULL, data TEXT NOT NULL, saved_at INTEGER NOT NULL);CREATE INDEX IF NOT EXISTS idx_build_revisions ON build_revisions(build_id,user_id,id DESC);CREATE TABLE IF NOT EXISTS model_assets(user_id INTEGER NOT NULL, device_id TEXT NOT NULL, glb BLOB NOT NULL, updated INTEGER NOT NULL, PRIMARY KEY(user_id,device_id));')
  return c
 with connect() as c: pass
 def hash_pass(password,salt):return hashlib.scrypt(password.encode(),salt=bytes.fromhex(salt),n=16384,r=8,p=1,dklen=32).hex()
@@ -44,7 +44,7 @@ class Handler(BaseHTTPRequestHandler):
   path=urlparse(self.path).path
   if not path.startswith('/api/'):return self.send(404,{'error':'Not found'})
   if method!='GET' and not self.csrf_ok():return self.send(403,{'error':'Origin verification failed'})
-  try:data=self.read_body() if method in ('POST','PUT') else {}
+  try:data=self.read_body() if method in ('POST','PUT') and not path.startswith('/api/models/') else {}
   except ValueError as e:return self.send(400,{'error':str(e)})
   try:
    with LOCK,connect() as c:
@@ -81,6 +81,27 @@ class Handler(BaseHTTPRequestHandler):
      jar=SimpleCookie();jar.load(self.headers.get('Cookie',''));token=jar.get('rack_session')
      if token:c.execute('DELETE FROM sessions WHERE token_hash=?',(hashlib.sha256(token.value.encode()).hexdigest(),))
      self.send_response(200);self.send_header('Set-Cookie','rack_session=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0');self.send_header('Content-Length','2');self.end_headers();self.wfile.write(b'{}');return
+    if path.startswith('/api/models/'):
+     device_id=path[len('/api/models/'):]
+     if not (1<=len(device_id)<=128 and all(ch.isalnum() or ch in '-_' for ch in device_id)):
+      return self.send(400,{'error':'Ungültige Geräte-ID'})
+     if method=='POST':
+      try:length=int(self.headers.get('Content-Length','0'))
+      except ValueError:return self.send(400,{'error':'Ungültige Dateigrösse'})
+      if not 20<=length<=20_000_000:return self.send(413,{'error':'GLB muss zwischen 20 Byte und 20 MB gross sein'})
+      raw=self.rfile.read(length)
+      if len(raw)!=length or raw[:4]!=b'glTF' or int.from_bytes(raw[4:8],'little')!=2 or int.from_bytes(raw[8:12],'little')!=length:
+       return self.send(400,{'error':'Ungültige binäre glTF-2.0-Datei'})
+      c.execute('INSERT INTO model_assets(user_id,device_id,glb,updated) VALUES(?,?,?,?) ON CONFLICT(user_id,device_id) DO UPDATE SET glb=excluded.glb,updated=excluded.updated',(current['id'],device_id,raw,int(time.time())))
+      return self.send(200,{'saved':True,'size':length})
+     if method=='GET':
+      asset=c.execute('SELECT glb FROM model_assets WHERE user_id=? AND device_id=?',(current['id'],device_id)).fetchone()
+      if not asset:return self.send(404,{'error':'GLB nicht gefunden'})
+      binary=asset['glb'];self.send_response(200);self.send_header('Content-Type','model/gltf-binary');self.send_header('Cache-Control','no-store');self.send_header('X-Content-Type-Options','nosniff');self.send_header('Content-Length',str(len(binary)));self.end_headers();self.wfile.write(binary);return
+     if method=='DELETE':
+      c.execute('DELETE FROM model_assets WHERE user_id=? AND device_id=?',(current['id'],device_id))
+      return self.send(200,{'deleted':True})
+     return self.send(405,{'error':'Methode nicht erlaubt'})
     if path=='/api/builds' and method=='GET':
      rows=c.execute('SELECT id,name,updated FROM builds WHERE user_id=? ORDER BY updated DESC',(current['id'],)).fetchall()
      return self.send(200,{'builds':[dict(v) for v in rows]})
