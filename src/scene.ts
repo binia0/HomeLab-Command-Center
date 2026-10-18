@@ -60,7 +60,7 @@ if(d.slots?.length){const count=d.slots.length;const columns=Math.max(1,Math.min
 drawEquipmentDetail(scene,root,d.category,d.id,W,h,mk);
 
 if(d.category==='ai'||d.category==='kvm')for(const s of [-1,1])mk('module',W*.34,h*.7,.012,s*W*.23,0,-.037,steel,root,d.id);
-}cam.setTarget(new Vector3(0,H/2,0));cam.radius=Math.max(.98,H*1.6)}
+}cam.setTarget(new Vector3(0,H/2,0));cam.radius=Math.max(1.25,D/2+H*1.58)}
 
 let restoreRevision=0;
 async function restoreModels(){
@@ -122,4 +122,4 @@ function updateCables(connections:{a:string;b:string}[]){
 }
 
 redraw(config);void restoreModels();scene.onPointerObservable.add(e=>{if(e.type!==PointerEventTypes.POINTERDOWN)return;let m=e.pickInfo?.pickedMesh;while(m){if(m.metadata?.id){if(m.metadata.port)onPort(m.metadata.id+'/'+m.metadata.port);else onDevice(m.metadata.id);return}m=m.parent as typeof m}},PointerEventTypes.POINTERDOWN);eng.runRenderLoop(()=>{cameraControl.tick();scene.render()});const resize=()=>eng.resize();window.addEventListener('resize',resize);
-return{redraw(c:Config){redraw(c);void restoreModels()},updateCables,focus(id:string){const node=instances.get(id);if(!node)return;const dev=cfg.devices.find(d=>d.id===id);cameraControl.focus(node.getAbsolutePosition(),Math.max(.35,Math.min(1.05,(dev?.height||1)*U*4+.3)),dev?.mount==='rear'?'back':'front')},home(){cameraControl.home(cfg.units*U)},view(f:Face){cameraControl.view(f)},async load(file:File,id:string){await importGLB(file,id,true)},dispose(){window.removeEventListener('resize',resize);eng.dispose()}}}
+return{redraw(c:Config){redraw(c);void restoreModels()},updateCables,focus(id:string){const node=instances.get(id);if(!node)return;const dev=cfg.devices.find(d=>d.id===id);cameraControl.focus(node.getAbsolutePosition(),Math.max(.35,Math.min(1.05,(dev?.height||1)*U*4+.3)),dev?.mount==='rear'?'back':'front')},home(){cameraControl.home(cfg.units*U,(cfg.depthMm??800)/1000)},view(f:Face){cameraControl.view(f)},async load(file:File,id:string){await importGLB(file,id,true)},dispose(){window.removeEventListener('resize',resize);eng.dispose()}}}
