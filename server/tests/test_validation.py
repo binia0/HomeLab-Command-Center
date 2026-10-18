@@ -25,6 +25,24 @@ class RackValidationTest(unittest.TestCase):
     def test_out_of_bounds(self):
         obj=rack();obj['rack']['devices'][0]['u']=9
         self.assertFalse(valid_rack_document(obj))
+    def test_mismatched_port_type(self):
+        obj=rack();obj['rack']['devices'][1]['ports'][0]['type']='USB-C'
+        self.assertFalse(valid_rack_document(obj))
+    def test_unknown_panel(self):
+        obj=rack();obj['rack']['devices'][1]['panelId']='not-found'
+        obj['rack']['devices'][1]['slotId']='one'
+        self.assertFalse(valid_rack_document(obj))
+    def test_duplicate_panel_slot(self):
+        obj=rack()
+        obj['rack']['devices'].append({'id':'tray','name':'Tray','u':6,'height':2,'slots':[{'id':'one'}],'ports':[]})
+        obj['rack']['devices'][0]['panelId']='tray';obj['rack']['devices'][0]['slotId']='one'
+        obj['rack']['devices'][1]['panelId']='tray';obj['rack']['devices'][1]['slotId']='one'
+        self.assertFalse(valid_rack_document(obj))
+    def test_cyclic_nesting(self):
+        obj=rack()
+        obj['rack']['devices'][0]['hostDeviceId']='pi'
+        obj['rack']['devices'][1]['hostDeviceId']='switch'
+        self.assertFalse(valid_rack_document(obj))
     def test_invalid_coordinate(self):
         obj=rack();obj['rack']['devices'][0]['ports'][0]['x']=float('nan')
         self.assertFalse(valid_rack_document(obj))
