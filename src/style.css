@@ -286,3 +286,14 @@ main{background:#030805}
 .account-popover,.editor-modal{background:#091a10;border:1px solid #397550;border-radius:6px}
 .editor-header{background:#112519}
 @media(max-width:1150px){.app{grid-template-columns:224px minmax(360px,1fr) 275px}}
+
+/* Reference-oriented compact rack workspace: prioritize central tall rack, not KPI dashboards. */
+.workspace-stats{display:none!important}
+.workspace-section-head{margin-top:8px}
+.rack-overview-inspector{padding:18px 14px;color:#acccb6;display:grid;gap:8px}
+.rack-overview-inspector small{font-size:9px;letter-spacing:1.3px;color:#78b58a}
+.rack-overview-inspector h2{color:#dcf3e2;font-size:16px;margin:0}
+.rack-overview-inspector p{margin:0 0 7px;font-size:11px;line-height:1.6;color:#7ba98b}
+.overview-row{background:#0c1a11;border:1px solid #213b2a;border-radius:4px;display:flex;justify-content:space-between;align-items:center;padding:9px 10px;gap:8px;font-size:11px}
+.overview-row strong{color:#83ec9f;font-size:12px}
+.overview-separator{font-size:9px;font-weight:900;letter-spacing:1.15px;color:#6ba77a;border-bottom:1px solid #25452f;padding:15px 0 7px}
