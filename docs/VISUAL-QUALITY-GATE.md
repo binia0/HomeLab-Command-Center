@@ -21,3 +21,13 @@ Goal: a professional, detailed, interactive rack editor with crisp hardware geom
 6. No release claims based solely on passing TypeScript/CSS edits. Real browser screenshot required.
 
 Current procedural Babylon boxes and generated mesh details do **not** yet satisfy this gate. Keep this fact explicit.
+
+## Rack and equipment dimensions: mandatory
+- 10-inch / 19-inch specifies **nominal rack mounting width**, not rack depth. A 19-inch rack has mounting width 482.6 mm; do not assume this is its depth or usable interior width.
+- Configure rack depth independently in millimeters (e.g. 450, 600, 800, 1000, 1200 mm) and support custom dimensions. Specify whether depth denotes outer cabinet depth or rail-to-rail mounting depth; do not conflate them.
+- Configure usable installation depth, front and rear rail positions, equipment clearances and door/panel clearance separately where relevant.
+- Each device records physical width, height and depth in millimeters, U height (1U = 44.45 mm), weight and front/rear mounting; enforce fit checks and warn if equipment exceeds usable depth or width.
+- Offer real rackmount equipment: 1U/2U/3U/4U servers, storage servers/NAS, UPS, PDUs, switches, patch panels, routers, mini PCs, Jetson boards, Raspberry Pis, KVMs, monitors and user-defined hardware; device library must never be restricted to Raspberry Pi.
+- Server equipment should have identifiable chassis sizes, rack ears, drive bays, fan grilles, NIC ports and front/back details when models/assets are available.
+- Keep each physical device editable independently, and permit multiple devices in a slot or one mechanical assembly as long as fit and collision constraints allow.
+- Test 19-inch x 42U x 1000 mm rack with a deep 2U server and a short switch; verify physical depth and camera views visibly distinguish them.
