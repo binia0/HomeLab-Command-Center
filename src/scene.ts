@@ -83,8 +83,13 @@ async function importGLB(file:File,id:string,persist:boolean){
  try{
   const result=await SceneLoader.ImportMeshAsync('','',url,scene,undefined,'.glb');
   if(instances.get(id)!==root){for(const m of result.meshes)m.dispose();return}
-  for(const child of root.getChildMeshes(false)){if(!child.metadata?.port)child.isVisible=false;}
+  // Re-import after redraw or model change must not pile up duplicate GLBs.
+  for(const child of root.getChildren())if(child.name.startsWith('real-GLB '+id))child.dispose(false,true);
   const node=new TransformNode('real-GLB '+id,scene);node.parent=root;
+  // Keep interactive port meshes visible but hide only primitive placeholder bodies.
+  for(const child of root.getChildMeshes(false)){
+   if(child!==node&&!child.metadata?.port&&!child.name.startsWith('real-GLB '))child.isVisible=false;
+  }
   for(const mesh of result.meshes){if(!mesh.parent)mesh.parent=node;mesh.metadata={...mesh.metadata,id}}
   const bounds=node.getHierarchyBoundingVectors(true),ext=bounds.max.subtract(bounds.min);
   const device=cfg.devices.find(d=>d.id===id);
