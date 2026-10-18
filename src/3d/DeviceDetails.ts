@@ -2,7 +2,7 @@ import {Scene,TransformNode,MeshBuilder,PBRMaterial,Color3} from '@babylonjs/cor
 type Draw=(name:string,w:number,h:number,d:number,x:number,y:number,z:number,mat:PBRMaterial,parent:TransformNode,id?:string)=>unknown;
 export function drawEquipmentDetail(scene:Scene,root:TransformNode,category:string|undefined,id:string,width:number,height:number,draw:Draw,networkPortXs:number[]=[]){
  const mat=(name:string,hex:string)=>{const m=new PBRMaterial(name+' '+id,scene);m.albedoColor=Color3.FromHexString(hex);m.metallic=.65;m.roughness=.43;return m};
- const metal=mat('machined metal','#4e6258'),dark=mat('vent void','#030906'),led=mat('status led','#4afc86'),glass=mat('glass','#071d14'),orange=mat('activity','#c87738'),bezel=mat('screen bezel','#17241e');led.emissiveColor=Color3.FromHexString('#12a943');
+ const metal=mat('machined metal','#647589'),dark=mat('vent void','#050c16'),led=mat('status led','#37b1ff'),glass=mat('glass','#091d35'),orange=mat('activity','#c87738'),bezel=mat('screen bezel','#182a40');led.emissiveColor=Color3.FromHexString('#116aaf');
  if(category==='server'||category==='storage'){ 
   // Server-style removable disk drawer array with separated faceplates.
   const brushed=mat('brushed hot swap drive cages','#334351');
@@ -25,7 +25,7 @@ export function drawEquipmentDetail(scene:Scene,root:TransformNode,category:stri
    for(let j=0;j<3;j++)draw('server drive status '+j,.004,.003,.009,width*.29+j*.008,height*.11,-.085,j===2?orange:led,root,id);
  }
  if(category==='switch'||category==='network'||category==='patch'){
-  const darkMetal=mat('switch chassis','#111b17'),accent=mat('switch identification','#45b96d');
+  const darkMetal=mat('switch chassis','#121e2f'),accent=mat('switch identification','#1b88dd');
   draw('full network module dark face',width*.91,height*.86,.006,0,0,-.063,darkMetal,root,id);
   draw('network module service stripe',width*.88,height*.035,.007,0,height*.41,-.069,accent,root,id);
   draw('network SFP cage',width*.090,height*.41,.009,width*.40,-height*.02,-.075,metal,root,id);
@@ -57,7 +57,7 @@ export function drawEquipmentDetail(scene:Scene,root:TransformNode,category:stri
   for(let i=0;i<3;i++)draw('device indicator '+i,.0045,.0045,.011,width*.16+i*.012,-height*.17,-.085,i===2?orange:led,root,id);
  }
  if(category==='sbc'){
-  const pcb=mat('sbc pcb','#15533c'),tracks=mat('sbc routed traces','#357d62'),chip=mat('sbc integrated circuits','#11191d'),copper=mat('sbc pins','#c8a86a');
+  const pcb=mat('sbc pcb','#126349'),tracks=mat('sbc routed traces','#357d62'),chip=mat('sbc integrated circuits','#11191d'),copper=mat('sbc pins','#c8a86a');
   draw('single board computer circuit board',width*.60,height*.68,.012,0,0,-.072,pcb,root,id);
   for(let i=0;i<12;i++){
    draw('GPIO copper contact '+i,.003,.006,.004,-width*.235+i*width*.041,height*.26,-.081,copper,root,id);
