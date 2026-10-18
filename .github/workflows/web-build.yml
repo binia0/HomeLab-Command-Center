@@ -22,6 +22,8 @@ jobs:
         run: node --experimental-strip-types --test tests/*.test.mjs
       - name: Compile web app
         run: npm run build
+      - name: Stamp exact built source revision
+        run: printf '{"commit":"%s","built_at":"%s"}\n' "$GITHUB_SHA" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > dist/build-meta.json
       - name: Publish static branch
         uses: peaceiris/actions-gh-pages@v4
         with:
