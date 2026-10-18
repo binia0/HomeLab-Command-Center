@@ -24,7 +24,7 @@ export function drawEquipmentDetail(scene:Scene,root:TransformNode,category:stri
    draw('server control module',width*.10,height*.43,.007,width*.31,0,-.078,dark,root,id);
    for(let j=0;j<3;j++)draw('server drive status '+j,.004,.003,.009,width*.29+j*.008,height*.11,-.085,j===2?orange:led,root,id);
  }
- if(category==='switch'||category==='network'||category==='patch'){
+ if(category==='switch'||category==='network'||category==='patch'||category==='patch-panel'){
   const darkMetal=mat('switch chassis','#121e2f'),accent=mat('switch identification','#1b88dd');
   draw('full network module dark face',width*.91,height*.86,.006,0,0,-.063,darkMetal,root,id);
   draw('network module service stripe',width*.88,height*.035,.007,0,height*.41,-.069,accent,root,id);
@@ -45,7 +45,7 @@ export function drawEquipmentDetail(scene:Scene,root:TransformNode,category:stri
  }
  // Physical front panel elements on otherwise generic hardware: vents, fasteners,
  // recessed diagnostic display and grouped service indicators.
- if(!['server','storage','switch','network','patch','display','sbc'].includes(category||'')){
+ if(!['server','storage','switch','network','patch','patch-panel','display','sbc','power'].includes(category||'')){
   const face=mat('anodized front plate','#242e35'),trim=mat('precision milled outline','#6c7a83'),recess=mat('ventilation darkness','#080e14');
   draw('anodized removable front plate',width*.81,height*.72,.008,0,0,-.068,face,root,id);
   for(const side of [-1,1]){
@@ -55,6 +55,17 @@ export function drawEquipmentDetail(scene:Scene,root:TransformNode,category:stri
   draw('service information label',width*.28,height*.19,.009,-width*.12,height*.11,-.077,recess,root,id);
   draw('service label accent',width*.26,.002,.011,-width*.12,height*.18,-.084,trim,root,id);
   for(let i=0;i<3;i++)draw('device indicator '+i,.0045,.0045,.011,width*.16+i*.012,-height*.17,-.085,i===2?orange:led,root,id);
+ }
+ if(category==='power'){
+  // UPS and PDU face: vented steel, control screen and recessed power channels.
+  const frame=mat('UPS brushed chassis','#303d4e');
+  const display=mat('UPS LCD lit','#095e9d');display.emissiveColor=Color3.FromHexString('#0b4d86');
+  const vent=mat('UPS grille shadow','#060d19');
+  draw('power unit structural bezel',width*.89,height*.82,.010,0,0,-.073,frame,root,id);
+  draw('power unit illuminated diagnostic',width*.22,height*.38,.008,-width*.18,0,-.084,display,root,id);
+  for(let i=0;i<3;i++)draw('power unit status row '+i,width*.14,height*.023,.010,-width*.18,height*(.105-i*.095),-.091,i===0?led:dark,root,id);
+  for(let i=0;i<9;i++)draw('power unit vent '+i,width*.018,height*.55,.012,width*(.06+i*.034),0,-.084,vent,root,id);
+  for(let side of [-1,1])draw('power unit screw '+side,.008,.008,.009,side*width*.41,0,-.082,metal,root,id);
  }
  if(category==='display'){
   // Layered industrial monitor: a projecting aluminium case, black glass and a legible
