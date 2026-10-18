@@ -108,4 +108,4 @@ class Handler(BaseHTTPRequestHandler):
  def do_POST(self):self.handle_request('POST')
  def do_PUT(self):self.handle_request('PUT')
  def do_DELETE(self):self.handle_request('DELETE')
-ThreadingHTTPServer(('0.0.0.0',8000),Handler).serve_forever()
+ThreadingHTTPServer(('0.0.0.0',int(os.getenv('HCC_PORT','8000'))),Handler).serve_forever()
