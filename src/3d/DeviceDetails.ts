@@ -67,6 +67,23 @@ export function drawEquipmentDetail(scene:Scene,root:TransformNode,category:stri
   for(let i=0;i<9;i++)draw('power unit vent '+i,width*.018,height*.55,.012,width*(.06+i*.034),0,-.084,vent,root,id);
   for(let side of [-1,1])draw('power unit screw '+side,.008,.008,.009,side*width*.41,0,-.082,metal,root,id);
  }
+ // A chassis must read as real equipment at normal rack-camera distance.
+ if(category==='switch'||category==='network'||category==='patch'||category==='patch-panel'){
+  const rail=mat('machined switch aluminium','#6a7b91'),channel=mat('machined recess','#06101e');
+  for(const side of [-1,1]){
+   draw('switch front mounting ear '+side,width*.033,height*.90,.012,side*width*.476,0,-.070,rail,root,id);
+   draw('switch mounting fastener '+side,.006,.006,.015,side*width*.478,height*.25,-.080,rail,root,id);
+  }
+  draw('switch lower machined recess',width*.78,height*.025,.009,0,-height*.40,-.078,channel,root,id);
+ }
+ if(category==='server'||category==='storage'){
+  const aluminum=mat('storage brushed steel','#586a80'),deep=mat('drive ventilation dark','#020814');
+  for(const side of [-1,1]){
+   draw('storage mounting handle '+side,.017,height*.67,.028,side*width*.45,0,-.084,aluminum,root,id);
+   draw('storage handle recess '+side,.006,height*.46,.011,side*width*.45,0,-.101,deep,root,id);
+  }
+  for(let i=0;i<12;i++)draw('top exhaust perforation '+i,width*.041,.003,.006,(i-5.5)*width*.066,height*.43,-.077,deep,root,id);
+ }
  if(category==='display'){
   // Layered industrial monitor: a projecting aluminium case, black glass and a legible
   // status-dashboard silhouette. All dimensions are relative to the assigned rack bay.
