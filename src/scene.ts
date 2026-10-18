@@ -50,6 +50,26 @@ if(d.category==='ai'||d.category==='kvm')for(const s of [-1,1])mk('module',W*.34
 }cam.setTarget(new Vector3(0,H/2,0));cam.radius=Math.max(.92,H*1.42)}
 
 let cableMeshes:Mesh[]=[];
-function updateCables(connections:{a:string;b:string}[]){for(const mesh of cableMeshes)mesh.dispose();cableMeshes=[];const gold=new StandardMaterial('cable wire',scene);gold.diffuseColor=color('#48c6b3');gold.emissiveColor=color('#103b37');for(const link of connections){const point=(key:string)=>{const index=key.indexOf('/');const id=key.slice(0,index),portid=key.slice(index+1);const d=cfg.devices.find(x=>x.id===id),root=instances.get(id),p=d?.ports.find(x=>x.id===portid);if(!d||!root||!p)return null;const w=spacing(cfg.width),h=d.height*U-.006;return Vector3.TransformCoordinates(new Vector3(Math.max(-w*.44,Math.min(w*.44,p.x*w*.87)),Math.max(-h*.37,Math.min(h*.37,p.y*h)),-.055),root.getWorldMatrix())};const a=point(link.a),b=point(link.b);if(!a||!b)continue;const outward=((a.z+b.z)/2>=0)?1:-1;const z=outward*(cfg.width===10?.28:.48);const side= a.x<=b.x?-1:1;const railX=side*(spacing(cfg.width)/2+.063);const path=[a,a.add(new Vector3(0,0,Math.sign(z)*(Math.abs(z-a.z)*.38))),new Vector3(railX,a.y-.018,z),new Vector3(railX,b.y-.018,z),b.add(new Vector3(0,0,Math.sign(z)*(Math.abs(z-b.z)*.38))),b];const tube=MeshBuilder.CreateTube('physical cable',{path,radius:.0025,tessellation:6},scene);tube.material=gold;tube.isPickable=false;cableMeshes.push(tube)}}
+function updateCables(connections:{a:string;b:string}[]){
+ for(const mesh of cableMeshes)mesh.dispose();cableMeshes=[];
+ const cablePalette=['#45c89a','#6e9fff','#e0a552','#b891e0','#d46578'];
+ for(const [i,link] of connections.entries()){
+  const endpoint=(key:string)=>{const separator=key.indexOf('/');if(separator<0)return null;const id=key.slice(0,separator),portid=key.slice(separator+1);const device=cfg.devices.find(d=>d.id===id),root=instances.get(id),port=device?.ports.find(p=>p.id===portid);if(!device||!root||!port)return null;root.computeWorldMatrix(true);const w=spacing(cfg.width),h=device.height*U-.006;const pos=Vector3.TransformCoordinates(new Vector3(Math.max(-w*.44,Math.min(w*.44,port.x*w*.87)),Math.max(-h*.37,Math.min(h*.37,port.y*h)),-.058),root.getWorldMatrix());return{pos,type:port.type}};
+  const aa=endpoint(link.a),bb=endpoint(link.b);if(!aa||!bb)continue;
+  const a=aa.pos,b=bb.pos,side=a.x<=b.x?-1:1;
+  const rear=a.z>0||b.z>0;
+  const routeZ=(rear?1:-1)*(Math.max(.25,(cfg.depthMm??600)/1000)/2+.10);
+  const gutterX=side*(spacing(cfg.width)/2+.10);
+  const steps=[a,a.add(new Vector3(0,0,(rear?1:-1)*.065)),new Vector3(gutterX,a.y-.045,routeZ),new Vector3(gutterX,Math.min(a.y,b.y)-.075,routeZ),new Vector3(gutterX,b.y-.045,routeZ),b.add(new Vector3(0,0,(rear?1:-1)*.065)),b];
+  const material=new StandardMaterial('cable insulation '+i,scene);material.diffuseColor=color(cablePalette[i%cablePalette.length]);material.specularColor=color('#93a8a1');material.emissiveColor=color('#07170f');
+  const curved=Vector3.CatmullRom(a,steps[1],steps[2],.5);
+  const smooth=Vector3.CatmullRom(steps[2],steps[3],steps[4],.5);
+  const path=[a,curved,steps[2],smooth,steps[4],steps[5],b];
+  const tube=MeshBuilder.CreateTube('cable '+i,{path,radius:.0026,tessellation:9,cap:3},scene);tube.material=material;tube.isPickable=false;cableMeshes.push(tube);
+  const plugMaterial=new StandardMaterial('cable plug '+i,scene);plugMaterial.diffuseColor=color('#242d2a');
+  for(const [j,p] of [a,b].entries()){const plug=MeshBuilder.CreateBox('plug '+i+' '+j,{width:.010,height:.009,depth:.018},scene);plug.position.copyFrom(p);plug.material=plugMaterial;plug.isPickable=false;cableMeshes.push(plug)}
+ }
+}
+
 redraw(config);scene.onPointerObservable.add(e=>{if(e.type!==PointerEventTypes.POINTERPICK)return;let m=e.pickInfo?.pickedMesh;while(m){if(m.metadata?.id){if(m.metadata.port)onPort(m.metadata.id+'/'+m.metadata.port);else onDevice(m.metadata.id);return}m=m.parent as typeof m}},PointerEventTypes.POINTERPICK);eng.runRenderLoop(()=>{cameraControl.tick();scene.render()});const resize=()=>eng.resize();window.addEventListener('resize',resize);
 return{redraw,updateCables,focus(id:string){const node=instances.get(id);if(!node)return;const dev=cfg.devices.find(d=>d.id===id);cameraControl.focus(node.getAbsolutePosition(),Math.max(.35,Math.min(1.05,(dev?.height||1)*U*4+.3)),dev?.mount==='rear'?'back':'front')},home(){cameraControl.home(cfg.units*U)},view(f:Face){cameraControl.view(f)},async load(file:File,id:string){const root=instances.get(id);if(!root)throw Error('No device selected');const url=URL.createObjectURL(file);try{const r=await SceneLoader.ImportMeshAsync('','',url,scene,undefined,'.glb');const node=new TransformNode('real-GLB '+id,scene);node.parent=root;for(const m of r.meshes){if(!m.parent)m.parent=node;m.metadata={...m.metadata,id}}const b=node.getHierarchyBoundingVectors(true),ext=b.max.subtract(b.min),dev=cfg.devices.find(x=>x.id===id)!;if(ext.x>0&&ext.y>0&&ext.z>0){const scale=Math.min(spacing(cfg.width)*.77/ext.x,dev.height*U*.7/ext.y,.08/ext.z);node.scaling.scaleInPlace(scale)}node.position.z=-.09}finally{URL.revokeObjectURL(url)}},dispose(){window.removeEventListener('resize',resize);eng.dispose()}}}
