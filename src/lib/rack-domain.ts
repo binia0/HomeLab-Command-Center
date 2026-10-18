@@ -1,4 +1,4 @@
-import {newId} from './ids';
+import {newId} from './ids.ts';
 export type RackStandard = 10 | 19;
 export type Face = 'front' | 'rear';
 export type Point3 = { x: number; y: number; z: number };
