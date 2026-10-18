@@ -14,13 +14,6 @@ export function drawEquipmentDetail(scene:Scene,root:TransformNode,category:stri
    draw('disk release button '+row+'-'+col,.004,.004,.012,px+width*.041,py-height*.074,-.102,row%2?led:latch,root,id);
   }
 
-  const columns=4,rows=height>.08?3:1;
-  for(let y=0;y<rows;y++)for(let x=0;x<columns;x++){
-   const px=(x-(columns-1)/2)*width*.205,py=(y-(rows-1)/2)*height*.29;
-   draw('removable drive cartridge '+x+'-'+y,width*.17,height*.22,.006,px,py,-.072,metal,root,id);
-   draw('cartridge inlay '+x+'-'+y,width*.13,height*.15,.008,px,py,-.077,dark,root,id);
-   draw('cartridge latch '+x+'-'+y,width*.07,.002,.009,px,py-height*.073,-.082,metal,root,id);
-  }
  }
  if(category==='server'){
    for(let j=0;j<2;j++){
