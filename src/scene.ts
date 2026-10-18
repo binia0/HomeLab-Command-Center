@@ -114,7 +114,7 @@ function updateCables(connections:{a:string;b:string}[]){
   const a=endpoint(link.a),b=endpoint(link.b);if(!a||!b)continue;
   const routing=routeRackCable(a,b,spacing(cfg.width),depth,i%5);
   const points=softenCablePath(routing,.012);
-  const material=new StandardMaterial('insulated cable '+i,scene);const shade=colors[a.type]||colors[b.type]||'#54bcd8';material.diffuseColor=color(shade);material.emissiveColor=color(shade).scale(.22);
+  const material=new StandardMaterial('insulated cable '+i,scene);const shade=a.type==='RJ45'?['#49dfa0','#ebc554','#a5e38b','#d87057'][i%4]:(colors[a.type]||colors[b.type]||'#54bcd8');material.diffuseColor=color(shade);material.emissiveColor=color(shade).scale(.12);
   const tube=MeshBuilder.CreateTube('routed cable '+i,{path:points,radius:.0028,tessellation:10,cap:3},scene);tube.material=material;tube.isPickable=false;cableMeshes.push(tube);
   const plugMat=new StandardMaterial('connector shell '+i,scene);plugMat.diffuseColor=color('#23332a');
   for(const [n,end] of [a,b].entries()){
