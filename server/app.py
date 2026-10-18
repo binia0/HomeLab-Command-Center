@@ -69,7 +69,9 @@ class Handler(BaseHTTPRequestHandler):
      user=str(data.get('username','')).strip().lower()
      if len(user)<2 or len(user)>40 or not all(ch.isalnum() or ch in '_-' for ch in user):return self.send(400,{'error':'Benutzername: 2–40 Buchstaben, Zahlen, _ oder -'})
      record=c.execute('SELECT id FROM users WHERE username=?',(user,)).fetchone()
-     if record:uid=record['id']
+     if record:
+      if c.execute('SELECT secret FROM users WHERE id=?',(record['id'],)).fetchone()['secret']!='username-only':return self.send(403,{'error':'Dieses Profil ist passwortgeschützt. Bitte anmelden.'})
+      uid=record['id']
      else:
       salt=secrets.token_hex(16)
       uid=c.execute('INSERT INTO users(username,salt,secret) VALUES(?,?,?)',(user,salt,'username-only')).lastrowid
@@ -80,6 +82,19 @@ class Handler(BaseHTTPRequestHandler):
     current=self.current(c)
     if path=='/api/me' and method=='GET':return self.send(200,{'username':current['username'] if current else None})
     if not current:return self.send(401,{'error':'Bitte anmelden'})
+    if path=='/api/set-password' and method=='POST':
+     pw=str(data.get('password',''))
+     if not 12<=len(pw)<=256:return self.send(400,{'error':'Passwort muss zwischen 12 und 256 Zeichen lang sein'})
+     salt=secrets.token_hex(16)
+     c.execute('UPDATE users SET salt=?,secret=? WHERE id=?',(salt,hash_pass(pw,salt),current['id']))
+     # Keep only this session after converting a legacy profile to a secured account.
+     cookie=SimpleCookie()
+     try:cookie.load(self.headers.get('Cookie',''))
+     except Exception:pass
+     session=cookie.get('rack_session')
+     token_hash=hashlib.sha256(session.value.encode()).hexdigest() if session else ''
+     c.execute('DELETE FROM sessions WHERE user_id=? AND token_hash!=?',(current['id'],token_hash))
+     return self.send(200,{'secured':True})
     if path=='/api/logout' and method=='POST':
      jar=SimpleCookie();jar.load(self.headers.get('Cookie',''));token=jar.get('rack_session')
      if token:c.execute('DELETE FROM sessions WHERE token_hash=?',(hashlib.sha256(token.value.encode()).hexdigest(),))
