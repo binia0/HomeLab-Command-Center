@@ -27,6 +27,6 @@ else
   git clone --depth 1 --branch static https://github.com/binia0/HomeLab-Command-Center.git web-dist
 fi
 test -s web-dist/index.html || { echo "Built index.html missing; check GitHub Actions." >&2; exit 1; }
-echo "Starting prebuilt nginx-only preview on port 8080..."
-sudo docker compose up -d --no-build
+echo "Starting prebuilt web and persistent rack API on port 8080..."
+sudo docker compose up -d --build
 echo "Ready. Open http://<YOUR-SERVER-IP>:8080/"
