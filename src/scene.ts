@@ -68,6 +68,7 @@ async function restoreModels(){
  for(const device of [...cfg.devices]){
   try{
    let asset=await loadModelAsset(device.id);
+   if(!asset){try{const response=await fetch('/api/models/'+encodeURIComponent(device.id),{credentials:'same-origin'});if(response.ok){asset=await response.blob();await saveModelAsset(device.id,new File([asset],device.id+'.glb',{type:'model/gltf-binary'}))}}catch(error){console.warn('Remote GLB unavailable',error)}}
    if(!asset&&device.templateId==='rack-nas-4u')asset=await builtInNas();
    if(revision!==restoreRevision)return;
    if(asset&&instances.has(device.id)){
@@ -102,7 +103,7 @@ async function importGLB(file:File,id:string,persist:boolean){
   // The supplied 4U NAS asset has its detailed drive bays on local +Z.
   // Babylon's rack front points toward -Z, so face the bays toward the viewer.
   if(!persist&&device?.templateId==='rack-nas-4u')node.rotation.y=Math.PI;
-  if(persist)await saveModelAsset(id,file);
+  if(persist){await saveModelAsset(id,file);try{const response=await fetch('/api/models/'+encodeURIComponent(id),{method:'POST',body:file,headers:{'Content-Type':'model/gltf-binary'},credentials:'same-origin'});if(!response.ok)console.warn('Remote GLB save unavailable:',response.status)}catch(error){console.warn('Remote GLB save unavailable',error)}}
  }finally{URL.revokeObjectURL(url)}
 }
 let cableMeshes:Mesh[]=[];
