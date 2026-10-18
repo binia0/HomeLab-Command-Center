@@ -3,7 +3,17 @@ type Draw=(name:string,w:number,h:number,d:number,x:number,y:number,z:number,mat
 export function drawEquipmentDetail(scene:Scene,root:TransformNode,category:string|undefined,id:string,width:number,height:number,draw:Draw,networkPortXs:number[]=[]){
  const mat=(name:string,hex:string)=>{const m=new PBRMaterial(name+' '+id,scene);m.albedoColor=Color3.FromHexString(hex);m.metallic=.65;m.roughness=.43;return m};
  const metal=mat('machined metal','#4e6258'),dark=mat('vent void','#030906'),led=mat('status led','#4afc86'),glass=mat('glass','#071d14'),orange=mat('activity','#c87738'),bezel=mat('screen bezel','#17241e');led.emissiveColor=Color3.FromHexString('#12a943');
- if(category==='server'||category==='storage'){
+ if(category==='server'||category==='storage'){ 
+  // Server-style removable disk drawer array with separated faceplates.
+  const brushed=mat('brushed hot swap drive cages','#334351');
+  const latch=mat('disk tray handles','#697b89');
+  for(let row=0;row<(height>.09?3:1);row++)for(let col=0;col<6;col++){
+   const px=(col-2.5)*width*.137,py=(row-((height>.09?3:1)-1)/2)*height*.265;
+   draw('drive sled inset '+row+'-'+col,width*.112,height*.215,.009,px,py,-.091,dark,root,id);
+   draw('disk eject strip '+row+'-'+col,width*.093,height*.023,.011,px,py-height*.073,-.098,brushed,root,id);
+   draw('disk release button '+row+'-'+col,.004,.004,.012,px+width*.041,py-height*.074,-.102,row%2?led:latch,root,id);
+  }
+
   const columns=4,rows=height>.08?3:1;
   for(let y=0;y<rows;y++)for(let x=0;x<columns;x++){
    const px=(x-(columns-1)/2)*width*.205,py=(y-(rows-1)/2)*height*.29;
