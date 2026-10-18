@@ -1,3 +1,4 @@
+import {renderLcdPi} from './3d/LcdPiAssembly';
 import {routeRackCable,softenCablePath} from './3d/CableRouter';
 import {builtInNas} from './3d/built-in-nas';
 import {loadModelAsset,saveModelAsset} from './lib/model-assets';
@@ -48,6 +49,7 @@ if(d.category==='storage'){for(let j=0;j<4;j++){mk('drive bay '+j,W*.17,h*.67,.0
 if(!d.slots?.length){for(let vent=0;vent<8;vent++){const xx=-W*.28+vent*(W*.56/7);mk('machined vent '+d.id+' '+vent,.004,Math.max(.003,h*.12),.002,xx,-h*.23,-.032,shadow,root,d.id)}}
 if(d.category==='switch'||d.category==='network'){mk('network status strip',W*.15,.006,.006,W*.3,h*.24,-.036,tag,root,d.id)}
 for(const display of d.displays||[]){const dw=Math.max(.015,Math.min(W*.87,display.widthMm/1000));const dh=Math.max(.012,Math.min(h*.86,display.heightMm/1000));const dx=Math.max(-W*.35,Math.min(W*.35,display.offsetXmm/1000));const dy=Math.max(-h*.3,Math.min(h*.3,display.offsetYmm/1000));const bezel=material('display bezel '+display.id,'#283d48');const glass=material('display glass '+display.id,'#0e3242');glass.emissiveColor=color('#0b4c56');mk('display mount '+display.id,dw+.006,dh+.006,.008,dx,dy,-.055,bezel,root,d.id);mk('display screen '+display.id,dw,dh,.003,dx,dy,-.062,glass,root,d.id);mk('display status bar '+display.id,dw*.67,.002,.002,dx,dy+dh*.27,-.064,accent,root,d.id)}
+if(d.category==='lcd-pi')renderLcdPi(scene,root,d.id,W,h);
 if(d.category==='display'){const bezel=material('standalone display bezel '+d.id,'#192d38');const screen=material('standalone screen '+d.id,'#0c4656');screen.metallic=.16;screen.roughness=.2;screen.emissiveColor=color('#136678');mk('display mounting back',W*.87,h*.89,.025,0,0,-.037,bezel,root,d.id);mk('display luminous screen',W*.79,h*.73,.005,0,0,-.057,screen,root,d.id);mk('display header',W*.68,h*.055,.003,0,h*.26,-.062,accent,root,d.id);for(let k=0;k<4;k++)mk('display status indicator '+k,W*.12,h*.022,.003,-W*.27+k*W*.18,-h*.12,-.063,k%2?accent:titanium,root,d.id)}
 if(d.imageData?.startsWith('data:image/')){const front=MeshBuilder.CreatePlane('device photo '+d.id,{width:W*.72,height:h*.56,sideOrientation:Mesh.DOUBLESIDE},scene);front.position.set(0,0,-.069);front.parent=root;front.metadata={id:d.id};const photo=new StandardMaterial('device photo material '+d.id,scene);photo.diffuseTexture=new Texture(d.imageData,scene);photo.emissiveColor=color('#59646a');photo.backFaceCulling=false;front.material=photo}
 const led=material('led '+d.id,'#24cba7');led.emissiveColor=color('#0b7a66');mk('LED',.008,.008,.006,-W*.39,0,-.032,led,root,d.id);
