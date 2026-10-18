@@ -223,3 +223,66 @@ main{display:flex;flex-direction:column;background:#0b101a;min-height:0}
 .account-build{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px;align-items:center;border:1px solid #3d5b6b;border-radius:7px;padding:7px}
 .account-build span{font-size:11px;overflow:hidden;text-overflow:ellipsis}
 .account-popover p{font-size:11px;line-height:1.4;color:#abe6df}
+
+/* COMPLETE WORKSPACE VISUAL V3: compact dark engineering terminal */
+:root{color:#dce8e1;background:#030805}
+html,body,#root{background:#030805}
+.app{grid-template-columns:258px minmax(400px,1fr) 322px;grid-template-rows:54px minmax(0,1fr);background:#040805}
+.header{padding:0 15px;background:#070e0b;border-bottom:1px solid #294633}
+.brand strong{font-family:Inter,'DM Sans',sans-serif;font-size:15px;letter-spacing:.2px}
+.brand em{color:#78dca6}.brand small{font-size:8px;color:#86aa92}
+.logo{height:31px;width:31px;border-color:#266447;background:#0d261a;color:#66dba5}
+aside,.left,.right{background:#07100d;border-color:#203c2c}
+.section{padding:12px 13px;color:#90ba9e;border-color:#1a3827;font-size:10px}
+.section span{color:#577d65}
+.palette-shortcuts{padding:10px 12px;display:grid;gap:5px;border-bottom:1px solid #1b3827}
+.palette-shortcuts button{border:1px solid #1c3728;background:#0b1711;border-radius:5px;padding:10px 11px;display:flex;align-items:center;gap:8px;color:#d0e9d6;font-size:11px;font-weight:700;text-align:left}
+.palette-shortcuts button svg{margin-left:auto}
+.palette-shortcuts button:hover{background:#143320;border-color:#60bd79}
+.palette-dot{width:6px;height:6px;border-radius:50%;background:#57dc79;flex-shrink:0}
+.rack-card{margin:10px 12px;padding:12px;background:#0b1a13;border-color:#244833;border-radius:5px}
+.rack-card h2{font-size:16px;color:#d7f4dc}
+.rack-card small,.rack-card p{color:#70a783}
+.settings{padding:10px 12px;gap:9px}
+.settings label{color:#a4c8ad;font-size:10px}
+.seg{background:#070f0a;border-color:#22432e}
+.seg button.active,.seg button.act{background:#19532b;color:#d5ffdc}
+.secondary,.save,.export-action,.account-open{background:#102a1d;color:#bcf3cc;border:1px solid #35744b;border-radius:5px}
+.items{padding:6px}
+.item{background:#0a1710;border-color:#21372b;margin-bottom:4px;border-radius:5px;padding:8px}
+.item:hover,.item.chosen{background:#123520;border-color:#4dbe73}
+.item strong{color:#e0f5e5}
+.item small{color:#8baa97}
+main{background:#030805}
+.heading{padding:14px 17px 8px}
+.heading h1{font-size:21px;letter-spacing:-.4px;color:#d9f6df}
+.heading small{font-size:9px;color:#78c48c}
+.heading p{font-size:10px;color:#719783}
+.heading>span{background:#0b1a11;color:#a8cbb0;border-color:#254833}
+.workspace-stats{padding:0 17px 11px;gap:7px}
+.workspace-stat{background:#0a1710;border-color:#22412c;border-radius:5px;padding:8px 11px}
+.workspace-stat small{color:#81a78c}.workspace-stat strong{font-size:18px;color:#e4f2e8}
+.workspace-stat>svg{color:#5dd58b}
+.workspace-cta{background:#195b30;color:#ddffe5;border-color:#3e9e5a;border-radius:5px;font-size:11px}
+.workspace-cta:hover{background:#25713d}
+.workspace-section-head{padding:0 18px 9px;color:#6c997a;font-size:9px}
+.workspace-section-head strong{color:#c0e6ca}
+.stage{margin:0 16px!important;background:#020504!important;border:1px solid #294832!important;border-radius:7px!important;box-shadow:inset 0 0 55px #000!important;position:relative}
+.stage::before{background:none!important}
+.viewport-ambient{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 58%,#16301b42 0,transparent 50%),linear-gradient(180deg,#03060400 0%,#0005 100%);z-index:0}
+.stage canvas{position:relative;z-index:1}
+.stage-label{background:#07140bdf;border:1px solid #285337;color:#a8e5b6;border-radius:4px;font-size:9px;top:12px;left:12px}
+.stage-label small{color:#6ba77f}
+.stage-note{font-size:9px;color:#649d79}
+.stage-note strong{color:#60cf89}
+.stage-bottom .seg{background:#07160bef;border:1px solid #31603f;border-radius:5px}
+.stage-bottom .seg button.active{background:#1b7037;color:#e8ffee}
+.camera-home{padding:9px 11px;border-radius:5px;background:#0c2718;border:1px solid #43885c;color:#c2f4cd;font-size:10px;font-weight:800;pointer-events:auto}
+.notice{background:#08180e;border-color:#28543a;color:#9acba5}
+.inspector{background:#09160e;border-color:#284b35}
+.inspector h2{color:#ddf1df}
+.tabs,.details{background:#08120c}
+.section-inner{color:#9ad4a9;border-color:#264b32}
+.account-popover,.editor-modal{background:#091a10;border:1px solid #397550;border-radius:6px}
+.editor-header{background:#112519}
+@media(max-width:1150px){.app{grid-template-columns:224px minmax(360px,1fr) 275px}}
