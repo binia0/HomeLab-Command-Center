@@ -73,8 +73,35 @@ export function drawEquipmentDetail(scene:Scene,root:TransformNode,category:stri
   draw('board activity diode',.005,.005,.008,-width*.20,-height*.21,-.083,led,root,id);
  }
  if(category==='display'){
-  draw('glass interactive display',width*.72,height*.7,.004,0,0,-.077,glass,root,id);draw('screen title strip',width*.64,height*.05,.005,0,height*.25,-.083,led,root,id);for(let line=0;line<4;line++)draw('screen metric '+line,width*(.32+line*.07),height*.022,.006,-width*.1,height*(.12-line*.1),-.084,line%2?metal:led,root,id);
-  draw('screen bottom bezel',width*.74,height*.06,.006,0,-height*.38,-.081,dark,root,id);
-  draw('display status led',.004,.004,.008,width*.32,-height*.38,-.086,led,root,id);
+  // Layered industrial monitor: a projecting aluminium case, black glass and a legible
+  // status-dashboard silhouette. All dimensions are relative to the assigned rack bay.
+  const housing=mat('monitor dark anodized aluminium','#263541');
+  const glassEdge=mat('monitor reflective glass border','#0e253d');
+  const screen=mat('monitor powered display','#08213b');
+  const cyan=mat('monitor cyan illuminated widgets','#2caef7');
+  const blue=mat('monitor blue illuminated widgets','#1274c3');
+  const white=mat('monitor labels','#9dd8eb');
+  cyan.emissiveColor=Color3.FromHexString('#1078b5');
+  blue.emissiveColor=Color3.FromHexString('#0a4a83');
+  screen.emissiveColor=Color3.FromHexString('#031a2e');
+  draw('display case milled aluminium',width*.91,height*.87,.025,0,0,-.069,housing,root,id);
+  draw('glass edge trim',width*.846,height*.77,.005,0,0,-.085,glassEdge,root,id);
+  draw('active monitor display',width*.825,height*.745,.003,0,0,-.089,screen,root,id);
+  draw('screen title bar',width*.75,height*.07,.004,0,height*.285,-.092,blue,root,id);
+  draw('screen left navigation',width*.125,height*.54,.004,-width*.323,-height*.045,-.092,glassEdge,root,id);
+  for(let i=0;i<4;i++){
+   draw('display navigation line '+i,width*.08,height*.012,.005,-width*.325,height*(.15-i*.12),-.095,i===0?cyan:white,root,id);
+  }
+  for(let i=0;i<3;i++){
+   const xx=width*(-.13+i*.19);
+   draw('status tile '+i,width*.155,height*.22,.004,xx,height*.055,-.093,glassEdge,root,id);
+   draw('status tile header '+i,width*.11,height*.02,.005,xx,height*.105,-.096,cyan,root,id);
+   draw('status tile value '+i,width*.072,height*.037,.005,xx,height*.018,-.096,white,root,id);
+   for(let j=0;j<4;j++)draw('micro bar '+i+' '+j,width*.012,height*(.03+.025*((i+j)%3)),.005,xx+width*(j-1.5)*.029,-height*.065,-.096,blue,root,id);
+  }
+  draw('timeline graphite',width*.55,height*.14,.004,width*.055,-height*.25,-.093,glassEdge,root,id);
+  for(let i=0;i<10;i++)draw('timeline activity '+i,width*.036,height*(.02+.015*(i%4)),.005,-width*.17+i*width*.047,-height*.28,-.096,i%3===0?cyan:blue,root,id);
+  draw('display lower metal chin',width*.91,height*.055,.007,0,-height*.43,-.086,housing,root,id);
+  draw('display illuminated power button',.006,.006,.010,width*.388,-height*.422,-.094,cyan,root,id);
  }
 }
