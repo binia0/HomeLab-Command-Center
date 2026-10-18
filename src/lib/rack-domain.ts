@@ -1,3 +1,4 @@
+import {newId} from './ids';
 export type RackStandard = 10 | 19;
 export type Face = 'front' | 'rear';
 export type Point3 = { x: number; y: number; z: number };
@@ -64,7 +65,7 @@ export function createEmptyRack(name: string, standard: RackStandard, units: num
   if (!name.trim()) throw new Error('Rack name required');
   if (!Number.isInteger(units) || units < 1 || units > 60) throw new Error('Invalid rack height');
   if (!Number.isFinite(depthMm) || depthMm < 100 || depthMm > 2000) throw new Error('Invalid rack depth');
-  return { id: crypto.randomUUID(), name: name.trim(), standard, units, depthMm };
+  return { id: newId(), name: name.trim(), standard, units, depthMm };
 }
 export function gridSlots(columns: number, rows: number, usableWidthMm: number, usableHeightMm: number, depthMm = 50): SlotRecord[] {
   if (![columns, rows].every(n => Number.isInteger(n) && n > 0) || columns * rows > 256)
@@ -76,7 +77,7 @@ export function gridSlots(columns: number, rows: number, usableWidthMm: number, 
   return Array.from({ length: columns * rows }, (_, i) => {
     const col = i % columns, row = Math.floor(i / columns);
     return {
-      id: crypto.randomUUID(),
+      id: newId(),
       name: 'Slot ' + (i + 1),
       localPositionMm: { x: (col + .5) * cellW - usableWidthMm / 2, y: usableHeightMm / 2 - (row + .5) * cellH, z: 0 },
       rotationDeg: { x: 0, y: 0, z: 0 },
