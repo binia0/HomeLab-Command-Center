@@ -28,8 +28,7 @@ export function renderPiCluster(scene:Scene,root:TransformNode,id:string,rackWid
   box('processor '+i,boardW*.48,boardH*.30,.009,x,boardH*.13,-.086,dark);
   box('CPU cooler '+i,boardW*.41,boardH*.24,.006,x,boardH*.13,-.095,sockets);
   for(let j=0;j<4;j++)box('heatsink fin '+i+' '+j,boardW*.34,.002,.008,x,boardH*(.035+j*.048),-.101,back);
-  box('ethernet case '+i,boardW*.39,boardH*.21,.014,x+boardW*.21,-boardH*.27,-.088,sockets);
-  box('ethernet cavity '+i,boardW*.25,boardH*.13,.004,x+boardW*.21,-boardH*.27,-.098,dark);
+  // Network sockets are drawn from the editable device port coordinates in scene.ts.
   box('USB connector '+i,boardW*.31,boardH*.18,.013,x-boardW*.24,-boardH*.29,-.088,sockets);
   box('USB slot '+i,boardW*.24,boardH*.09,.003,x-boardW*.24,-boardH*.29,-.098,blue);
   for(let p=0;p<9;p++)box('GPIO pin '+i+' '+p,.0017,.003,.003,x-boardW*.39+p*boardW*.095,boardH*.38,-.083,gold);
