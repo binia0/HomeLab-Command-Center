@@ -2,9 +2,9 @@ import {Scene,TransformNode,MeshBuilder,PBRMaterial,Color3} from '@babylonjs/cor
 /** Visible physical fixtures separate from device UI and port data. All lengths are metres. */
 export function addPrecisionRackFixtures(scene:Scene,parent:TransformNode,w:number,h:number,depth:number,units:number){
  const mat=(id:string,hex:string,metal:number)=>{const m=new PBRMaterial(id,scene);m.albedoColor=Color3.FromHexString(hex);m.metallic=metal;m.roughness=.48;return m};
- const anodized=mat('powder coated structure','#3f4850',.78);
- const bright=mat('brushed aluminum brackets','#a8aeb2',.86);
- const dark=mat('ventilation recesses','#11191e',.2);
+ const anodized=mat('powder coated structure','#202822',.78);
+ const bright=mat('brushed aluminum brackets','#59655b',.86);
+ const dark=mat('ventilation recesses','#060b08',.2);
  const part=(name:string,width:number,height:number,d:number,x:number,y:number,z:number,m:PBRMaterial)=>{
   const mesh=MeshBuilder.CreateBox(name,{width,height,depth:d},scene);mesh.position.set(x,y,z);mesh.material=m;mesh.parent=parent;mesh.isPickable=false;return mesh;
  };
