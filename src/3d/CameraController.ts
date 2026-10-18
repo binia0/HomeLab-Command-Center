@@ -13,7 +13,7 @@ export class CameraController {
   this.beta=side==='orbit'?this.camera.beta:Math.PI/2;
  }
  home(height:number,depth=.8){this.target=new Vector3(0,height/2,0);this.radius=Math.max(depth/2+.34,height/(2*Math.tan(this.camera.fov/2)*.79));this.alpha=-Math.PI/2;this.beta=Math.PI/2}
- view(side:'front'|'back'|'orbit'){this.alpha=side==='front'?-Math.PI/2:side==='back'?Math.PI/2:-Math.PI/2+.42;this.beta=side==='orbit'?Math.PI/2.12:Math.PI/2}
+ view(side:'front'|'back'|'orbit'){this.alpha=side==='front'?-Math.PI/2+.13:side==='back'?Math.PI/2-.13:-Math.PI/2+.42;this.beta=side==='orbit'?Math.PI/2.12:Math.PI/2.06}
  tick(){
   const k=.12;
   if(this.target){this.camera.setTarget(Vector3.Lerp(this.camera.target,this.target,k));this.camera.radius+=(this.radius-this.camera.radius)*k;if(Vector3.Distance(this.camera.target,this.target)<.0002&&Math.abs(this.camera.radius-this.radius)<.0002)this.target=null}
