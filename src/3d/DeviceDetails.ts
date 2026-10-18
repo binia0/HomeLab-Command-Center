@@ -1,6 +1,6 @@
 import {Scene,TransformNode,MeshBuilder,PBRMaterial,Color3} from '@babylonjs/core';
 type Draw=(name:string,w:number,h:number,d:number,x:number,y:number,z:number,mat:PBRMaterial,parent:TransformNode,id?:string)=>unknown;
-export function drawEquipmentDetail(scene:Scene,root:TransformNode,category:string|undefined,id:string,width:number,height:number,draw:Draw){
+export function drawEquipmentDetail(scene:Scene,root:TransformNode,category:string|undefined,id:string,width:number,height:number,draw:Draw,networkPortXs:number[]=[]){
  const mat=(name:string,hex:string)=>{const m=new PBRMaterial(name+' '+id,scene);m.albedoColor=Color3.FromHexString(hex);m.metallic=.65;m.roughness=.43;return m};
  const metal=mat('machined metal','#4e6258'),dark=mat('vent void','#030906'),led=mat('status led','#4afc86'),glass=mat('glass','#071d14'),orange=mat('activity','#c87738'),bezel=mat('screen bezel','#17241e');led.emissiveColor=Color3.FromHexString('#12a943');
  if(category==='server'||category==='storage'){
@@ -22,10 +22,14 @@ export function drawEquipmentDetail(scene:Scene,root:TransformNode,category:stri
    for(let j=0;j<3;j++)draw('server drive status '+j,.004,.003,.009,width*.29+j*.008,height*.11,-.085,j===2?orange:led,root,id);
  }
  if(category==='switch'||category==='network'||category==='patch'){
-  for(let i=0;i<12;i++){
-   const x=(i-5.5)*width*.065;
-   draw('switch jack recess '+i,width*.047,height*.29,.005,x,0,-.075,dark,root,id);
-   draw('switch jack metal surround '+i,width*.052,.002,.007,x,height*.19,-.077,metal,root,id);draw('link LED '+i,.003,.003,.009,x,height*.29,-.082,i%4===0?orange:led,root,id);
+  const xs=networkPortXs.length?networkPortXs.slice(0,24).map(x=>x*width*.87):Array.from({length:8},(_,i)=>(i-3.5)*width*.102);
+  for(let i=0;i<xs.length;i++){
+   const x=xs[i],portW=Math.min(.022,width*.057);
+   draw('8P switch recessed RJ45 shell '+i,portW,height*.48,.009,x,0,-.073,metal,root,id);
+   draw('RJ45 dark opening '+i,portW*.82,height*.30,.010,x,-height*.025,-.082,dark,root,id);
+   draw('RJ45 locking lip '+i,portW*.54,height*.04,.006,x,-height*.19,-.087,metal,root,id);
+   for(let pin=0;pin<6;pin++)draw('gold contact '+i+' '+pin,portW*.06,.001,.003,x+portW*(pin-2.5)*.11,height*.06,-.088,orange,root,id);
+   draw('link activity LED '+i,.003,.003,.006,x,height*.34,-.091,i%3?led:orange,root,id);
   }
  }
  if(category==='display'){
