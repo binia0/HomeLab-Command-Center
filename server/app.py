@@ -119,14 +119,17 @@ class Handler(BaseHTTPRequestHandler):
       rows=result.get('data',[])
       if not rows or not labels:return None
       return {str(label):value for label,value in zip(labels[1:],rows[0][1:]) if isinstance(value,(int,float))}
-     try:
-      cpu=chart('system.cpu')
-      ram=chart('system.ram')
-      cpu_percent=round(sum(v for k,v in cpu.items() if k!='idle'),1) if cpu else None
-      ram_used=round(100*ram['used']/sum(v for k,v in ram.items() if k in ('used','free','cached','buffers')),1) if ram and 'used' in ram and sum(v for k,v in ram.items() if k in ('used','free','cached','buffers'))>0 else None
-      return self.send(200,{'source':'Netdata','available':bool(cpu or ram),'cpu_percent':cpu_percent,'ram_percent':ram_used,'timestamp':int(time.time())})
-     except Exception:
-      return self.send(200,{'source':'Netdata','available':False,'cpu_percent':None,'ram_percent':None,'timestamp':int(time.time())})
+     readings={}
+     for metric,chart_name in (('cpu','system.cpu'),('ram','system.ram'),('network','system.net'),('uptime','system.uptime')):
+      try:readings[metric]=chart(chart_name)
+      except Exception:readings[metric]=None
+     cpu=readings['cpu'];ram=readings['ram'];net=readings['network'];uptime=readings['uptime']
+     cpu_percent=round(sum(v for k,v in cpu.items() if k!='idle'),1) if cpu else None
+     ram_total=sum(v for k,v in ram.items() if k in ('used','free','cached','buffers')) if ram else 0
+     ram_used=round(100*ram['used']/ram_total,1) if ram and 'used' in ram and ram_total>0 else None
+     network_kbps=round(sum(abs(v) for v in net.values()),1) if net else None
+     uptime_seconds=round(max(uptime.values())) if uptime else None
+     return self.send(200,{'source':'Netdata','available':any(v is not None for v in readings.values()),'cpu_percent':cpu_percent,'ram_percent':ram_used,'network_kbps':network_kbps,'uptime_seconds':uptime_seconds,'timestamp':int(time.time())})
     if path.startswith('/api/models/'):
      device_id=path[len('/api/models/'):]
      if not (1<=len(device_id)<=128 and all(ch.isalnum() or ch in '-_' for ch in device_id)):
