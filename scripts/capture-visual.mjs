@@ -11,8 +11,8 @@ try{
  const canvas=page.locator('canvas').first();
  const size=await canvas.boundingBox();
  if(!size||size.width<150||size.height<200)throw Error('Missing rack render viewport');
- if(failures.length)throw Error('Browser errors: '+failures.join('; '));
  await mkdir('visual-artifacts',{recursive:true});
  await page.screenshot({path:'visual-artifacts/rack-showcase.png',fullPage:true});
  console.log('Browser viewport rendered:',JSON.stringify(size));
+ if(failures.length)throw Error('Browser errors: '+failures.join('; '));
 }finally{await browser.close()}
