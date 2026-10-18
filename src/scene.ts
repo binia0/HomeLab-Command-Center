@@ -1,3 +1,4 @@
+import {routeRackCable,softenCablePath} from './3d/CableRouter';
 import {builtInNas} from './3d/built-in-nas';
 import {loadModelAsset,saveModelAsset} from './lib/model-assets';
 import {renderSingleBoardComputer} from './3d/SingleBoardComputer';
@@ -96,22 +97,24 @@ async function importGLB(file:File,id:string,persist:boolean){
 let cableMeshes:Mesh[]=[];
 function updateCables(connections:{a:string;b:string}[]){
  for(const mesh of cableMeshes)mesh.dispose();cableMeshes=[];
- const cablePalette=['#45c89a','#6e9fff','#e0a552','#b891e0','#d46578'];
+ const colors:{[kind:string]:string}={RJ45:'#38e4a0',POWER:'#f0a85e',HDMI:'#8d9dff',DisplayPort:'#8d9dff','USB-C':'#7fd0f1',USB:'#7fd0f1'};
+ const depth=Math.max(.25,Math.min(1.5,(cfg.depthMm??(cfg.width===10?450:800))/1000));
  for(const [i,link] of connections.entries()){
-  const endpoint=(key:string)=>{const separator=key.indexOf('/');if(separator<0)return null;const id=key.slice(0,separator),portid=key.slice(separator+1);const device=cfg.devices.find(d=>d.id===id),root=instances.get(id),port=device?.ports.find(p=>p.id===portid);if(!device||!root||!port)return null;root.computeWorldMatrix(true);const w=spacing(cfg.width),h=device.height*U-.006;const pos=Vector3.TransformCoordinates(new Vector3(Math.max(-w*.44,Math.min(w*.44,port.x*w*.87)),Math.max(-h*.37,Math.min(h*.37,port.y*h)),-.058),root.getWorldMatrix());return{pos,type:port.type}};
-  const aa=endpoint(link.a),bb=endpoint(link.b);if(!aa||!bb)continue;
-  const a=aa.pos,b=bb.pos,side=a.x<=b.x?-1:1;
-  const rear=a.z>0||b.z>0;
-  const routeZ=(rear?1:-1)*(Math.max(.25,(cfg.depthMm??600)/1000)/2+.10);
-  const gutterX=side*(spacing(cfg.width)/2+.10);
-  const steps=[a,a.add(new Vector3(0,0,(rear?1:-1)*.065)),new Vector3(gutterX,a.y-.045,routeZ),new Vector3(gutterX,Math.min(a.y,b.y)-.075,routeZ),new Vector3(gutterX,b.y-.045,routeZ),b.add(new Vector3(0,0,(rear?1:-1)*.065)),b];
-  const material=new StandardMaterial('cable insulation '+i,scene);material.diffuseColor=color(cablePalette[i%cablePalette.length]);material.specularColor=color('#93a8a1');material.emissiveColor=color('#07170f');
-  const curved=Vector3.CatmullRom(a,steps[1],steps[2],steps[3],.5);
-  const smooth=Vector3.CatmullRom(steps[2],steps[3],steps[4],steps[5],.5);
-  const path=[a,curved,steps[2],smooth,steps[4],steps[5],b];
-  const tube=MeshBuilder.CreateTube('cable '+i,{path,radius:.0026,tessellation:9,cap:3},scene);tube.material=material;tube.isPickable=false;cableMeshes.push(tube);
-  const plugMaterial=new StandardMaterial('cable plug '+i,scene);plugMaterial.diffuseColor=color('#242d2a');
-  for(const [j,p] of [a,b].entries()){const plug=MeshBuilder.CreateBox('plug '+i+' '+j,{width:.010,height:.009,depth:.018},scene);plug.position.copyFrom(p);plug.material=plugMaterial;plug.isPickable=false;cableMeshes.push(plug)}
+  const endpoint=(key:string)=>{const separator=key.indexOf('/');if(separator<0)return null;const id=key.slice(0,separator),portid=key.slice(separator+1),device=cfg.devices.find(d=>d.id===id),root=instances.get(id),port=device?.ports.find(p=>p.id===portid);if(!device||!root||!port)return null;
+   root.computeWorldMatrix(true);const w=spacing(cfg.width),h=device.height*U-.006;
+   const point=Vector3.TransformCoordinates(new Vector3(Math.max(-w*.44,Math.min(w*.44,port.x*w*.87)),Math.max(-h*.37,Math.min(h*.37,port.y*h)),-.055),root.getWorldMatrix());
+   return{point,face:device.mount==='rear'?'rear' as const:'front' as const,type:port.type};
+  };
+  const a=endpoint(link.a),b=endpoint(link.b);if(!a||!b)continue;
+  const routing=routeRackCable(a,b,spacing(cfg.width),depth,i%5);
+  const points=softenCablePath(routing,.012);
+  const material=new StandardMaterial('insulated cable '+i,scene);const shade=colors[a.type]||colors[b.type]||'#54bcd8';material.diffuseColor=color(shade);material.emissiveColor=color(shade).scale(.22);
+  const tube=MeshBuilder.CreateTube('routed cable '+i,{path:points,radius:.0028,tessellation:10,cap:3},scene);tube.material=material;tube.isPickable=false;cableMeshes.push(tube);
+  const plugMat=new StandardMaterial('connector shell '+i,scene);plugMat.diffuseColor=color('#23332a');
+  for(const [n,end] of [a,b].entries()){
+   const plug=MeshBuilder.CreateBox('cable plug '+i+'/'+n,{width:.011,height:.010,depth:.022},scene);
+   plug.position.copyFrom(end.point);plug.material=plugMat;plug.isPickable=false;cableMeshes.push(plug);
+  }
  }
 }
 
