@@ -1,3 +1,4 @@
+import {addRackPresentation} from './3d/RackPresentation';
 import {renderLcdPi} from './3d/LcdPiAssembly';
 import {routeRackCable,softenCablePath} from './3d/CableRouter';
 import {builtInNas} from './3d/built-in-nas';
@@ -12,7 +13,7 @@ export const U=.04445;export const spacing=(w:Width)=>w===10?.254:.4826;const gr
 export const demo:Config={width:10,units:20,devices:[{id:'router',name:'NETWORK GATEWAY',u:19,height:1,color:'#365969',ports:group(4)},{id:'switch1',name:'MANAGED SWITCH 01',u:17,height:1,color:'#253a42',ports:group(8)},{id:'switch2',name:'MANAGED SWITCH 02',u:16,height:1,color:'#253a42',ports:group(8)},{id:'switch3',name:'MANAGED SWITCH 03',u:15,height:1,color:'#253a42',ports:group(8)},{id:'patch',name:'12-PORT PATCH PANEL',u:13,height:1,color:'#334850',ports:group(12)},{id:'pis',name:'8 VERTICAL PI SLOTS',u:10,height:2,color:'#23504c',category:'holder',slots:Array.from({length:8},(_,i)=>({id:'slot-'+(i+1),name:'Pi '+(i+1),model:'',ip:'',occupied:i<4})),ports:[]},{id:'jetson',name:'2 JETSON SLOTS',u:7,height:2,color:'#345765',ports:[]},{id:'kvm',name:'2 JETKVM SLOTS',u:5,height:1,color:'#3e4c57',ports:[]},{id:'nas',name:'STORAGE ARRAY',u:1,height:3,color:'#364653',ports:[]}]};
 export const initial:Config={width:10,units:20,depthMm:600,devices:[]};
 const color=(s:string)=>Color3.FromHexString(s);
-export function build(canvas:HTMLCanvasElement,config:Config,onDevice:(id:string)=>void,onPort:(a:string)=>void){const eng=new Engine(canvas,true);eng.setHardwareScalingLevel(Math.min(2,Math.max(1,devicePixelRatio/1.5)));const scene=new Scene(eng);scene.clearColor=new Color4(.006,.013,.008,1);const cam=new ArcRotateCamera('camera',-Math.PI/2,Math.PI/2.06,1.72,new Vector3(0,.4,0),scene);cam.attachControl(canvas,true);cam.lowerRadiusLimit=.4;cam.upperRadiusLimit=6;cam.wheelPrecision=60;cam.minZ=.01;const cameraControl=new CameraController(cam);
+export function build(canvas:HTMLCanvasElement,config:Config,onDevice:(id:string)=>void,onPort:(a:string)=>void){const eng=new Engine(canvas,true);eng.setHardwareScalingLevel(Math.min(2,Math.max(1,devicePixelRatio/1.5)));const scene=new Scene(eng);scene.clearColor=new Color4(.006,.013,.008,1);const cam=new ArcRotateCamera('camera',-Math.PI/2,Math.PI/2.12,1.72,new Vector3(0,.4,0),scene);cam.attachControl(canvas,true);cam.lowerRadiusLimit=.4;cam.upperRadiusLimit=6;cam.wheelPrecision=60;cam.minZ=.01;const cameraControl=new CameraController(cam);
 const hemi=new HemisphericLight('soft ambient',new Vector3(0,1,0),scene);hemi.intensity=.72;
 const light=new DirectionalLight('large key',new Vector3(-.7,-1,.9),scene);light.intensity=1.55;light.diffuse=color('#f5f9ff');
 const rim=new DirectionalLight('edge rim',new Vector3(.8,-.4,-.7),scene);rim.intensity=.32;rim.diffuse=color('#c6e2f2');
@@ -28,7 +29,7 @@ for(const level of [0,Math.floor(c.units/2),c.units]){const yy=level*U;mk('rear 
 for(const side of [-1,1]){for(let k=0;k<4;k++){const y=H*(.12+k*.245);mk('brace mounting '+side+' '+k,.018,.014,D*.66,side*(W/2+.035),y,0,titanium,rack)}}
 for(const side of [-1,1])for(const depth of [-1,1])mk('rack leveling foot '+side+' '+depth,.046,.042,.046,side*W*.38,-.065,depth*D*.39,black,rack);
 for(let k=0;k<c.units;k+=2){const yy=k*U+.007;mk('fine engraved unit guide '+k,.002,.003,.006,-W/2-.046,yy,-D/2-.032,screw,rack)}
-mk('top frame',W+.14,.031,D+.09,0,H+.012,0,steel,rack);mk('roof inlay',W+.105,.005,D+.05,0,H+.031,0,shadow,rack);mk('bottom frame',W+.12,.023,D+.05,0,0,0,steel,rack);addPrecisionRackFixtures(scene,rack,W,H,D,c.units);/* Open back: no rear panel hiding rear-mounted modules. */
+mk('top frame',W+.14,.031,D+.09,0,H+.012,0,steel,rack);mk('roof inlay',W+.105,.005,D+.05,0,H+.031,0,shadow,rack);mk('bottom frame',W+.12,.023,D+.05,0,0,0,steel,rack);addPrecisionRackFixtures(scene,rack,W,H,D,c.units);addRackPresentation(scene,rack,W,H,D,c.units);/* Open back: no rear panel hiding rear-mounted modules. */
 for(const d of c.devices){const h=d.height*U-.006,y=(d.u-1)*U+h/2+.008;if(y>H||y<0)continue;const root=new TransformNode('device '+d.id,scene);const isRear=d.mount==='rear';const host=d.hostDeviceId?c.devices.find(item=>item.id===d.hostDeviceId):undefined;const panel=d.panelId?c.devices.find(item=>item.id===d.panelId):undefined;const attachedSlot=panel?.slots?.find(slot=>slot.id===d.slotId);const slotIndex=attachedSlot&&panel?.slots?panel.slots.indexOf(attachedSlot):-1;const cols=panel?.slots?.length?Math.max(1,Math.min(panel.slots.length,panel.slotColumns||panel.slots.length)):1;const rows=panel?.slots?.length?Math.ceil(panel.slots.length/cols):1;const slotCol=slotIndex>=0?slotIndex%cols:0,slotRow=slotIndex>=0?Math.floor(slotIndex/cols):0;const panelHeight=panel?(panel.height*U-.006):h;const slotX=panel&&attachedSlot?(-W*.4+(slotCol+.5)*W*.8/cols+(attachedSlot.offsetXmm||0)/1000):0;const slotY=panel&&attachedSlot?((panel.u-1)*U+panelHeight/2+.008+panelHeight*.38-(slotRow+.5)*panelHeight*.76/rows+(attachedSlot.offsetYmm||0)/1000):y;const hostY=host?(host.u-1)*U+(host.height*U-.006)/2+.008:y;root.position.set(slotX,panel&&attachedSlot?slotY:(host?hostY:y),isRear?D/2+.01:-D/2-.01);if(isRear)root.rotation.y=Math.PI;root.parent=rack;root.metadata={id:d.id};instances.set(d.id,root);const face=material('face '+d.id,d.color);/* Full-depth equipment chassis with vents, handles and mounting details. */
 const enclosureDepth=Math.min(D-.05,Math.max(.035,(d.depthMm??(d.category==='server'?650:d.category==='storage'?450:180))/1000));const sideBody=material('chassis '+d.id,'#273744');
 mk('enclosure body '+d.id,Math.min(W*.88,(d.widthMm||W*880)/1000),h*.83,enclosureDepth,0,0,enclosureDepth*.5+.005,sideBody,root,d.id);
@@ -59,7 +60,7 @@ if(d.slots?.length){const count=d.slots.length;const columns=Math.max(1,Math.min
 drawEquipmentDetail(scene,root,d.category,d.id,W,h,mk);
 
 if(d.category==='ai'||d.category==='kvm')for(const s of [-1,1])mk('module',W*.34,h*.7,.012,s*W*.23,0,-.037,steel,root,d.id);
-}cam.setTarget(new Vector3(0,H/2,0));cam.radius=Math.max(.92,H*1.42)}
+}cam.setTarget(new Vector3(0,H/2,0));cam.radius=Math.max(.98,H*1.6)}
 
 let restoreRevision=0;
 async function restoreModels(){
