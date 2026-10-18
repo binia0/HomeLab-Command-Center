@@ -101,6 +101,7 @@ class Handler(BaseHTTPRequestHandler):
       c.execute('UPDATE builds SET name=?,data=?,updated=? WHERE id=? AND user_id=?',(name,json.dumps(payload),int(time.time()),bid,current['id']))
       return self.send(200,{'id':bid})
      if method=='DELETE':
+      c.execute('DELETE FROM build_revisions WHERE build_id=? AND user_id=?',(bid,current['id']))
       c.execute('DELETE FROM builds WHERE id=? AND user_id=?',(bid,current['id']))
       return self.send(200,{'deleted':True})
     if path.startswith('/api/revisions/') and method=='GET':
