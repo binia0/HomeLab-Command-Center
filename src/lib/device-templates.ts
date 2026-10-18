@@ -1,3 +1,4 @@
+import {newId} from './ids';
 import type {Device,Port} from '../scene';
 export type Template={id:string;name:string;manufacturer:string;model:string;category:string;color:string;ports:Port[];imageData?:string};
 const jack=(name:string,type:string,x:number,y=0):Port=>({id:name,type,x,y,z:-1});
@@ -9,6 +10,6 @@ export const starterTemplates:Template[]=[
 {id:'display',name:'Rack Display',manufacturer:'Custom',model:'LCD / Touchscreen',category:'display',color:'#2c4355',ports:[jack('hdmi','HDMI',-.15),jack('power','USB-C',.23)]},
 {id:'switch8',name:'8-Port Ethernet Switch',manufacturer:'Generic',model:'8-Port Switch',category:'switch',color:'#243d4a',ports:Array.from({length:8},(_,i)=>jack('lan'+(i+1),'RJ45',-.40+i*.11))}
 ];
-export function instantiateTemplate(t:Template,u=1):Device{return{id:'device-'+crypto.randomUUID(),name:t.name,u,height:1,color:t.color,mount:'front',category:t.category,manufacturer:t.manufacturer,model:t.model,templateId:t.id,imageData:t.imageData,ports:t.ports.map(p=>({...p}))}}
+export function instantiateTemplate(t:Template,u=1):Device{return{id:newId('device'),name:t.name,u,height:1,color:t.color,mount:'front',category:t.category,manufacturer:t.manufacturer,model:t.model,templateId:t.id,imageData:t.imageData,ports:t.ports.map(p=>({...p}))}}
 export function loadTemplates():Template[]{try{const raw=localStorage.getItem('hcc-device-templates-v1');const parsed=raw?JSON.parse(raw):[];return [...starterTemplates,...(Array.isArray(parsed)?parsed:[])].filter(v=>v&&typeof v.id==='string'&&typeof v.name==='string')}catch{return [...starterTemplates]}}
 export function saveCustomTemplate(template:Template){const custom=loadTemplates().filter(t=>!starterTemplates.some(s=>s.id===t.id));localStorage.setItem('hcc-device-templates-v1',JSON.stringify([...custom,template]))}
