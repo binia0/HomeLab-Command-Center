@@ -16,12 +16,12 @@ The project is a working prototype, **not yet a verified v1.0 release**.
 - [x] GitHub Actions backend smoke-test workflow
 
 ## Priority 1 — release blockers
-- [ ] Confirm successful frontend build and Python tests on latest commit
+- [ ] Confirm successful frontend build and Python tests on latest commit (local checkout blocked by unavailable GitHub DNS; CI results not independently verified)
 - [ ] Test on real low-memory Raspberry Pi: deployment, camera, models, links, permissions
 - [ ] Verify external volume backup AND tested SQLite/GLB recovery
 - [ ] Replace username-only profiles with verified authentication and secure migration
 - [ ] Prevent orphaned GLBs after bulk rack changes and cross-device model ID conflicts
-- [ ] Accurate real-model port locations, connector raycasts and transform gizmos
+- [ ] Accurate real-model port locations, connector raycasts and transform gizmos (current numeric port XYZ mapping is partial)
 - [ ] Resolve model placement/fit for side-by-side independent SBCs and nested slots
 
 ## Priority 2 — functionality
@@ -32,7 +32,8 @@ The project is a working prototype, **not yet a verified v1.0 release**.
 - [ ] License-aware model discovery/import without unattended third-party downloads
 
 ## Priority 3 — polish
-- [ ] Device search/filter and better keyboard/mobile ergonomics
+- [x] Device name/manufacturer/model/IP search in left equipment panel
+- [ ] Better keyboard/mobile ergonomics
 - [ ] End-to-end interaction and regression tests
 - [ ] Measure Babylon memory and frame times on the target Pi
 - [ ] Accessibility, German UI wording and performance tuning
