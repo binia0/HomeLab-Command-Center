@@ -53,7 +53,7 @@ for(const p of d.ports){const px=Math.max(-W*.44,Math.min(W*.44,p.x*W*.87)),py=M
 if(d.slots?.length){const count=d.slots.length;const columns=Math.max(1,Math.min(count,d.slotColumns||count));const rows=Math.ceil(count/columns);for(let i=0;i<count;i++){const slot=d.slots[i];const col=i%columns,row=Math.floor(i/columns);const xSlot=-W*.4+(col+.5)*W*.8/columns+(slot.offsetXmm||0)/1000;const ySlot=h*.38-(row+.5)*h*.76/rows+(slot.offsetYmm||0)/1000;const slotRoot=new TransformNode('slot '+slot.id,scene);slotRoot.parent=root;slotRoot.position.set(xSlot,ySlot,0);slotRoot.rotation.z=(slot.rotationDeg||0)*Math.PI/180;mk('slot mounting rail '+i,W*.8/columns*.83,h*.8/rows*.85,.008,0,0,-.039,steel,slotRoot,d.id);if(slot.occupied){mk('slot PCB '+i,W*.7/columns,h*.64/rows,.014,0,0,-.053,green,slotRoot,d.id);mk('slot CPU '+i,W*.32/columns,h*.20/rows,.005,0,-h*.09/rows,-.063,black,slotRoot,d.id);mk('slot GPIO '+i,W*.48/columns,h*.035/rows,.005,0,h*.22/rows,-.062,copper,slotRoot,d.id)}else{mk('empty slot '+i,W*.58/columns,h*.42/rows,.004,0,0,-.051,shadow,slotRoot,d.id)}}}
 
 drawEquipmentDetail(scene,root,d.category,d.id,W,h,mk);
-if(d.category!=='display'&&!d.imageData&&!d.slots?.length)addHardwareFace(scene,root,d,W,h);
+if(d.category!=='display'&&d.category!=='sbc'&&!d.imageData&&!d.slots?.length)addHardwareFace(scene,root,d,W,h);
 if(d.category==='ai'||d.category==='kvm')for(const s of [-1,1])mk('module',W*.34,h*.7,.012,s*W*.23,0,-.037,steel,root,d.id);
 }cam.setTarget(new Vector3(0,H/2,0));cam.radius=Math.max(.92,H*1.42)}
 
