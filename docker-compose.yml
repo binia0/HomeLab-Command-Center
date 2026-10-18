@@ -14,6 +14,8 @@ services:
   api:
     build: ./server
     restart: unless-stopped
+    environment:
+      HCC_NETDATA_SOURCES: ${HCC_NETDATA_SOURCES:-{}}
     volumes:
       - rack_data:/data
     mem_limit: 128m
