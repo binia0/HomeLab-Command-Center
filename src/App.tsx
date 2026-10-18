@@ -9,13 +9,23 @@ useEffect(()=>{if(!canvas.current)return;const h=build(canvas.current,config,id=
 const createDisplayAssembly=()=>{const result=createLcdPiAssembly(config,assemblyName,newId('lcd-pi'));if(!result.ok){setAssemblyError(result.error);return}setConfig(v=>({...v,devices:[...v.devices,result.device]}));setSel(result.device.id);setShowAssembly(false);setAssemblyHost('');setAssemblyError('');setStatus('Ein gemeinsames LCD+Raspberry-Pi-Bauteil an U'+result.device.u+' montiert')};
 const loadShowcaseRack=()=>{if(config.devices.length&&!window.confirm('Dieses Showcase ersetzt deinen aktuellen lokalen Rack-Arbeitsstand. Bitte vorher über „Rack exportieren“ sichern. Fortfahren?'))return;
 const jack=(id:string,type:string,x:number):Port=>({id,type,x,y:0,z:-1});
-const showcase:Config={width:19,units:20,depthMm:800,devices:[
-{id:'showcase-nas',name:'Compact 4U NAS / 4 Bays',u:2,height:4,category:'storage',manufacturer:'Custom',model:'4U 4-Bay NAS',templateId:'rack-nas-4u',widthMm:282,depthMm:220,color:'#26342b',ports:[jack('eth0','RJ45',-.28),jack('eth1','RJ45',-.13),jack('power','POWER',.30)]},
-{id:'showcase-server',name:'2U Rack Server',u:8,height:2,category:'server',manufacturer:'Custom',model:'19-inch 2U server',widthMm:440,depthMm:650,color:'#24312a',ports:[jack('eth0','RJ45',-.29),jack('eth1','RJ45',-.10),jack('power','POWER',.29)]},
-{id:'showcase-switch',name:'8-Port Gigabit Switch',u:14,height:1,category:'switch',manufacturer:'Custom',model:'8-Port Managed',widthMm:440,depthMm:240,color:'#1c3328',ports:Array.from({length:8},(_,i)=>jack('lan'+(i+1),'RJ45',-.42+i*.12))},
-{id:'showcase-display',name:'LCD + Raspberry Pi',u:17,height:2,category:'lcd-pi',manufacturer:'Raspberry Pi',model:'LCD / Pi Assembly',widthMm:195,depthMm:95,color:'#183629',ports:[jack('eth0','RJ45',.18),jack('power','USB-C',.35)]}
+const showcase:Config={width:19,units:24,depthMm:800,devices:[
+{id:'showcase-ups',name:'Rack UPS 2U',u:1,height:2,category:'power',manufacturer:'Custom',model:'Rack UPS',widthMm:440,depthMm:500,color:'#242d3b',ports:[jack('input','POWER',-.25),jack('output','POWER',.25)]},
+{id:'showcase-nas',name:'8-Bay NAS Storage',u:4,height:3,category:'storage',manufacturer:'Custom',model:'8-Bay Storage',widthMm:440,depthMm:500,color:'#26313f',ports:[jack('eth0','RJ45',-.27),jack('power','POWER',.30)]},
+{id:'showcase-server',name:'2U Rack Server',u:8,height:3,category:'server',manufacturer:'Custom',model:'Rack Server',widthMm:440,depthMm:650,color:'#253343',ports:[jack('eth0','RJ45',-.30),jack('power','POWER',.29)]},
+{id:'showcase-pis',name:'4 Raspberry Pis + Rack LCD',u:12,height:5,category:'pi-cluster',manufacturer:'Raspberry Pi',model:'4x SBC with Telemetry LCD',widthMm:440,depthMm:190,color:'#172735',ports:[jack('eth1','RJ45',-.32),jack('eth2','RJ45',-.14),jack('eth3','RJ45',.04),jack('eth4','RJ45',.21),jack('lcd','HDMI',.36),jack('power','POWER',.42)]},
+{id:'showcase-switch-secondary',name:'24 Port Network Switch',u:18,height:1,category:'switch',manufacturer:'Custom',model:'24 Port Managed Network Switch',widthMm:440,depthMm:270,color:'#1a2736',ports:Array.from({length:16},(_,i)=>jack('lan'+(i+1),'RJ45',-.42+i*.056))},
+{id:'showcase-switch',name:'24 Port Core Switch',u:21,height:1,category:'switch',manufacturer:'Custom',model:'24 Port Core Network',widthMm:440,depthMm:270,color:'#182838',ports:Array.from({length:16},(_,i)=>jack('lan'+(i+1),'RJ45',-.42+i*.056))}
 ]};
-setConfig(showcase);setCables([{a:'showcase-switch/lan1',b:'showcase-display/eth0'},{a:'showcase-switch/lan2',b:'showcase-nas/eth0'},{a:'showcase-switch/lan3',b:'showcase-server/eth0'},{a:'showcase-switch/lan4',b:'showcase-nas/eth1'}]);setUrls({});setSel('');setFace('front');setFirst('');setMode('SELECT');setStatus('Showcase-Rack geladen · 4 Geräte · 4 Verbindungen · echtes 4U NAS-Modell');};
+setConfig(showcase);setCables([
+{a:'showcase-switch/lan1',b:'showcase-pis/eth1'},
+{a:'showcase-switch/lan2',b:'showcase-pis/eth2'},
+{a:'showcase-switch/lan3',b:'showcase-pis/eth3'},
+{a:'showcase-switch/lan4',b:'showcase-pis/eth4'},
+{a:'showcase-switch/lan5',b:'showcase-server/eth0'},
+{a:'showcase-switch/lan6',b:'showcase-nas/eth0'},
+{a:'showcase-switch/lan7',b:'showcase-switch-secondary/lan1'}
+]);setUrls({});setSel('');setFace('front');setFirst('');setMode('SELECT');setStatus('Referenz-Showcase geladen · 6 Geräte · 7 farbige Kabel · 4 Pis + LCD');};
 const exportRack=()=>{const data={format:'homelab-rack-v1',exportedAt:new Date().toISOString(),rack:config,cables,services:urls};const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='homelab-rack-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(url);setStatus('Rack exportiert · JSON-Backup gespeichert')};
 const[telemetry,setTelemetry]=useState<{available:boolean;cpu_percent:number|null;ram_percent:number|null;network_kbps?:number|null;uptime_seconds?:number|null;timestamp:number;source:string}|null>(null);
 useEffect(()=>{const device=config.devices.find(d=>d.id===sel);if(!device?.ip){setTelemetry(null);return}let alive=true;const load=async()=>{try{const response=await fetch('/api/telemetry?host='+encodeURIComponent(device.ip||''),{credentials:'same-origin'});const data=await response.json();if(alive)setTelemetry(response.ok?data:{available:false,cpu_percent:null,ram_percent:null,timestamp:0,source:'Netdata'})}catch{if(alive)setTelemetry({available:false,cpu_percent:null,ram_percent:null,timestamp:0,source:'Netdata'})}};setTelemetry(null);void load();const timer=window.setInterval(()=>void load(),15000);return()=>{alive=false;window.clearInterval(timer)}},[sel,config.devices]);
