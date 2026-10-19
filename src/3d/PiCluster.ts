@@ -3,7 +3,7 @@ import {Scene,TransformNode,MeshBuilder,PBRMaterial,Color3,StandardMaterial,Dyna
 /** Four vertically edge-mounted Pi boards: PCB planes run along rack depth.
  * The forward network and USB cages are at negative Z; the boards are not front-facing stickers.
  */
-export function renderPiCluster(scene:Scene,root:TransformNode,id:string,rackWidth:number,rackHeight:number,ethernetPositions:number[]=[]){
+export function renderPiCluster(scene:Scene,root:TransformNode,id:string,rackWidth:number,rackHeight:number,ethernetPositions:number[]=[],ethernetIds:string[]=[]){
  const paint=(name:string,hex:string,metallic=.3,emissive=false)=>{
   const m=new PBRMaterial(id+' '+name,scene);m.albedoColor=Color3.FromHexString(hex);
   m.metallic=metallic;m.roughness=metallic>.7?.34:.62;
@@ -14,13 +14,14 @@ export function renderPiCluster(scene:Scene,root:TransformNode,id:string,rackWid
  const silicon=paint('chips','#172228',.28),nickel=paint('connector shields','#98a6ad',.82);
  const sockets=paint('dark sockets','#0c151e',.2),blue=paint('blue USB cores','#225a9b',.2);
  const gold=paint('gold pins','#d4b36a',.8),led=paint('activity LED','#26d99f',.1,true);
+ let boardRoot:TransformNode|null=null,boardX=0;
  const box=(name:string,w:number,h:number,d:number,x:number,y:number,z:number,mat:PBRMaterial)=>{
   const mesh=MeshBuilder.CreateBox(id+' '+name,{width:w,height:h,depth:d},scene);
-  mesh.parent=root;mesh.position.set(x,y,z);mesh.material=mat;mesh.metadata={id};
+  mesh.parent=boardRoot||root;mesh.position.set(boardRoot?x-boardX:x,y,z);mesh.material=mat;mesh.metadata={id};
   return mesh;
  };
  const bayW=Math.min(rackWidth*.85,.415),bayH=Math.min(rackHeight*.84,.19);
- const boardH=Math.min(.057,bayH*.73),boardD=.085,boardFront=-.113,boardBack=boardFront+boardD;
+ const boardH=Math.min(.057,bayH*.73),boardD=.085,boardFront=-.086,boardBack=boardFront+boardD;
  box('open bottom carrier',bayW,.006,.126,0,-bayH*.44,-.054,frame);
  box('backplate rails',bayW,.009,.016,0,bayH*.40,-.027,frame);
  for(const side of [-1,1]){
@@ -32,6 +33,8 @@ export function renderPiCluster(scene:Scene,root:TransformNode,id:string,rackWid
  const xs=ethernetPositions.length>=4?ethernetPositions.slice(0,4):standard;
  for(let i=0;i<4;i++){
   const x=Math.max(-bayW*.44,Math.min(bayW*.44,xs[i]));
+  boardRoot=new TransformNode('pi-port-carrier:'+id+':'+(ethernetIds[i]||'lan'+i),scene);
+  boardRoot.parent=root;boardRoot.position.x=x;boardX=x;
   box('vertical Pi PCB '+(i+1),.002,boardH,boardD,x,0,(boardFront+boardBack)/2,pcb);
   for(const dy of [-1,1]){
    box('board standoff '+i+' '+dy,.014,.007,.014,x,-boardH*.5+(.006+(.5+dy*.5)*(boardH-.012)),-.041,frame);
@@ -52,6 +55,7 @@ export function renderPiCluster(scene:Scene,root:TransformNode,id:string,rackWid
    box('forward USB socket '+i+' '+n,.012,.006,.002,x,-boardH*.05-n*.012,boardFront-.014,blue);
   }
   box('Pi activity light '+i,.004,.004,.004,x,boardH*.38,boardFront-.012,led);
+  boardRoot=null;
  }
  const screenW=bayW*.23,screenH=Math.min(bayH*.50,.095),screenX=bayW*.375;
  box('monitor case',screenW,screenH,.015,screenX,0,-.091,frame);
