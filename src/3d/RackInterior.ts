@@ -29,14 +29,24 @@ export function buildRackInterior(scene:Scene,root:TransformNode,w:number,h:numb
    stage('cable management carrier '+side+' '+level,.018,.008,depth*.26,side*w*.44,y,-depth*.20,rib);
   }
  }
- // Structural shelves occur only in empty rack units, not intersecting the installed devices.
+ // Occupancy uses actual U intervals: no shelf, tie bar, or trim may cut through hardware.
  const unit=.04445,units=Math.round(h/unit);
+ const occupiedAt=(u:number)=>occupied.some(d=>u>=d.u-1&&u<d.u-1+d.height);
  for(let u=1;u<units;u++){
-  if(occupied.some(d=>u>=d.u-1&&u<=d.u-1+d.height))continue;
+  if(occupiedAt(u-1)||occupiedAt(u))continue;
   if(u%3!==0)continue;
   const y=u*unit;
-  stage('recessed horizontal interior tray '+u,w*.80,.003,depth*.72,0,y,depth*.065,graphite);
-  stage('tray steel forward edge '+u,w*.80,.003,.007,0,y,-depth*.30,aluminum);
+  stage('free bay interior tray '+u,w*.78,.003,depth*.64,0,y,depth*.09,graphite);
+  stage('free bay rolled front edge '+u,w*.78,.004,.011,0,y,-depth*.265,aluminum);
+  for(const side of [-1,1])
+   stage('free bay shelf side gusset '+side+' '+u,.009,.022,depth*.36,side*w*.39,y-.014,depth*.08,aluminum);
+ }
+ // Recessed side-to-side support rails physically sit BEHIND every installed front.
+ // This preserves a spacious silhouette and visible machine depth from an angled camera.
+ for(const side of [-1,1]){
+  stage('interior lower vertical inner rail '+side,.012,h*.9,.016,side*w*.40,h*.5,depth*.19,aluminum);
+  stage('interior longitudinal rack runner '+side,.013,.012,depth*.86,side*w*.40,h*.09,.012,graphite);
+  stage('interior ceiling rack runner '+side,.013,.012,depth*.86,side*w*.40,h*.91,.012,graphite);
  }
  // Practical work light is inside the cage; it changes the entire 3D depth impression.
  for(const side of [-1,1]){
