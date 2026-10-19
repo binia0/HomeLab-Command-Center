@@ -159,4 +159,53 @@ export function drawEquipmentDetail(scene:Scene,root:TransformNode,category:stri
   draw('display lower metal chin',width*.91,height*.055,.007,0,-height*.43,-.086,housing,root,id);
   draw('display illuminated power button',.006,.006,.010,width*.388,-height*.422,-.094,cyan,root,id);
  }
+ // Non-rectilinear hardware: grilles, actual circular fasteners and fan impellers.
+ // All meshes share the device root so device rotation and selection remain correct.
+ const detailMetal=mat('precision stamped hardware','#8397a5');
+ const fanVoid=mat('circular ventilation recess','#0a111b');
+ const blade=mat('fan blades','#364958');
+ const cylindrical=(name:string,r:number,depth:number,x:number,y:number,z:number,m:PBRMaterial)=>{
+  const mesh=MeshBuilder.CreateCylinder(id+' '+name,{diameter:r*2,height:depth,tessellation:32},scene);
+  mesh.rotation.x=Math.PI/2;mesh.position.set(x,y,z);mesh.parent=root;
+  mesh.material=m;mesh.metadata={id};mesh.isPickable=false;return mesh;
+ };
+ if(['server','storage','power','network','switch'].includes(category||'')){
+  for(const x of [-width*.385,width*.385]){
+   cylindrical('sunken captive screw '+x,.004,.0019,x,height*.36,-.113,detailMetal);
+   draw('screw driver slot '+x,.0045,.00065,.0007,x,height*.36,-.115,fanVoid,root,id);
+  }
+ }
+ if(category==='server'||category==='power'){
+  const fanCount=category==='server'?3:2;
+  for(let i=0;i<fanCount;i++){
+   const x=(i-(fanCount-1)/2)*width*.17,y=category==='server'?-height*.29:height*.10;
+   const r=Math.min(height*.13,width*.043);
+   cylindrical('round cooling intake '+i,r,.0015,x,y,-.111,fanVoid);
+   cylindrical('round fan hub '+i,r*.24,.002,x,y,-.115,detailMetal);
+   for(let n=0;n<7;n++){
+    const angle=n*Math.PI*2/7;
+    const bx=x+Math.cos(angle)*r*.56,by=y+Math.sin(angle)*r*.56;
+    const b=draw('angled fan vane '+i+' '+n,r*.42,r*.18,.001,bx,by,-.114,blade,root,id);
+    // Existing draw factory returns a pickable Babylon mesh.
+    if(b&&typeof b==='object'&&'rotation' in b)(b as {rotation:{z:number}}).rotation.z=angle+.42;
+   }
+  }
+ }
+ if(category==='storage'){
+  // Rounded latch finger-holes distinguish removable NAS trays from a tiled facade.
+  for(let i=0;i<8;i++){
+   const x=(i-3.5)*width*.095;
+   cylindrical('recessed eject finger cup '+i,Math.min(height*.027,width*.010),.0014,x,-height*.30,-.114,fanVoid);
+   cylindrical('drive lock indicator '+i,.002,.0019,x,height*.23,-.111,i%2?led:orange);
+  }
+ }
+ if(category==='switch'||category==='network'){
+  const count=networkPortXs.length?networkPortXs.length:8;
+  for(let i=0;i<Math.min(24,count);i++){
+   const x=networkPortXs[i]??((i-(count-1)/2)*width*.7/count);
+   if(Math.abs(x)>width*.45)continue;
+   for(let pin=0;pin<8;pin++)draw('recessed RJ45 contact '+i+' '+pin,.00055,.003,.001,x+(pin-3.5)*.00175,height*.045,-.110,detailMetal,root,id);
+  }
+ }
+
 }
