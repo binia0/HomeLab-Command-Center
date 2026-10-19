@@ -163,7 +163,14 @@ async function importGLB(file:File,id:string,persist:boolean){
   // The supplied 4U NAS asset has its detailed drive bays on local +Z.
   // Babylon's rack front points toward -Z, so face the bays toward the viewer.
   if(!persist&&device?.templateId==='rack-nas-4u')node.rotation.y=Math.PI;
-  if(persist){await saveModelAsset(id,file);try{const response=await fetch('/api/models/'+encodeURIComponent(id),{method:'POST',body:file,headers:{'Content-Type':'model/gltf-binary'},credentials:'same-origin'});if(!response.ok)console.warn('Remote GLB save unavailable:',response.status)}catch(error){console.warn('Remote GLB save unavailable',error)}}
+  if(persist){
+    // Save a local copy regardless of login; never claim the server stored it unless confirmed.
+    await saveModelAsset(id,file);
+    try{
+      const response=await fetch('/api/models/'+encodeURIComponent(id),{method:'POST',body:file,headers:{'Content-Type':'model/gltf-binary'},credentials:'same-origin'});
+      if(!response.ok)console.warn('GLB only stored in this browser; remote save returned HTTP '+response.status);
+    }catch(error){console.warn('GLB only stored in this browser; remote save unavailable',error)}
+  }
  }finally{URL.revokeObjectURL(url)}
 }
 let cableMeshes:Mesh[]=[];
