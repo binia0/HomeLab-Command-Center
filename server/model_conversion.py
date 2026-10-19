@@ -36,3 +36,19 @@ def stl_to_glb(raw:bytes)->bytes:
     vertices+=bytes([0]) *((-len(vertices))%4)
     length=12+8+len(header)+8+len(vertices)
     return struct.pack('<4sII',b'glTF',2,length)+struct.pack('<I4s',len(header),b'JSON')+header+struct.pack('<I4s',len(vertices),b'BIN'+bytes([0]))+vertices
+
+def step_to_glb(raw:bytes)->bytes:
+    """Tessellate STEP through the Gmsh OpenCASCADE kernel in an isolated child process."""
+    import subprocess,tempfile,pathlib,sys
+    with tempfile.TemporaryDirectory(prefix='hcc-step-') as folder:
+        source=pathlib.Path(folder)/'part.step'
+        output=pathlib.Path(folder)/'mesh.stl'
+        source.write_bytes(raw)
+        command=['/usr/bin/python3',str(pathlib.Path(__file__).with_name('step_worker.py')),str(source),str(output)]
+        try:
+            result=subprocess.run(command,capture_output=True,text=True,timeout=90,check=False)
+        except (OSError,subprocess.TimeoutExpired) as exc:
+            raise ValueError('STEP-Konvertierung nicht verfügbar oder Zeitlimit überschritten') from exc
+        if result.returncode or not output.exists():
+            raise ValueError('STEP-Tessellierung fehlgeschlagen: '+result.stderr[-350:])
+        return stl_to_glb(output.read_bytes())
