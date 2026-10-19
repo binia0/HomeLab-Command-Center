@@ -29,7 +29,7 @@ export function build(canvas:HTMLCanvasElement,config:Config,onDevice:(id:string
 const hemi=new HemisphericLight('soft ambient',new Vector3(0,1,0),scene);hemi.intensity=.83;
 const light=new DirectionalLight('large key',new Vector3(-.7,-1,.9),scene);light.intensity=1.8;light.diffuse=color('#dcecff');const rackShadows=new ShadowGenerator(1024,light);rackShadows.usePercentageCloserFiltering=true;rackShadows.bias=.0008;
 const rim=new DirectionalLight('edge rim',new Vector3(.8,-.4,-.7),scene);rim.intensity=.66;rim.diffuse=color('#459afa');
-const material=(n:string,c:string)=>{const m=new PBRMaterial(n,scene);m.albedoColor=color(c);m.metallic=.75;m.roughness=.31;return m};const black=material('dark','#080d0c'),steel=material('steel','#202c3a'),accent=material('accent','#1475c6'),shadow=material('recess','#020604'),titanium=material('titanium','#596c81'),screw=material('screw','#98a8ba');let rack:TransformNode|null=null;let instances=new Map<string,TransformNode>();let cfg=config;
+const material=(n:string,c:string)=>{const m=new PBRMaterial(n,scene);m.albedoColor=color(c);m.metallic=.75;m.roughness=.31;return m};const black=material('dark','#080d0c'),steel=material('steel','#202c3a'),accent=material('accent','#1475c6'),shadow=material('recess','#020604'),titanium=material('titanium','#596c81'),screw=material('screw','#98a8ba');let hasFramedRack=false;let rack:TransformNode|null=null;let instances=new Map<string,TransformNode>();let cfg=config;
 const mk=(n:string,w:number,h:number,d:number,x:number,y:number,z:number,mat:PBRMaterial,parent:TransformNode,id?:string,port?:string)=>{const b=MeshBuilder.CreateBox(n,{width:w,height:h,depth:d},scene);b.position.set(x,y,z);b.material=mat;b.parent=parent;b.receiveShadows=true;if(/^(enclosure body|top frame|bottom frame|front steel rail|rear steel rail|side panel|plinth|chassis handle)/.test(n))rackShadows.addShadowCaster(b);if(id)b.metadata={id,port};return b};
 function redraw(c:Config){cfg=c;if(rack)rack.dispose(false,true);for(const mesh of cableMeshes)mesh.dispose();cableMeshes=[];rack=new TransformNode('rack',scene);instances=new Map();const W=spacing(c.width),H=c.units*U,D=Math.max(.25,Math.min(1.5,(c.depthMm??(c.width===10?450:800))/1000)),x=W/2+.024;
 const floorMat=material('matte showroom floor','#202b35');floorMat.metallic=.18;floorMat.roughness=.88;
@@ -115,7 +115,7 @@ if(d.slots?.length&&visualCategory!=='pi-cluster'){const count=d.slots.length;co
 if(visualCategory!=='pi-cluster')drawEquipmentDetail(scene,root,visualCategory,d.id,W,h,mk,d.ports.filter(p=>p.type==='RJ45').map(p=>p.x));
 
 if(d.category==='ai'||d.category==='kvm')for(const s of [-1,1])mk('module',W*.34,h*.7,.012,s*W*.23,0,-.037,steel,root,d.id);
-}cameraControl.home(H,D)}
+}if(!hasFramedRack){cameraControl.home(H,D);hasFramedRack=true}}
 
 let restoreRevision=0;
 async function restoreModels(){
