@@ -76,15 +76,30 @@ export function drawEquipmentDetail(scene:Scene,root:TransformNode,category:stri
   for(let i=0;i<3;i++)draw('device indicator '+i,.0045,.0045,.011,width*.16+i*.012,-height*.17,-.085,i===2?orange:led,root,id);
  }
  if(category==='power'){
-  // UPS and PDU face: vented steel, control screen and recessed power channels.
-  const frame=mat('UPS brushed chassis','#303d4e');
-  const display=mat('UPS LCD lit','#095e9d');display.emissiveColor=Color3.FromHexString('#0b4d86');
-  const vent=mat('UPS grille shadow','#060d19');
-  draw('power unit structural bezel',width*.89,height*.82,.010,0,0,-.073,frame,root,id);
-  draw('power unit illuminated diagnostic',width*.22,height*.38,.008,-width*.18,0,-.084,display,root,id);
-  for(let i=0;i<3;i++)draw('power unit status row '+i,width*.14,height*.023,.010,-width*.18,height*(.105-i*.095),-.091,i===0?led:dark,root,id);
-  for(let i=0;i<9;i++)draw('power unit vent '+i,width*.018,height*.55,.012,width*(.06+i*.034),0,-.084,vent,root,id);
-  for(let side of [-1,1])draw('power unit screw '+side,.008,.008,.009,side*width*.41,0,-.082,metal,root,id);
+  // Distinct 2U UPS front with a projecting LCD control bay and two recessed vents.
+  const caseMat=mat('UPS powder coated steel','#202a3a');
+  const edge=mat('UPS metallic edge','#687c8f');
+  const shadow=mat('UPS deep mesh','#050a12');
+  const screen=mat('UPS powered LCD','#075286');
+  const green=mat('UPS online LED','#23cd8e');
+  screen.emissiveColor=Color3.FromHexString('#084c86');
+  green.emissiveColor=Color3.FromHexString('#159766');
+  draw('UPS broad dark steel bezel',width*.87,height*.83,.014,0,0,-.074,caseMat,root,id);
+  for(const side of [-1,1]){
+   const x=side*width*.265;
+   draw('UPS recessed air intake '+side,width*.245,height*.58,.010,x,0,-.086,shadow,root,id);
+   for(let i=0;i<10;i++)draw('UPS horizontal grille '+side+' '+i,width*.215,.0028,.011,x,(i-4.5)*height*.049,-.093,edge,root,id);
+   draw('UPS inlet bordering bar '+side,width*.260,.004,.012,x,height*.32,-.088,edge,root,id);
+  }
+  draw('UPS control housing',width*.155,height*.60,.022,0,0,-.091,caseMat,root,id);
+  draw('UPS powered display rim',width*.128,height*.41,.006,0,height*.06,-.107,edge,root,id);
+  draw('UPS luminous screen',width*.114,height*.35,.005,0,height*.06,-.112,screen,root,id);
+  for(let i=0;i<4;i++)draw('UPS meter row '+i,width*(.03+.014*(i%2)),.0035,.006,-width*.012,height*(.18-i*.066),-.116,i===0?green:led,root,id);
+  draw('UPS power circle',.014,.014,.012,0,-height*.252,-.104,edge,root,id);
+  draw('UPS power LED',.006,.006,.014,0,-height*.252,-.112,green,root,id);
+  for(const side of [-1,1]){
+   draw('UPS grab handle '+side,.010,height*.63,.026,side*width*.447,0,-.091,edge,root,id);
+  }
  }
  // A chassis must read as real equipment at normal rack-camera distance.
  if(category==='switch'||category==='network'||category==='patch'||category==='patch-panel'){
