@@ -3,17 +3,36 @@ type Draw=(name:string,w:number,h:number,d:number,x:number,y:number,z:number,mat
 export function drawEquipmentDetail(scene:Scene,root:TransformNode,category:string|undefined,id:string,width:number,height:number,draw:Draw,networkPortXs:number[]=[]){
  const mat=(name:string,hex:string)=>{const m=new PBRMaterial(name+' '+id,scene);m.albedoColor=Color3.FromHexString(hex);m.metallic=.65;m.roughness=.43;return m};
  const metal=mat('machined metal','#647589'),dark=mat('vent void','#050c16'),led=mat('status led','#37b1ff'),glass=mat('glass','#091d35'),orange=mat('activity','#c87738'),bezel=mat('screen bezel','#182a40');led.emissiveColor=Color3.FromHexString('#116aaf');
- if(category==='server'||category==='storage'){ 
-  // Server-style removable disk drawer array with separated faceplates.
-  const brushed=mat('brushed hot swap drive cages','#334351');
-  const latch=mat('disk tray handles','#697b89');
-  for(let row=0;row<(height>.09?3:1);row++)for(let col=0;col<6;col++){
-   const px=(col-2.5)*width*.137,py=(row-((height>.09?3:1)-1)/2)*height*.265;
-   draw('drive sled inset '+row+'-'+col,width*.112,height*.215,.009,px,py,-.091,dark,root,id);
-   draw('disk eject strip '+row+'-'+col,width*.093,height*.023,.011,px,py-height*.073,-.098,brushed,root,id);
-   draw('disk release button '+row+'-'+col,.004,.004,.012,px+width*.041,py-height*.074,-.102,row%2?led:latch,root,id);
+ if(category==='storage'){
+  // NAS: eight tall, independently recessed removable drive bays, not a server grid.
+  const enclosure=mat('NAS matte black fascia','#101820');
+  const tray=mat('NAS individually milled tray','#293644');
+  const lip=mat('NAS satin silver latch','#7a91a5');
+  draw('8 bay NAS recessed door',width*.79,height*.80,.016,0,0,-.073,enclosure,root,id);
+  const bayW=width*.077,step=width*.095;
+  for(let i=0;i<8;i++){
+   const x=(i-3.5)*step;
+   draw('NAS deep bay recess '+i,bayW,height*.67,.010,x,-height*.015,-.086,dark,root,id);
+   draw('NAS removable vertical drive '+i,bayW*.87,height*.63,.011,x,-height*.008,-.094,tray,root,id);
+   draw('NAS drive eject latch '+i,bayW*.62,height*.036,.013,x,-height*.282,-.103,lip,root,id);
+   draw('NAS drive activity LED '+i,.0028,.004,.014,x+bayW*.27,height*.246,-.105,i%4===0?orange:led,root,id);
   }
-
+  draw('NAS power switch surround',width*.042,height*.20,.013,width*.43,height*.19,-.080,glass,root,id);
+  draw('NAS power illuminated',.009,.009,.015,width*.43,height*.19,-.089,led,root,id);
+ }
+ if(category==='server'){
+  // Rack server: horizontal drive carriers, paired intake banks and a control module.
+  const front=mat('server graphite perforated fascia','#1b2836');
+  const handle=mat('server brushed titanium sled grip','#768a9b');
+  draw('rack server removable front',width*.83,height*.80,.010,0,0,-.071,front,root,id);
+  const rows=height>.095?2:1,columns=6;
+  for(let row=0;row<rows;row++)for(let col=0;col<columns;col++){
+   const px=(col-2.5)*width*.119,py=(row-(rows-1)/2)*height*.29;
+   draw('server hot swap shadow '+row+'-'+col,width*.103,height*.245,.009,px,py,-.083,dark,root,id);
+   draw('server horizontal drive '+row+'-'+col,width*.094,height*.220,.009,px,py,-.090,metal,root,id);
+   draw('server drive release '+row+'-'+col,width*.077,height*.033,.011,px,py-height*.077,-.097,handle,root,id);
+   draw('server disk green activity '+row+'-'+col,.003,.003,.012,px+width*.039,py+height*.076,-.098,col%3===0?orange:led,root,id);
+  }
  }
  if(category==='server'){
    for(let j=0;j<2;j++){
