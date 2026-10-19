@@ -12,6 +12,7 @@ export class CameraController {
    }
   });
  }
+ cancel(){this.target=null;this.alpha=null;this.beta=null;this.radius=this.camera.radius}
  focus(point:Vector3,distance:number,side:'front'|'back'|'orbit'='orbit'){
   this.target=point.clone();this.radius=Math.max(.25,distance);
   if(side==='front')this.alpha=-Math.PI/2;
