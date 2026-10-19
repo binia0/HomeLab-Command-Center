@@ -9,7 +9,7 @@ import {renderPiCluster} from './3d/PiCluster';
 import {drawEquipmentDetail} from './3d/DeviceDetails';
 import {addPrecisionRackFixtures} from './3d/RackDetails';
 import {CameraController} from './3d/CameraController';
-import{Engine,Scene,ArcRotateCamera,Vector3,Color3,Color4,HemisphericLight,DirectionalLight,MeshBuilder,PBRMaterial,TransformNode,PointerEventTypes,SceneLoader,StandardMaterial,Mesh,Texture,GlowLayer,ShadowGenerator}from'@babylonjs/core';import'@babylonjs/loaders/glTF';
+import{Engine,Scene,ArcRotateCamera,Vector3,Color3,Color4,HemisphericLight,DirectionalLight,MeshBuilder,PBRMaterial,TransformNode,PointerEventTypes,SceneLoader,StandardMaterial,Mesh,Texture,GlowLayer,ShadowGenerator,Matrix}from'@babylonjs/core';import'@babylonjs/loaders/glTF';
 export type Width=10|19;export type Face='front'|'back'|'orbit';export type Port={id:string;type:string;x:number;y:number;z:number};export type Slot={id:string;name:string;model:string;ip:string;occupied:boolean;deviceIds?:string[];offsetXmm?:number;offsetYmm?:number;rotationDeg?:number;scale?:number};export type DeviceDisplay={id:string;name:string;kind:'lcd'|'oled'|'touch'|'monitor';widthMm:number;heightMm:number;offsetXmm:number;offsetYmm:number;connection:'HDMI'|'USB'|'DSI'|'SPI'|'I2C'|'OTHER'};export type Device={id:string;name:string;u:number;height:number;color:string;mount?:'front'|'rear';category?:string;manufacturer?:string;model?:string;ip?:string;slots?:Slot[];slotColumns?:number;displays?:DeviceDisplay[];imageData?:string;templateId?:string;widthMm?:number;depthMm?:number;hostDeviceId?:string;panelId?:string;slotId?:string;ports:Port[]};export type Config={width:Width;units:number;depthMm?:number;devices:Device[]};
 export const U=.04445;
 /** One coordinate mapping for visible sockets and cable attachments. */
@@ -25,7 +25,7 @@ export const spacing=(w:Width)=>w===10?.254:.4826;const group=(n:number):Port[]=
 export const demo:Config={width:10,units:20,devices:[{id:'router',name:'NETWORK GATEWAY',u:19,height:1,color:'#365969',ports:group(4)},{id:'switch1',name:'MANAGED SWITCH 01',u:17,height:1,color:'#253a42',ports:group(8)},{id:'switch2',name:'MANAGED SWITCH 02',u:16,height:1,color:'#253a42',ports:group(8)},{id:'switch3',name:'MANAGED SWITCH 03',u:15,height:1,color:'#253a42',ports:group(8)},{id:'patch',name:'12-PORT PATCH PANEL',u:13,height:1,color:'#334850',ports:group(12)},{id:'pis',name:'8 VERTICAL PI SLOTS',u:10,height:2,color:'#23504c',category:'holder',slots:Array.from({length:8},(_,i)=>({id:'slot-'+(i+1),name:'Pi '+(i+1),model:'',ip:'',occupied:i<4})),ports:[]},{id:'jetson',name:'2 JETSON SLOTS',u:7,height:2,color:'#345765',ports:[]},{id:'kvm',name:'2 JETKVM SLOTS',u:5,height:1,color:'#3e4c57',ports:[]},{id:'nas',name:'STORAGE ARRAY',u:1,height:3,color:'#364653',ports:[]}]};
 export const initial:Config={width:10,units:20,depthMm:600,devices:[]};
 const color=(s:string)=>Color3.FromHexString(s);
-export function build(canvas:HTMLCanvasElement,config:Config,onDevice:(id:string)=>void,onPort:(a:string)=>void){const eng=new Engine(canvas,true);eng.setHardwareScalingLevel(Math.min(2,Math.max(1,devicePixelRatio/1.5)));const scene=new Scene(eng);const illumination=new GlowLayer('LED and cable bloom',scene,{blurKernelSize:24});illumination.intensity=.34;scene.clearColor=new Color4(.016,.024,.036,1);const cam=new ArcRotateCamera('camera',-Math.PI/2+.17,Math.PI/2.08,1.72,new Vector3(0,.4,0),scene);cam.attachControl(canvas,true);cam.lowerRadiusLimit=.4;cam.upperRadiusLimit=6;cam.wheelPrecision=60;cam.minZ=.01;const cameraControl=new CameraController(cam);
+export function build(canvas:HTMLCanvasElement,config:Config,onDevice:(id:string)=>void,onPort:(a:string)=>void,onPlacePort?:(id:string,port:string,x:number,y:number)=>void){const eng=new Engine(canvas,true);eng.setHardwareScalingLevel(Math.min(2,Math.max(1,devicePixelRatio/1.5)));const scene=new Scene(eng);const illumination=new GlowLayer('LED and cable bloom',scene,{blurKernelSize:24});illumination.intensity=.34;scene.clearColor=new Color4(.016,.024,.036,1);const cam=new ArcRotateCamera('camera',-Math.PI/2+.17,Math.PI/2.08,1.72,new Vector3(0,.4,0),scene);cam.attachControl(canvas,true);cam.lowerRadiusLimit=.4;cam.upperRadiusLimit=6;cam.wheelPrecision=60;cam.minZ=.01;const cameraControl=new CameraController(cam);
 const hemi=new HemisphericLight('soft ambient',new Vector3(0,1,0),scene);hemi.intensity=.83;
 const light=new DirectionalLight('large key',new Vector3(-.7,-1,.9),scene);light.intensity=1.8;light.diffuse=color('#dcecff');const rackShadows=new ShadowGenerator(1024,light);rackShadows.usePercentageCloserFiltering=true;rackShadows.bias=.0008;
 const rim=new DirectionalLight('edge rim',new Vector3(.8,-.4,-.7),scene);rim.intensity=.66;rim.diffuse=color('#459afa');
@@ -160,5 +160,32 @@ function updateCables(connections:{a:string;b:string}[]){
  }
 }
 
-redraw(config);void restoreModels();scene.onPointerObservable.add(e=>{if(e.type!==PointerEventTypes.POINTERDOWN)return;let m=e.pickInfo?.pickedMesh;while(m){if(m.metadata?.id){if(m.metadata.port)onPort(m.metadata.id+'/'+m.metadata.port);else onDevice(m.metadata.id);return}m=m.parent as typeof m}},PointerEventTypes.POINTERDOWN);eng.runRenderLoop(()=>{cameraControl.tick();scene.render()});const resize=()=>eng.resize();window.addEventListener('resize',resize);
-return{redraw(c:Config){redraw(c);void restoreModels()},updateCables,focus(id:string){const node=instances.get(id);if(!node)return;const dev=cfg.devices.find(d=>d.id===id);cameraControl.focus(node.getAbsolutePosition(),Math.max(.35,Math.min(1.05,(dev?.height||1)*U*4+.3)),dev?.mount==='rear'?'back':'front')},home(){cameraControl.home(cfg.units*U,(cfg.depthMm??800)/1000)},view(f:Face){cameraControl.view(f)},async load(file:File,id:string){await importGLB(file,id,true)},dispose(){window.removeEventListener('resize',resize);eng.dispose()}}}
+let placement:{id:string;port:string;plane:Mesh}|null=null;
+const stopPlacement=()=>{placement?.plane.dispose();placement=null};
+const setPlacement=(id:string,port:string)=>{
+ stopPlacement();
+ const device=cfg.devices.find(d=>d.id===id),root=instances.get(id);
+ if(!device||!root)return;
+ const w=spacing(cfg.width),h=device.height*U-.006;
+ const plane=MeshBuilder.CreatePlane('port placement surface '+id,{width:w*.87,height:h*.74},scene);
+ plane.parent=root;plane.position.z=-.15;plane.visibility=.015;plane.isPickable=true;
+ plane.metadata={id,placement:true};
+ placement={id,port,plane};
+};
+redraw(config);void restoreModels();scene.onPointerObservable.add(e=>{if(e.type!==PointerEventTypes.POINTERDOWN)return;
+ if(placement){
+  const hit=scene.pick(scene.pointerX,scene.pointerY,m=>m===placement?.plane);
+  if(hit?.hit&&hit.pickedPoint){
+   const {id,port,plane}=placement;
+   const w=spacing(cfg.width),h=(cfg.devices.find(d=>d.id===id)?.height||1)*U-.006;
+   const inverse=plane.parent!.getWorldMatrix().clone().invert();
+   const local=Vector3.TransformCoordinates(hit.pickedPoint,inverse);
+   const x=Math.max(-1,Math.min(1,local.x/(w*.435)));
+   const y=Math.max(-1,Math.min(1,local.y/(h*.37)));
+   stopPlacement();onPlacePort?.(id,port,Math.round(x*1000)/1000,Math.round(y*1000)/1000);
+   return;
+  }
+  return;
+ }
+ let m=e.pickInfo?.pickedMesh;while(m){if(m.metadata?.id){if(m.metadata.port)onPort(m.metadata.id+'/'+m.metadata.port);else onDevice(m.metadata.id);return}m=m.parent as typeof m}},PointerEventTypes.POINTERDOWN);eng.runRenderLoop(()=>{cameraControl.tick();scene.render()});const resize=()=>eng.resize();window.addEventListener('resize',resize);
+return{setPlacement,stopPlacement,redraw(c:Config){stopPlacement();redraw(c);void restoreModels()},updateCables,focus(id:string){const node=instances.get(id);if(!node)return;const dev=cfg.devices.find(d=>d.id===id);cameraControl.focus(node.getAbsolutePosition(),Math.max(.35,Math.min(1.05,(dev?.height||1)*U*4+.3)),dev?.mount==='rear'?'back':'front')},home(){cameraControl.home(cfg.units*U,(cfg.depthMm??800)/1000)},view(f:Face){cameraControl.view(f)},async load(file:File,id:string){await importGLB(file,id,true)},dispose(){stopPlacement();window.removeEventListener('resize',resize);eng.dispose()}}}
