@@ -14,7 +14,10 @@ export function buildRackInterior(scene:Scene,root:TransformNode,w:number,h:numb
   mesh.parent=root;mesh.position.set(x,y,z);mesh.material=material;mesh.isPickable=false;mesh.receiveShadows=true;return mesh;
  };
  // The rear surface sits behind the device bodies, giving real parallax without masking fronts.
- stage('recessed rear shadow wall',w*.94,h*.96,.009,0,h*.5,depth*.5-.008,shadow);
+ // Open center for rear-mounted equipment and back-side cable inspection.
+ for(const side of [-1,1]){
+  stage('recessed rear cavity side panel '+side,w*.115,h*.94,.009,side*w*.432,h*.5,depth*.45,shadow);
+ }
  // Rear structural uprights, visible in the gaps between distinct rack components.
  for(const side of [-1,1]){
   stage('deep interior rear pillar '+side,.022,h*.97,.043,side*w*.44,h*.5,depth*.39,graphite);
