@@ -44,23 +44,32 @@ export function drawEquipmentDetail(scene:Scene,root:TransformNode,category:stri
    for(let j=0;j<3;j++)draw('server drive status '+j,.004,.003,.009,width*.29+j*.008,height*.11,-.085,j===2?orange:led,root,id);
  }
  if(category==='switch'||category==='network'||category==='patch'||category==='patch-panel'){
-  const darkMetal=mat('switch chassis','#121e2f'),accent=mat('switch identification','#1b88dd');
-  draw('full network module dark face',width*.91,height*.86,.006,0,0,-.063,darkMetal,root,id);
-  draw('network module service stripe',width*.88,height*.035,.007,0,height*.41,-.069,accent,root,id);
-  draw('network SFP cage',width*.090,height*.41,.009,width*.40,-height*.02,-.075,metal,root,id);
-  draw('network SFP socket',width*.069,height*.29,.010,width*.40,-height*.02,-.081,dark,root,id);
-  draw('network status',.004,.004,.009,-width*.41,height*.26,-.081,led,root,id);
-  for(let v=0;v<5;v++)draw('switch fine cooling slit '+v,width*.07,.001,.009,-width*.40,-height*.06-v*height*.069,-.079,dark,root,id);
-
-  const xs=networkPortXs.slice(0,24).map(x=>x*width*.87);
-  for(let i=0;i<xs.length;i++){
-   const x=xs[i],portW=Math.min(.022,width*.057);
-   draw('8P switch recessed RJ45 shell '+i,portW,height*.48,.009,x,0,-.073,metal,root,id);
-   draw('RJ45 dark opening '+i,portW*.82,height*.30,.010,x,-height*.025,-.082,dark,root,id);
-   draw('RJ45 locking lip '+i,portW*.54,height*.04,.006,x,-height*.19,-.087,metal,root,id);
-   for(let pin=0;pin<6;pin++)draw('gold contact '+i+' '+pin,portW*.06,.001,.003,x+portW*(pin-2.5)*.11,height*.06,-.088,orange,root,id);
-   draw('link activity LED '+i,.003,.003,.006,x,height*.34,-.091,i%3?led:orange,root,id);
+  // Dense, physically layered 24-port network fascia, with the RJ45 mouths on the
+  // outward surface. Ports are not flat drawn rectangles.
+  const chassis=mat('switch black anodized chassis','#151c28');
+  const cavity=mat('dark socket interiors','#02060c');
+  const shell=mat('satin nickel RJ45 housings','#8a939a');
+  const gold=mat('eight gold contacts','#c4a269');
+  const portCount=Math.max(8,Math.min(24,networkPortXs.length||24));
+  const columns=Math.ceil(portCount/2);
+  draw('recessed switch faceplate',width*.91,height*.88,.018,0,0,-.068,chassis,root,id);
+  const firstX=-width*.385, spacing=width*.765/Math.max(1,columns-1);
+  for(let i=0;i<portCount;i++){
+   const col=i%columns,row=Math.floor(i/columns);
+   const x=firstX+col*spacing;
+   const y=(row===0?1:-1)*height*.19;
+   const pw=Math.min(width*.045,spacing*.75);
+   const ph=height*.28;
+   draw('machined RJ45 bezel '+i,pw,ph,.012,x,y,-.086,shell,root,id);
+   draw('recessed RJ45 interior '+i,pw*.79,ph*.76,.004,x,y,-.094,cavity,root,id);
+   draw('socket retaining lip '+i,pw*.58,ph*.09,.004,x,y-ph*.29,-.099,shell,root,id);
+   for(let pin=0;pin<8;pin++){
+    draw('RJ45 contact '+i+'-'+pin,pw*.045,ph*.11,.002,x+(pin-3.5)*pw*.087,y+ph*.21,-.098,gold,root,id);
+   }
+   draw('network activity '+i,.0026,.0026,.005,x+pw*.38,y+ph*.42,-.095,i%4===0?orange:led,root,id);
   }
+  draw('switch ventilation grille',width*.073,height*.38,.012,width*.425,0,-.079,cavity,root,id);
+  for(let v=0;v<7;v++)draw('switch vent vane '+v,width*.060,.0015,.013,width*.425,(v-3)*height*.043,-.086,metal,root,id);
  }
  // Physical front panel elements on otherwise generic hardware: vents, fasteners,
  // recessed diagnostic display and grouped service indicators.
