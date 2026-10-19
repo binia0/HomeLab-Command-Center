@@ -137,6 +137,29 @@ async function importGLB(file:File,id:string,persist:boolean){
  }finally{URL.revokeObjectURL(url)}
 }
 let cableMeshes:Mesh[]=[];
+/** Port edits must not rebuild the full rack, reload GLBs, or reset the camera. */
+function updatePortPositions(next:Config){
+ const old=cfg, width=spacing(next.width);
+ for(const device of next.devices){
+  const previous=old.devices.find(d=>d.id===device.id),root=instances.get(device.id);
+  if(!previous||!root)continue;
+  const h=device.height*U-.006;
+  const depth=Math.min(Math.max(.25,Math.min(1.5,(next.depthMm??800)/1000))-.05,
+   Math.max(.035,(device.depthMm??(device.category==='server'?650:device.category==='storage'?450:180))/1000));
+  const meshes=root.getChildMeshes(false);
+  for(const port of device.ports){
+   const oldPort=previous.ports.find(p=>p.id===port.id);
+   if(!oldPort||oldPort.x===port.x&&oldPort.y===port.y&&oldPort.z===port.z)continue;
+   const shift=connectorPosition(port,width,h,depth).subtract(connectorPosition(oldPort,width,h,depth));
+   for(const mesh of meshes){
+    if(mesh.metadata?.id===device.id&&mesh.metadata?.port===port.id){
+     mesh.position.addInPlace(shift);
+    }
+   }
+  }
+ }
+ cfg=next;
+}
 function updateCables(connections:{a:string;b:string}[]){
  for(const mesh of cableMeshes)mesh.dispose();cableMeshes=[];
  const colors:{[kind:string]:string}={RJ45:'#248ee9',POWER:'#ec5a47',HDMI:'#b38cff',DisplayPort:'#b38cff','USB-C':'#33b8ee',USB:'#33b8ee'};
@@ -188,4 +211,4 @@ redraw(config);void restoreModels();scene.onPointerObservable.add(e=>{if(e.type!
   return;
  }
  let m=e.pickInfo?.pickedMesh;while(m){if(m.metadata?.id){if(m.metadata.port)onPort(m.metadata.id+'/'+m.metadata.port);else onDevice(m.metadata.id);return}m=m.parent as typeof m}},PointerEventTypes.POINTERDOWN);eng.runRenderLoop(()=>{cameraControl.tick();scene.render()});const resize=()=>eng.resize();window.addEventListener('resize',resize);
-return{setPlacement,stopPlacement,redraw(c:Config){stopPlacement();redraw(c);void restoreModels()},updateCables,focus(id:string){const node=instances.get(id);if(!node)return;const dev=cfg.devices.find(d=>d.id===id);cameraControl.focus(node.getAbsolutePosition(),Math.max(.35,Math.min(1.05,(dev?.height||1)*U*4+.3)),dev?.mount==='rear'?'back':'front')},home(){cameraControl.home(cfg.units*U,(cfg.depthMm??800)/1000)},view(f:Face){cameraControl.view(f)},async load(file:File,id:string){await importGLB(file,id,true)},dispose(){stopPlacement();window.removeEventListener('resize',resize);eng.dispose()}}}
+return{setPlacement,stopPlacement,updatePortPositions,redraw(c:Config){stopPlacement();redraw(c);void restoreModels()},updateCables,focus(id:string){const node=instances.get(id);if(!node)return;const dev=cfg.devices.find(d=>d.id===id);cameraControl.focus(node.getAbsolutePosition(),Math.max(.35,Math.min(1.05,(dev?.height||1)*U*4+.3)),dev?.mount==='rear'?'back':'front')},home(){cameraControl.home(cfg.units*U,(cfg.depthMm??800)/1000)},view(f:Face){cameraControl.view(f)},async load(file:File,id:string){await importGLB(file,id,true)},dispose(){stopPlacement();window.removeEventListener('resize',resize);eng.dispose()}}}
