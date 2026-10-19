@@ -3,7 +3,7 @@ from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from http.cookies import SimpleCookie
 from urllib.parse import urlparse
 from rack_validation import valid_rack_document
-from model_conversion import stl_to_glb
+from model_conversion import stl_to_glb,step_to_glb
 from pathlib import Path
 from urllib.request import build_opener, HTTPRedirectHandler
 from urllib.parse import urlencode, parse_qs
@@ -149,7 +149,8 @@ class Handler(BaseHTTPRequestHandler):
       glb=raw
       if len(glb)<12 or glb[:4]!=b'glTF' or int.from_bytes(glb[4:8],'little')!=2 or int.from_bytes(glb[8:12],'little')!=len(glb):return self.send(422,{'error':'Ungültiges GLB'})
      elif kind in ('step','stp'):
-      return self.send(422,{'error':'STEP benötigt einen CAD-Kernel (z. B. FreeCAD). Noch nicht installiert.'})
+      try:glb=step_to_glb(raw)
+      except (ValueError,OverflowError) as error:return self.send(422,{'error':str(error)})
      else:return self.send(415,{'error':'Nur GLB oder STL importierbar'})
      if len(glb)>50*1024*1024:return self.send(413,{'error':'Konvertiertes Modell ist zu gross'})
      key=secrets.token_hex(12)
