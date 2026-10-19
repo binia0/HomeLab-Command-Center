@@ -46,7 +46,7 @@ mk('top frame',W+.14,.031,D+.09,0,H+.012,0,steel,rack);mk('roof inlay',W+.105,.0
 for(const d of c.devices){
  // Existing saved racks often predate category support. Detect their hardware visually.
  const identity=(d.name+' '+(d.model||'')+' '+(d.manufacturer||'')).toLowerCase();
- const visualCategory=d.category&&d.category!=='other'?d.category:
+ const visualCategory=d.category==='holder'&&d.slots?.some(slot=>slot.occupied)?'pi-cluster':d.category&&d.category!=='other'?d.category:
  /switch|network|ethernet/.test(identity)?'switch':
  /synology|nas|storage/.test(identity)?'storage':
  /ups|cyberpower|battery/.test(identity)?'power':
@@ -54,8 +54,8 @@ for(const d of c.devices){
  /raspberry|\bpi cluster\b|\bpi rack\b/.test(identity)?'pi-cluster':d.category;
  const h=d.height*U-.006,y=(d.u-1)*U+h/2+.008;if(y>H||y<0)continue;const root=new TransformNode('device '+d.id,scene);const isRear=d.mount==='rear';const host=d.hostDeviceId?c.devices.find(item=>item.id===d.hostDeviceId):undefined;const panel=d.panelId?c.devices.find(item=>item.id===d.panelId):undefined;const attachedSlot=panel?.slots?.find(slot=>slot.id===d.slotId);const slotIndex=attachedSlot&&panel?.slots?panel.slots.indexOf(attachedSlot):-1;const cols=panel?.slots?.length?Math.max(1,Math.min(panel.slots.length,panel.slotColumns||panel.slots.length)):1;const rows=panel?.slots?.length?Math.ceil(panel.slots.length/cols):1;const slotCol=slotIndex>=0?slotIndex%cols:0,slotRow=slotIndex>=0?Math.floor(slotIndex/cols):0;const panelHeight=panel?(panel.height*U-.006):h;const slotX=panel&&attachedSlot?(-W*.4+(slotCol+.5)*W*.8/cols+(attachedSlot.offsetXmm||0)/1000):0;const slotY=panel&&attachedSlot?((panel.u-1)*U+panelHeight/2+.008+panelHeight*.38-(slotRow+.5)*panelHeight*.76/rows+(attachedSlot.offsetYmm||0)/1000):y;const hostY=host?(host.u-1)*U+(host.height*U-.006)/2+.008:y;const faceOffset=host&&d.category==='display'?.12:0;root.position.set(host?0:slotX,panel&&attachedSlot?slotY:(host?hostY:y),isRear?D/2+.01+faceOffset:-D/2-.01-faceOffset);if(isRear)root.rotation.y=Math.PI;root.parent=rack;root.metadata={id:d.id};instances.set(d.id,root);const face=material('face '+d.id,d.color);/* Full-depth equipment chassis with vents, handles and mounting details. */
 const enclosureDepth=Math.min(D-.05,Math.max(.035,(d.depthMm??(d.category==='server'?650:d.category==='storage'?450:180))/1000));const sideBody=material('chassis '+d.id,'#273744');
-if(!['sbc','display','lcd-pi','pi-cluster'].includes(d.category||'')&&!d.hostDeviceId)mk('enclosure body '+d.id,Math.min(W*.88,(d.widthMm||W*880)/1000),h*.83,enclosureDepth,0,0,enclosureDepth*.5+.005,sideBody,root,d.id);
-if(!['sbc','display','lcd-pi','pi-cluster'].includes(d.category||'')&&!d.hostDeviceId)for(const side of [-1,1]){mk('chassis handle '+side+' '+d.id,.012,Math.max(.012,h*.42),.022,side*W*.37,0,-.045,titanium,root,d.id)}
+if(!['sbc','display','lcd-pi','pi-cluster'].includes(visualCategory||'')&&!d.hostDeviceId)mk('enclosure body '+d.id,Math.min(W*.88,(d.widthMm||W*880)/1000),h*.83,enclosureDepth,0,0,enclosureDepth*.5+.005,sideBody,root,d.id);
+if(!['sbc','display','lcd-pi','pi-cluster'].includes(visualCategory||'')&&!d.hostDeviceId)for(const side of [-1,1]){mk('chassis handle '+side+' '+d.id,.012,Math.max(.012,h*.42),.022,side*W*.37,0,-.045,titanium,root,d.id)}
 if(d.category==='sbc'&&!d.slots?.length){
   mk('open single board computer mounting tray',W*.57,h*.86,.008,0,0,-.023,steel,root,d.id);
   for(const side of [-1,1]){mk('SBC side mounting rail',.009,h*.9,.026,side*W*.30,0,-.028,titanium,root,d.id)}
@@ -76,7 +76,7 @@ for(const sx of [-1,1]){mk('rack fastener recessed '+d.id+' '+sx,.009,.009,.004,
 const trim=material('metal trim '+d.id,'#91a4ac');const blue=material('usb blue '+d.id,'#2264b0');const green=material('PCB '+d.id,'#216d50');const copper=material('PCB copper '+d.id,'#b68b52');const pale=material('connector '+d.id,'#a9b9bf');const tag=material('status '+d.id,'#e6c464');
 if(d.category==='sbc'&&!d.slots?.length){renderSingleBoardComputer(scene,root,d.id,W,h)}
 /* Perforated metal ventilation, meaningful status lights and dedicated device detail. */
-if(!d.slots?.length&&!['sbc','display','lcd-pi','pi-cluster'].includes(d.category||'')){for(let vent=0;vent<8;vent++){const xx=-W*.28+vent*(W*.56/7);mk('machined vent '+d.id+' '+vent,.004,Math.max(.003,h*.12),.002,xx,-h*.23,-.032,shadow,root,d.id)}}
+if(!d.slots?.length&&!['sbc','display','lcd-pi','pi-cluster'].includes(visualCategory||'')){for(let vent=0;vent<8;vent++){const xx=-W*.28+vent*(W*.56/7);mk('machined vent '+d.id+' '+vent,.004,Math.max(.003,h*.12),.002,xx,-h*.23,-.032,shadow,root,d.id)}}
 if(d.category==='switch'||d.category==='network'){mk('network status strip',W*.15,.006,.006,W*.3,h*.24,-.036,tag,root,d.id)}
 for(const display of d.displays||[]){const dw=Math.max(.015,Math.min(W*.87,display.widthMm/1000));const dh=Math.max(.012,Math.min(h*.86,display.heightMm/1000));const dx=Math.max(-W*.35,Math.min(W*.35,display.offsetXmm/1000));const dy=Math.max(-h*.3,Math.min(h*.3,display.offsetYmm/1000));const bezel=material('display bezel '+display.id,'#283d48');const glass=material('display glass '+display.id,'#0e3242');glass.emissiveColor=color('#0b4c56');mk('display mount '+display.id,dw+.006,dh+.006,.008,dx,dy,-.055,bezel,root,d.id);mk('display screen '+display.id,dw,dh,.003,dx,dy,-.062,glass,root,d.id);mk('display status bar '+display.id,dw*.67,.002,.002,dx,dy+dh*.27,-.064,accent,root,d.id)}
 if(d.category==='lcd-pi')renderLcdPi(scene,root,d.id,W,h);
@@ -89,7 +89,7 @@ if(d.slots?.length){const count=d.slots.length;const columns=Math.max(1,Math.min
 if(d.category!=='pi-cluster')drawEquipmentDetail(scene,root,visualCategory,d.id,W,h,mk,d.ports.filter(p=>p.type==='RJ45').map(p=>p.x));
 
 if(d.category==='ai'||d.category==='kvm')for(const s of [-1,1])mk('module',W*.34,h*.7,.012,s*W*.23,0,-.037,steel,root,d.id);
-}cam.setTarget(new Vector3(0,H/2,0));cam.radius=Math.max(.64,D/2+.22,H/(2*Math.tan(cam.fov/2)*.76))}
+}cameraControl.home(H,D)}
 
 let restoreRevision=0;
 async function restoreModels(){
