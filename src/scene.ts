@@ -1,4 +1,5 @@
 import {addRackPresentation} from './3d/RackPresentation';
+import {buildRackInterior} from './3d/RackInterior';
 import {renderLcdPi} from './3d/LcdPiAssembly';
 import {routeRackCable,softenCablePath} from './3d/CableRouter';
 import {builtInNas} from './3d/built-in-nas';
@@ -42,7 +43,7 @@ for(const level of [0,Math.floor(c.units/2),c.units]){const yy=level*U;mk('rear 
 for(const side of [-1,1]){for(let k=0;k<4;k++){const y=H*(.12+k*.245);mk('brace mounting '+side+' '+k,.018,.014,D*.66,side*(W/2+.035),y,0,titanium,rack)}}
 for(const side of [-1,1])for(const depth of [-1,1])mk('rack leveling foot '+side+' '+depth,.046,.042,.046,side*W*.38,-.065,depth*D*.39,black,rack);
 for(let k=0;k<c.units;k+=2){const yy=k*U+.007;mk('fine engraved unit guide '+k,.002,.003,.006,-W/2-.046,yy,-D/2-.032,screw,rack)}
-mk('top frame',W+.14,.031,D+.09,0,H+.012,0,steel,rack);mk('roof inlay',W+.105,.005,D+.05,0,H+.031,0,shadow,rack);mk('bottom frame',W+.12,.023,D+.05,0,0,0,steel,rack);addPrecisionRackFixtures(scene,rack,W,H,D,c.units);addRackPresentation(scene,rack,W,H,D,c.units);/* Open back: no rear panel hiding rear-mounted modules. */
+mk('top frame',W+.14,.031,D+.09,0,H+.012,0,steel,rack);mk('roof inlay',W+.105,.005,D+.05,0,H+.031,0,shadow,rack);mk('bottom frame',W+.12,.023,D+.05,0,0,0,steel,rack);addPrecisionRackFixtures(scene,rack,W,H,D,c.units);addRackPresentation(scene,rack,W,H,D,c.units);buildRackInterior(scene,rack,W,H,D,c.devices.map(d=>({u:d.u,height:d.height})));/* Open back: no rear panel hiding rear-mounted modules. */
 for(const d of c.devices){
  // Existing saved racks often predate category support. Detect their hardware visually.
  const identity=(d.name+' '+(d.model||'')+' '+(d.manufacturer||'')).toLowerCase();
