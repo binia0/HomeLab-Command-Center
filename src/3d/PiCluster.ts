@@ -21,6 +21,20 @@ export function renderPiCluster(scene:Scene,root:TransformNode,id:string,rackWid
   return mesh;
  };
  const bayW=Math.min(rackWidth*.85,.415),bayH=Math.min(rackHeight*.84,.19);
+ // Solid mounting bezel is a hollow rectangular frame, not a plate over the Pis.
+ // Four open slots and the LCD remain visible and reachable.
+ const edgeZ=-.116;
+ const railThickness=Math.min(.012,bayH*.10);
+ box('Pi rack front bezel top',bayW+.028,railThickness,.014,0,bayH*.5-railThickness*.5,edgeZ,frame);
+ box('Pi rack front bezel bottom',bayW+.028,railThickness,.014,0,-bayH*.5+railThickness*.5,edgeZ,frame);
+ for(const side of [-1,1]){
+  box('Pi rack front bezel side '+side,.012,bayH,.014,side*(bayW*.5+.01),0,edgeZ,frame);
+  for(const sign of [-1,1]){
+   const x=side*(bayW*.5+.01),y=sign*bayH*.38;
+   const washer=MeshBuilder.CreateCylinder(id+' bezel mounting bolt '+side+' '+sign,{diameter:.006,height:.003,tessellation:20},scene);
+   washer.rotation.x=Math.PI/2;washer.position.set(x,y,edgeZ-.009);washer.parent=root;washer.material=nickel;washer.metadata={id};
+  }
+ }
  const boardH=Math.min(.057,bayH*.73),boardD=.085,boardFront=-.086,boardBack=boardFront+boardD;
  box('open bottom carrier',bayW,.006,.126,0,-bayH*.44,-.054,frame);
  box('backplate rails',bayW,.009,.016,0,bayH*.40,-.027,frame);
