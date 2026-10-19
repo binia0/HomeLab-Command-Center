@@ -33,6 +33,6 @@ def stl_to_glb(raw:bytes)->bytes:
       "accessors":[{"bufferView":0,"componentType":5126,"count":len(triangles),"type":"VEC3","min":axismin,"max":axismax}]}
     header=json.dumps(scene,separators=(',',':')).encode()
     header+=b' ' * ((-len(header))%4)
-    vertices+=b'\\x00' *((-len(vertices))%4)
+    vertices+=bytes([0]) *((-len(vertices))%4)
     length=12+8+len(header)+8+len(vertices)
-    return struct.pack('<4sII',b'glTF',2,length)+struct.pack('<I4s',len(header),b'JSON')+header+struct.pack('<I4s',len(vertices),b'BIN\\x00')+vertices
+    return struct.pack('<4sII',b'glTF',2,length)+struct.pack('<I4s',len(header),b'JSON')+header+struct.pack('<I4s',len(vertices),b'BIN'+bytes([0]))+vertices
