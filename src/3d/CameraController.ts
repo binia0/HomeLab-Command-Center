@@ -4,7 +4,14 @@ export class CameraController {
  private radius=1;
  private alpha:number|null=null;
  private beta:number|null=null;
- constructor(private camera:ArcRotateCamera){}
+ constructor(private camera:ArcRotateCamera){
+  // Direct mouse/wheel interactions always win over pending animated framing.
+  camera.onViewMatrixChangedObservable.add(()=>{
+   if(camera.inertialRadiusOffset!==0||camera.inertialAlphaOffset!==0||camera.inertialBetaOffset!==0){
+    this.target=null;this.alpha=null;this.beta=null;
+   }
+  });
+ }
  focus(point:Vector3,distance:number,side:'front'|'back'|'orbit'='orbit'){
   this.target=point.clone();this.radius=Math.max(.25,distance);
   if(side==='front')this.alpha=-Math.PI/2;
