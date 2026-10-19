@@ -50,15 +50,15 @@ export function drawEquipmentDetail(scene:Scene,root:TransformNode,category:stri
   const cavity=mat('dark socket interiors','#02060c');
   const shell=mat('satin nickel RJ45 housings','#8a939a');
   const gold=mat('eight gold contacts','#c4a269');
-  const portCount=Math.max(8,Math.min(24,networkPortXs.length||24));
-  const columns=Math.ceil(portCount/2);
+  const portCount=Math.min(24,networkPortXs.length);
+  const columns=Math.max(1,Math.ceil(portCount/2));
   draw('recessed switch faceplate',width*.91,height*.88,.018,0,0,-.068,chassis,root,id);
   const firstX=-width*.385, spacing=width*.765/Math.max(1,columns-1);
   for(let i=0;i<portCount;i++){
    const col=i%columns,row=Math.floor(i/columns);
-   const x=firstX+col*spacing;
+   const x=networkPortXs[i]*width*.435;
    const y=(row===0?1:-1)*height*.19;
-   const pw=Math.min(width*.045,spacing*.75);
+   const pw=Math.min(width*.039,spacing*.68);
    const ph=height*.28;
    draw('machined RJ45 bezel '+i,pw,ph,.012,x,y,-.086,shell,root,id);
    draw('recessed RJ45 interior '+i,pw*.79,ph*.76,.004,x,y,-.094,cavity,root,id);
