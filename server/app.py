@@ -137,7 +137,7 @@ class Handler(BaseHTTPRequestHandler):
      if method=='POST':
       try:length=int(self.headers.get('Content-Length','0'))
       except ValueError:return self.send(400,{'error':'Ungültige Dateigrösse'})
-      if not 20<=length<=20_000_000:return self.send(413,{'error':'GLB muss zwischen 20 Byte und 20 MB gross sein'})
+      if not 20<=length<=50*1024*1024:return self.send(413,{'error':'GLB muss zwischen 20 Byte und 50 MiB gross sein'})
       raw=self.rfile.read(length)
       if len(raw)!=length or raw[:4]!=b'glTF' or int.from_bytes(raw[4:8],'little')!=2 or int.from_bytes(raw[8:12],'little')!=length:
        return self.send(400,{'error':'Ungültige binäre glTF-2.0-Datei'})
