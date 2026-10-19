@@ -3,7 +3,7 @@ import {buildRackInterior} from './3d/RackInterior';
 import {renderLcdPi} from './3d/LcdPiAssembly';
 import {routeRackCable,softenCablePath} from './3d/CableRouter';
 import {builtInNas} from './3d/built-in-nas';
-import {loadModelAsset,saveModelAsset} from './lib/model-assets';
+import {loadModelAsset,saveModelAsset,deleteModelAsset} from './lib/model-assets';
 import {renderSingleBoardComputer} from './3d/SingleBoardComputer';
 import {renderPiCluster} from './3d/PiCluster';
 import {drawEquipmentDetail} from './3d/DeviceDetails';
@@ -245,4 +245,15 @@ redraw(config);void restoreModels();scene.onPointerObservable.add(e=>{if(e.type!
   return;
  }
  let m=e.pickInfo?.pickedMesh;while(m){if(m.metadata?.id){if(m.metadata.port)onPort(m.metadata.id+'/'+m.metadata.port);else onDevice(m.metadata.id);return}m=m.parent as typeof m}},PointerEventTypes.POINTERDOWN);eng.runRenderLoop(()=>{cameraControl.tick();scene.render()});const resize=()=>eng.resize();window.addEventListener('resize',resize);
-return{setPlacement,stopPlacement,updatePortPositions,redraw(c:Config){stopPlacement();redraw(c);void restoreModels()},updateCables,focus(id:string){const node=instances.get(id);if(!node)return;const dev=cfg.devices.find(d=>d.id===id);cameraControl.focus(node.getAbsolutePosition(),Math.max(.35,Math.min(1.05,(dev?.height||1)*U*4+.3)),dev?.mount==='rear'?'back':'front')},home(){cameraControl.home(cfg.units*U,(cfg.depthMm??800)/1000)},view(f:Face){cameraControl.view(f)},async load(file:File,id:string){await importGLB(file,id,true)},dispose(){stopPlacement();window.removeEventListener('resize',resize);eng.dispose()}}}
+return{setPlacement,stopPlacement,updatePortPositions,redraw(c:Config){stopPlacement();redraw(c);void restoreModels()},updateCables,focus(id:string){const node=instances.get(id);if(!node)return;const dev=cfg.devices.find(d=>d.id===id);cameraControl.focus(node.getAbsolutePosition(),Math.max(.35,Math.min(1.05,(dev?.height||1)*U*4+.3)),dev?.mount==='rear'?'back':'front')},home(){cameraControl.home(cfg.units*U,(cfg.depthMm??800)/1000)},view(f:Face){cameraControl.view(f)},async load(file:File,id:string){
+ if(!/\.glb$/i.test(file.name)||file.size<20)throw Error('Bitte eine gültige .glb-Datei auswählen.');
+ if(file.size>50*1024*1024)throw Error('Das Modell darf höchstens 50 MB groß sein.');
+ const signature=new Uint8Array(await file.slice(0,4).arrayBuffer());
+ if(signature[0]!==103||signature[1]!==108||signature[2]!==84||signature[3]!==70)
+  throw Error('Keine gültige binäre GLB-Datei (glTF-Kennung fehlt).');
+ await importGLB(file,id,true);
+},async removeModel(id:string){
+ await deleteModelAsset(id);
+ try{await fetch('/api/models/'+encodeURIComponent(id),{method:'DELETE',credentials:'same-origin'})}catch{}
+ redraw(cfg);void restoreModels();
+},dispose(){stopPlacement();window.removeEventListener('resize',resize);eng.dispose()}}}
