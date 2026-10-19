@@ -1,8 +1,9 @@
-import json, os, secrets, sqlite3, hashlib, hmac, time, threading
+import json, os, secrets, sqlite3, hashlib, hmac, time, threading, struct
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from http.cookies import SimpleCookie
 from urllib.parse import urlparse
 from rack_validation import valid_rack_document
+from model_conversion import stl_to_glb
 from pathlib import Path
 from urllib.request import build_opener, HTTPRedirectHandler
 from urllib.parse import urlencode, parse_qs
@@ -12,7 +13,7 @@ LOCK=threading.RLock()
 def connect():
  c=sqlite3.connect(DB,timeout=20); c.row_factory=sqlite3.Row
  c.execute('PRAGMA journal_mode=WAL')
- c.executescript('CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, username TEXT NOT NULL UNIQUE, salt TEXT NOT NULL, secret TEXT NOT NULL);CREATE TABLE IF NOT EXISTS sessions(token_hash TEXT PRIMARY KEY, user_id INTEGER NOT NULL, expires INTEGER NOT NULL);CREATE TABLE IF NOT EXISTS builds(id TEXT PRIMARY KEY, user_id INTEGER NOT NULL, name TEXT NOT NULL, data TEXT NOT NULL, updated INTEGER NOT NULL);CREATE TABLE IF NOT EXISTS build_revisions(id INTEGER PRIMARY KEY AUTOINCREMENT, build_id TEXT NOT NULL, user_id INTEGER NOT NULL, name TEXT NOT NULL, data TEXT NOT NULL, saved_at INTEGER NOT NULL);CREATE INDEX IF NOT EXISTS idx_build_revisions ON build_revisions(build_id,user_id,id DESC);CREATE TABLE IF NOT EXISTS model_assets(user_id INTEGER NOT NULL, device_id TEXT NOT NULL, glb BLOB NOT NULL, updated INTEGER NOT NULL, PRIMARY KEY(user_id,device_id));')
+ c.executescript('CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, username TEXT NOT NULL UNIQUE, salt TEXT NOT NULL, secret TEXT NOT NULL);CREATE TABLE IF NOT EXISTS sessions(token_hash TEXT PRIMARY KEY, user_id INTEGER NOT NULL, expires INTEGER NOT NULL);CREATE TABLE IF NOT EXISTS builds(id TEXT PRIMARY KEY, user_id INTEGER NOT NULL, name TEXT NOT NULL, data TEXT NOT NULL, updated INTEGER NOT NULL);CREATE TABLE IF NOT EXISTS build_revisions(id INTEGER PRIMARY KEY AUTOINCREMENT, build_id TEXT NOT NULL, user_id INTEGER NOT NULL, name TEXT NOT NULL, data TEXT NOT NULL, saved_at INTEGER NOT NULL);CREATE INDEX IF NOT EXISTS idx_build_revisions ON build_revisions(build_id,user_id,id DESC);CREATE TABLE IF NOT EXISTS model_assets(user_id INTEGER NOT NULL, device_id TEXT NOT NULL, glb BLOB NOT NULL, updated INTEGER NOT NULL, PRIMARY KEY(user_id,device_id));CREATE TABLE IF NOT EXISTS cad_library(id TEXT PRIMARY KEY,user_id INTEGER NOT NULL,name TEXT NOT NULL,format TEXT NOT NULL,glb BLOB NOT NULL,updated INTEGER NOT NULL);')
  return c
 with connect() as c: pass
 def hash_pass(password,salt):return hashlib.scrypt(password.encode(),salt=bytes.fromhex(salt),n=16384,r=8,p=1,dklen=32).hex()
@@ -130,6 +131,41 @@ class Handler(BaseHTTPRequestHandler):
      network_kbps=round(sum(abs(v) for v in net.values()),1) if net else None
      uptime_seconds=round(max(uptime.values())) if uptime else None
      return self.send(200,{'source':'Netdata','available':any(v is not None for v in readings.values()),'cpu_percent':cpu_percent,'ram_percent':ram_used,'network_kbps':network_kbps,'uptime_seconds':uptime_seconds,'timestamp':int(time.time())})
+    if path=='/api/library/models' and method=='GET':
+     rows=c.execute('SELECT id,name,format,length(glb) size,updated FROM cad_library WHERE user_id=? ORDER BY updated DESC',(current['id'],)).fetchall()
+     return self.send(200,{'models':[dict(row) for row in rows]})
+    if path=='/api/library/models' and method=='POST':
+     try:length=int(self.headers.get('Content-Length','0'))
+     except ValueError:return self.send(400,{'error':'Ungültige Dateigrösse'})
+     if not 20<=length<=50*1024*1024:return self.send(413,{'error':'Maximal 50 MiB'})
+     kind=self.headers.get('X-Model-Format','').lower()
+     name=self.headers.get('X-Model-Name','Modell')[:120]
+     raw=self.rfile.read(length)
+     if len(raw)!=length:return self.send(400,{'error':'Datei unvollständig'})
+     if kind=='stl':
+      try:glb=stl_to_glb(raw)
+      except (ValueError,UnicodeError,OverflowError,struct.error) as error:return self.send(422,{'error':str(error)})
+     elif kind=='glb':
+      glb=raw
+      if len(glb)<12 or glb[:4]!=b'glTF' or int.from_bytes(glb[4:8],'little')!=2 or int.from_bytes(glb[8:12],'little')!=len(glb):return self.send(422,{'error':'Ungültiges GLB'})
+     elif kind in ('step','stp'):
+      return self.send(422,{'error':'STEP benötigt einen CAD-Kernel (z. B. FreeCAD). Noch nicht installiert.'})
+     else:return self.send(415,{'error':'Nur GLB oder STL importierbar'})
+     if len(glb)>50*1024*1024:return self.send(413,{'error':'Konvertiertes Modell ist zu gross'})
+     key=secrets.token_hex(12)
+     c.execute('INSERT INTO cad_library(id,user_id,name,format,glb,updated) VALUES(?,?,?,?,?,?)',(key,current['id'],name,kind,glb,int(time.time())))
+     return self.send(201,{'id':key,'name':name,'format':kind,'size':len(glb)})
+    if path.startswith('/api/library/models/'):
+     key=path[len('/api/library/models/'):]
+     if not (len(key)==24 and all(ch in '0123456789abcdef' for ch in key)):return self.send(400,{'error':'Ungültige ID'})
+     if method=='GET':
+      row=c.execute('SELECT glb FROM cad_library WHERE id=? AND user_id=?',(key,current['id'])).fetchone()
+      if not row:return self.send(404,{'error':'Nicht gefunden'})
+      binary=row['glb'];self.send_response(200);self.send_header('Content-Type','model/gltf-binary');self.send_header('Content-Length',str(len(binary)));self.send_header('Cache-Control','no-store');self.end_headers();self.wfile.write(binary);return
+     if method=='DELETE':
+      c.execute('DELETE FROM cad_library WHERE id=? AND user_id=?',(key,current['id']))
+      return self.send(200,{'deleted':True})
+     return self.send(405,{'error':'Methode nicht erlaubt'})
     if path.startswith('/api/models/'):
      device_id=path[len('/api/models/'):]
      if not (1<=len(device_id)<=128 and all(ch.isalnum() or ch in '-_' for ch in device_id)):
