@@ -121,7 +121,7 @@ async function restoreModels(){
   }catch(error){console.warn('3D model restore failed',device.id,error)}
  }
 }
-async function importGLB(file:File,id:string,persist:boolean){
+async function importGLB(file:File,id:string,persist:boolean):Promise<'server'|'local'|'preview'>{
  const root=instances.get(id);if(!root)throw Error('No device selected');
  const url=URL.createObjectURL(file);
  try{
@@ -163,14 +163,18 @@ async function importGLB(file:File,id:string,persist:boolean){
   // The supplied 4U NAS asset has its detailed drive bays on local +Z.
   // Babylon's rack front points toward -Z, so face the bays toward the viewer.
   if(!persist&&device?.templateId==='rack-nas-4u')node.rotation.y=Math.PI;
+  let stored:'server'|'local'|'preview'='preview';
   if(persist){
+    stored='local';
     // Save a local copy regardless of login; never claim the server stored it unless confirmed.
     await saveModelAsset(id,file);
     try{
       const response=await fetch('/api/models/'+encodeURIComponent(id),{method:'POST',body:file,headers:{'Content-Type':'model/gltf-binary'},credentials:'same-origin'});
-      if(!response.ok)console.warn('GLB only stored in this browser; remote save returned HTTP '+response.status);
+      if(response.ok)stored='server';
+      else console.warn('GLB only stored in this browser; remote save returned HTTP '+response.status);
     }catch(error){console.warn('GLB only stored in this browser; remote save unavailable',error)}
   }
+  return stored;
  }finally{URL.revokeObjectURL(url)}
 }
 let cableMeshes:Mesh[]=[];
@@ -258,7 +262,7 @@ return{setPlacement,stopPlacement,updatePortPositions,redraw(c:Config){stopPlace
  const signature=new Uint8Array(await file.slice(0,4).arrayBuffer());
  if(signature[0]!==103||signature[1]!==108||signature[2]!==84||signature[3]!==70)
   throw Error('Keine gültige binäre GLB-Datei (glTF-Kennung fehlt).');
- await importGLB(file,id,true);
+ return await importGLB(file,id,true);
 },async removeModel(id:string){
  await deleteModelAsset(id);
  try{await fetch('/api/models/'+encodeURIComponent(id),{method:'DELETE',credentials:'same-origin'})}catch{}
