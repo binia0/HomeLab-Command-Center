@@ -132,7 +132,7 @@ async function importGLB(file:File,id:string,persist:boolean){
   const node=new TransformNode('real-GLB '+id,scene);node.parent=root;
   // Keep interactive port meshes visible but hide only primitive placeholder bodies.
   for(const child of root.getChildMeshes(false)){
-   if(child!==node&&!child.metadata?.port&&!child.name.startsWith('real-GLB '))child.isVisible=false;
+   if(child!==node&&!child.metadata?.port&&!child.name.startsWith('real-GLB ')&&!child.name.includes(' photograph '+id))child.isVisible=false;
   }
   for(const mesh of result.meshes){if(!mesh.parent)mesh.parent=node;mesh.metadata={...mesh.metadata,id}}
   const bounds=node.getHierarchyBoundingVectors(true),ext=bounds.max.subtract(bounds.min);
