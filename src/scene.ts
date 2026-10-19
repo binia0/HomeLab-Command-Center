@@ -135,14 +135,31 @@ async function importGLB(file:File,id:string,persist:boolean){
    if(child!==node&&!child.metadata?.port&&!child.name.startsWith('real-GLB ')&&!child.name.includes(' photograph '+id))child.isVisible=false;
   }
   for(const mesh of result.meshes){if(!mesh.parent)mesh.parent=node;mesh.metadata={...mesh.metadata,id}}
+  // Normalize models in their own local axes. Imported assets often have the
+  // origin at a corner or use centimeters/millimeters instead of meters.
+  // Never include connector meshes or the parent rack in these bounds.
+  node.computeWorldMatrix(true);
   const bounds=node.getHierarchyBoundingVectors(true),ext=bounds.max.subtract(bounds.min);
   const device=cfg.devices.find(d=>d.id===id);
-  if(device&&ext.x>.00001&&ext.y>.00001&&ext.z>.00001){
-    const depth=Math.max(.04,(device.depthMm??280)/1000);
-    const scale=Math.min(spacing(cfg.width)*.89/ext.x,device.height*U*.88/ext.y,depth*.9/ext.z);
-    node.scaling.scaleInPlace(scale);
+  if(device){
+    const targetWidth=Math.min(spacing(cfg.width)*.86,(device.widthMm??spacing(cfg.width)*860)/1000);
+    const targetHeight=device.height*U*.79;
+    const targetDepth=Math.max(.035,Math.min((cfg.depthMm??800)/1000-.055,(device.depthMm??180)/1000));
+    // Ignore zero-thickness axes (common with textured CAD board exports).
+    const limits=[[ext.x,targetWidth],[ext.y,targetHeight],[ext.z,targetDepth]]
+      .filter(([extent])=>extent>.00001).map(([extent,target])=>target/extent);
+    if(limits.length){
+      const scale=Math.min(...limits);
+      const center=bounds.min.add(bounds.max).scale(.5);
+      // node's own translation is used to re-center the original imported hierarchy.
+      // Transform its local center into node-relative coordinates before applying scale.
+      const inverse=node.getWorldMatrix().clone().invert();
+      const localCenter=Vector3.TransformCoordinates(center,inverse);
+      for(const child of [...node.getChildren()])child.position.subtractInPlace(localCenter);
+      node.scaling.setAll(scale);
+      node.position.set(0,0,-.056);
+    }
   }
-  node.position.z=-.058;
   // The supplied 4U NAS asset has its detailed drive bays on local +Z.
   // Babylon's rack front points toward -Z, so face the bays toward the viewer.
   if(!persist&&device?.templateId==='rack-nas-4u')node.rotation.y=Math.PI;
