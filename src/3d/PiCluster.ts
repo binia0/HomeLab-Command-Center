@@ -1,63 +1,65 @@
 import {Scene,TransformNode,MeshBuilder,PBRMaterial,Color3,StandardMaterial,DynamicTexture,Mesh} from '@babylonjs/core';
 
-/** A rack-mounted four SBC service bay with a front telemetry monitor. One rack device. */
-export function renderPiCluster(scene:Scene,root:TransformNode,id:string,rackWidth:number,rackHeight:number){
- const paint=(name:string,hex:string,metallic=.3,glow=false)=>{
-  const m=new PBRMaterial(id+' '+name,scene);m.albedoColor=Color3.FromHexString(hex);m.metallic=metallic;m.roughness=.52;
-  if(glow)m.emissiveColor=Color3.FromHexString(hex).scale(.65);
+/** Four vertically edge-mounted Pi boards: PCB planes run along rack depth.
+ * The forward network and USB cages are at negative Z; the boards are not front-facing stickers.
+ */
+export function renderPiCluster(scene:Scene,root:TransformNode,id:string,rackWidth:number,rackHeight:number,ethernetPositions:number[]=[]){
+ const paint=(name:string,hex:string,metallic=.3,emissive=false)=>{
+  const m=new PBRMaterial(id+' '+name,scene);m.albedoColor=Color3.FromHexString(hex);
+  m.metallic=metallic;m.roughness=metallic>.7?.34:.62;
+  if(emissive)m.emissiveColor=Color3.FromHexString(hex).scale(.55);
   return m;
  };
- const back=paint('mounting frame','#17202c',.85),pcb=paint('four PCBs','#165c3c',.16),
- dark=paint('silicon','#131b23'),sockets=paint('steel connectors','#8d9dab',.8),
- blue=paint('USB insert','#155d9a'),gold=paint('pin headers','#c6a56b',.7),
- led=paint('activity lights','#36e29c',.1,true),displayFrame=paint('screen bezel','#252f3c',.65);
+ const frame=paint('machined aluminum carrier','#263540',.84),pcb=paint('PCB substrate','#19613c',.14);
+ const silicon=paint('chips','#172228',.28),nickel=paint('connector shields','#98a6ad',.82);
+ const sockets=paint('dark sockets','#0c151e',.2),blue=paint('blue USB cores','#225a9b',.2);
+ const gold=paint('gold pins','#d4b36a',.8),led=paint('activity LED','#26d99f',.1,true);
  const box=(name:string,w:number,h:number,d:number,x:number,y:number,z:number,mat:PBRMaterial)=>{
-  const o=MeshBuilder.CreateBox(id+' '+name,{width:w,height:h,depth:d},scene);o.parent=root;o.position.set(x,y,z);o.material=mat;o.metadata={id};return o;
+  const mesh=MeshBuilder.CreateBox(id+' '+name,{width:w,height:h,depth:d},scene);
+  mesh.parent=root;mesh.position.set(x,y,z);mesh.material=mat;mesh.metadata={id};
+  return mesh;
  };
- const usable=Math.min(rackWidth*.86,.41),bayH=Math.min(rackHeight*.8,.18);
- box('cluster backplane',usable,bayH,.012,0,0,-.044,back);
+ const bayW=Math.min(rackWidth*.85,.415),bayH=Math.min(rackHeight*.84,.19);
+ const boardH=Math.min(.057,bayH*.73),boardD=.085,boardFront=-.113,boardBack=boardFront+boardD;
+ box('open bottom carrier',bayW,.006,.126,0,-bayH*.44,-.054,frame);
+ box('backplate rails',bayW,.009,.016,0,bayH*.40,-.027,frame);
  for(const side of [-1,1]){
-  box('mount rail '+side,.016,bayH*.98,.021,side*usable*.5,0,-.061,sockets);
-  for(let i=0;i<4;i++)box('mount rivet '+side+' '+i,.004,.004,.004,side*usable*.5,(i-1.5)*bayH*.20,-.073,gold);
+  box('side upright '+side,.010,bayH*.91,.115,side*bayW*.51,0,-.06,frame);
  }
- // Each Pi has a separate physical 3D carrier and an elevated board.
- // Distinct PCB thickness, mounting standoffs, etched traces, chips and port bodies.
- const boardW=usable*.145,boardH=bayH*.70;
- const trace=paint('copper PCB traces','#9e8050',.38),silk=paint('PCB markings','#c5d9b2',.05);
+ // Each board is orthogonal to the front face and sits on its NARROW edge.
+ // Align its Ethernet-facing end with the actual editable physical connector.
+ const standard=[-.34,-.125,.09,.305].map(x=>x*bayW);
+ const xs=ethernetPositions.length>=4?ethernetPositions.slice(0,4):standard;
  for(let i=0;i<4;i++){
-  const x=-usable*.378+i*usable*.182;
-  const carrierZ=-.064,boardZ=-.083;
-  box('independent carrier '+i,boardW*1.12,boardH*1.12,.006,x,0,carrierZ,back);
-  for(const sx of [-1,1])for(const sy of [-1,1]){
-   const px=x+sx*boardW*.43,py=sy*boardH*.43;
-   box('separate standoff '+i+' '+sx+sy,.007,.007,.019,px,py,-.073,sockets);
-   box('standoff screw '+i+' '+sx+sy,.004,.004,.003,px,py,-.089,gold);
+  const x=Math.max(-bayW*.44,Math.min(bayW*.44,xs[i]));
+  box('vertical Pi PCB '+(i+1),.002,boardH,boardD,x,0,(boardFront+boardBack)/2,pcb);
+  for(const dy of [-1,1]){
+   box('board standoff '+i+' '+dy,.014,.007,.014,x,-boardH*.5+(.006+(.5+dy*.5)*(boardH-.012)),-.041,frame);
   }
-  box('green Raspberry Pi circuit board '+i,boardW,boardH,.003,x,0,boardZ,pcb);
-  for(let j=0;j<5;j++){
-   box('PCB signal track '+i+' '+j,boardW*.55,.0009,.0007,x,boardH*(-.23+j*.115),-.085,trace);
-   box('silkscreen label '+i+' '+j,boardW*.21,.0011,.0007,x-boardW*.20,boardH*(-.35+j*.155),-.0857,silk);
+  // Copper, ICs and GPIO are on the two side faces, visible from angled camera.
+  for(const side of [-1,1]){
+   const xx=x+side*.003;
+   box('main processor '+i+' '+side,.004,boardH*.29,.021,xx,boardH*.12,-.067,silicon);
+   box('RAM chip '+i+' '+side,.003,boardH*.18,.018,xx,-boardH*.22,-.078,silicon);
+   box('GPIO header '+i+' '+side,.004,.007,.051,xx,boardH*.39,-.065,sockets);
+   for(let pin=0;pin<10;pin++)box('GPIO pin '+i+' '+side+' '+pin,.004,.0015,.002,xx+side*.002,boardH*.39,-.088+pin*.0051,gold);
   }
-  box('processor '+i,boardW*.39,boardH*.25,.008,x-boardW*.08,boardH*.12,-.090,dark);
-  box('processor heatspreader '+i,boardW*.34,boardH*.22,.004,x-boardW*.08,boardH*.12,-.096,sockets);
-  for(let j=0;j<5;j++)box('metal heatsink fin '+i+' '+j,boardW*.30,.0017,.009,x-boardW*.08,boardH*(.03+j*.043),-.104,sockets);
-  box('RAM '+i,boardW*.22,boardH*.13,.003,x+boardW*.20,boardH*.18,-.088,dark);
-  // Structural USB stack only; editable RJ45 sockets come from the shared port renderer.
-  box('USB metal housing '+i,boardW*.28,boardH*.15,.012,x+boardW*.24,-boardH*.25,-.094,sockets);
-  box('USB inset '+i,boardW*.19,boardH*.085,.002,x+boardW*.24,-boardH*.25,-.101,blue);
-  box('USB stack seam '+i,boardW*.25,.001,.002,x+boardW*.24,-boardH*.25,-.103,dark);
-  for(let p=0;p<12;p++){
-   box('individual GPIO gold pin '+i+' '+p,.0013,.003,.004,x-boardW*.39+p*boardW*.068,boardH*.39,-.087,gold);
+  // Metal cages genuinely face the aisle, not sideways into neighbouring boards.
+  box('forward Ethernet cage '+i,.020,.018,.016,x,boardH*.22,boardFront-.007,nickel);
+  box('forward Ethernet cavity '+i,.015,.012,.002,x,boardH*.22,boardFront-.016,sockets);
+  for(let n=0;n<2;n++){
+   box('forward USB shield '+i+' '+n,.017,.010,.013,x,-boardH*.05-n*.012,boardFront-.006,nickel);
+   box('forward USB socket '+i+' '+n,.012,.006,.002,x,-boardH*.05-n*.012,boardFront-.014,blue);
   }
-  box('Pi activity diode '+i,.003,.004,.005,x+boardW*.32,boardH*.29,-.089,led);
+  box('Pi activity light '+i,.004,.004,.004,x,boardH*.38,boardFront-.012,led);
  }
- const screenW=usable*.20,screenH=bayH*.53,screenX=usable*.35;
- box('monitor case',screenW,screenH,.014,screenX,0,-.081,displayFrame);
- const screen=MeshBuilder.CreatePlane(id+' telemetry screen',{width:screenW*.90,height:screenH*.82,sideOrientation:Mesh.DOUBLESIDE},scene);
- screen.parent=root;screen.position.set(screenX,0,-.091);screen.metadata={id};
- const tex=new DynamicTexture(id+' telemetry', {width:256,height:320},scene,false);
+ const screenW=bayW*.23,screenH=Math.min(bayH*.50,.095),screenX=bayW*.375;
+ box('monitor case',screenW,screenH,.015,screenX,0,-.091,frame);
+ const screen=MeshBuilder.CreatePlane(id+' telemetry screen',{width:screenW*.89,height:screenH*.81,sideOrientation:Mesh.DOUBLESIDE},scene);
+ screen.parent=root;screen.position.set(screenX,0,-.101);screen.metadata={id};
+ const tex=new DynamicTexture(id+' telemetry',{width:256,height:320},scene,false);
  const ctx=tex.getContext();ctx.fillStyle='#061728';ctx.fillRect(0,0,256,320);
  ctx.fillStyle='#4fcaff';ctx.font='bold 25px monospace';ctx.fillText('HomeLab',15,38);
- for(let i=0;i<4;i++){ctx.fillStyle=i%2?'#258cda':'#35dc9c';ctx.fillRect(15,80+i*56,130+i*18,14);ctx.fillStyle='#d8f2ff';ctx.font='18px monospace';ctx.fillText(['CPU','RAM','TEMP','NET'][i],15,70+i*56)}
- tex.update();const screenMat=new StandardMaterial(id+' telemetry material',scene);screenMat.diffuseTexture=tex;screenMat.emissiveColor=new Color3(.21,.3,.4);screenMat.backFaceCulling=false;screen.material=screenMat;
+ for(let i=0;i<4;i++){ctx.fillStyle=i%2?'#258cda':'#35dc9c';ctx.fillRect(15,78+i*55,125+i*18,13);ctx.fillStyle='#d8f2ff';ctx.font='16px monospace';ctx.fillText('PI '+(i+1),15,75+i*55);}
+ tex.update();const display=new StandardMaterial(id+' display screen',scene);display.diffuseTexture=tex;display.emissiveColor=Color3.FromHexString('#106c8b');display.backFaceCulling=false;screen.material=display;
 }
