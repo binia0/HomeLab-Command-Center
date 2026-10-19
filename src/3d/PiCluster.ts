@@ -20,19 +20,36 @@ export function renderPiCluster(scene:Scene,root:TransformNode,id:string,rackWid
   box('mount rail '+side,.016,bayH*.98,.021,side*usable*.5,0,-.061,sockets);
   for(let i=0;i<4;i++)box('mount rivet '+side+' '+i,.004,.004,.004,side*usable*.5,(i-1.5)*bayH*.20,-.073,gold);
  }
- const boardW=usable*.155,boardH=bayH*.69;
+ // Each Pi has a separate physical 3D carrier and an elevated board.
+ // Distinct PCB thickness, mounting standoffs, etched traces, chips and port bodies.
+ const boardW=usable*.145,boardH=bayH*.70;
+ const trace=paint('copper PCB traces','#9e8050',.38),silk=paint('PCB markings','#c5d9b2',.05);
  for(let i=0;i<4;i++){
-  const x=-usable*.36+i*usable*.18;
-  box('board '+i,boardW,boardH,.004,x,0,-.077,pcb);
-  for(const sx of [-1,1])for(const sy of [-1,1])box('board fixing '+i+sx+sy,.005,.005,.005,x+sx*boardW*.42,sy*boardH*.42,-.082,gold);
-  box('processor '+i,boardW*.48,boardH*.30,.009,x,boardH*.13,-.086,dark);
-  box('CPU cooler '+i,boardW*.41,boardH*.24,.006,x,boardH*.13,-.095,sockets);
-  for(let j=0;j<4;j++)box('heatsink fin '+i+' '+j,boardW*.34,.002,.008,x,boardH*(.035+j*.048),-.101,back);
-  // Network sockets are drawn from the editable device port coordinates in scene.ts.
-  box('USB connector '+i,boardW*.31,boardH*.18,.013,x-boardW*.24,-boardH*.29,-.088,sockets);
-  box('USB slot '+i,boardW*.24,boardH*.09,.003,x-boardW*.24,-boardH*.29,-.098,blue);
-  for(let p=0;p<9;p++)box('GPIO pin '+i+' '+p,.0017,.003,.003,x-boardW*.39+p*boardW*.095,boardH*.38,-.083,gold);
-  box('Pi LED '+i,.004,.004,.006,x+boardW*.31,boardH*.30,-.088,led);
+  const x=-usable*.378+i*usable*.182;
+  const carrierZ=-.064,boardZ=-.083;
+  box('independent carrier '+i,boardW*1.12,boardH*1.12,.006,x,0,carrierZ,back);
+  for(const sx of [-1,1])for(const sy of [-1,1]){
+   const px=x+sx*boardW*.43,py=sy*boardH*.43;
+   box('separate standoff '+i+' '+sx+sy,.007,.007,.019,px,py,-.073,sockets);
+   box('standoff screw '+i+' '+sx+sy,.004,.004,.003,px,py,-.089,gold);
+  }
+  box('green Raspberry Pi circuit board '+i,boardW,boardH,.003,x,0,boardZ,pcb);
+  for(let j=0;j<5;j++){
+   box('PCB signal track '+i+' '+j,boardW*.55,.0009,.0007,x,boardH*(-.23+j*.115),-.085,trace);
+   box('silkscreen label '+i+' '+j,boardW*.21,.0011,.0007,x-boardW*.20,boardH*(-.35+j*.155),-.0857,silk);
+  }
+  box('processor '+i,boardW*.39,boardH*.25,.008,x-boardW*.08,boardH*.12,-.090,dark);
+  box('processor heatspreader '+i,boardW*.34,boardH*.22,.004,x-boardW*.08,boardH*.12,-.096,sockets);
+  for(let j=0;j<5;j++)box('metal heatsink fin '+i+' '+j,boardW*.30,.0017,.009,x-boardW*.08,boardH*(.03+j*.043),-.104,sockets);
+  box('RAM '+i,boardW*.22,boardH*.13,.003,x+boardW*.20,boardH*.18,-.088,dark);
+  // Structural USB stack only; editable RJ45 sockets come from the shared port renderer.
+  box('USB metal housing '+i,boardW*.28,boardH*.15,.012,x+boardW*.24,-boardH*.25,-.094,sockets);
+  box('USB inset '+i,boardW*.19,boardH*.085,.002,x+boardW*.24,-boardH*.25,-.101,blue);
+  box('USB stack seam '+i,boardW*.25,.001,.002,x+boardW*.24,-boardH*.25,-.103,dark);
+  for(let p=0;p<12;p++){
+   box('individual GPIO gold pin '+i+' '+p,.0013,.003,.004,x-boardW*.39+p*boardW*.068,boardH*.39,-.087,gold);
+  }
+  box('Pi activity diode '+i,.003,.004,.005,x+boardW*.32,boardH*.29,-.089,led);
  }
  const screenW=usable*.20,screenH=bayH*.53,screenX=usable*.35;
  box('monitor case',screenW,screenH,.014,screenX,0,-.081,displayFrame);
