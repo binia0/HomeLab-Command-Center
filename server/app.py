@@ -131,6 +131,28 @@ class Handler(BaseHTTPRequestHandler):
      network_kbps=round(sum(abs(v) for v in net.values()),1) if net else None
      uptime_seconds=round(max(uptime.values())) if uptime else None
      return self.send(200,{'source':'Netdata','available':any(v is not None for v in readings.values()),'cpu_percent':cpu_percent,'ram_percent':ram_used,'network_kbps':network_kbps,'uptime_seconds':uptime_seconds,'timestamp':int(time.time())})
+    if path=='/api/library/import-raspberry-pi-5' and method=='POST':
+     # Official Raspberry Pi Ltd CAD model. Fetch only this fixed HTTPS URL.
+     from urllib.request import urlopen
+     from zipfile import ZipFile
+     from io import BytesIO
+     url='https://pip-assets.raspberrypi.com/categories/892-raspberry-pi-5/documents/RP-010082-CA-1-rpi-5%203D%20STEP%20-%20With%20Graphics%20large%20file.zip'
+     try:
+      with urlopen(url,timeout=30) as source:archive=source.read(35*1024*1024+1)
+      if len(archive)>35*1024*1024:raise ValueError('Originaldatei zu groß')
+      with ZipFile(BytesIO(archive)) as z:
+       candidates=[info for info in z.infolist() if info.filename.lower().endswith(('.step','.stp')) and not info.is_dir()]
+       if not candidates:raise ValueError('ZIP enthält keine STEP-Geometrie')
+       part=max(candidates,key=lambda info:info.file_size)
+       if part.file_size>50*1024*1024:raise ValueError('STEP-Datei ist zu groß')
+       raw=z.read(part)
+      glb=step_to_glb(raw)
+      if len(glb)>50*1024*1024:raise ValueError('CAD-Konvertierung zu groß')
+     except Exception as error:return self.send(422,{'error':'Raspberry Pi 5 CAD-Import fehlgeschlagen: '+str(error)[:280]})
+     key=secrets.token_hex(12)
+     name='Raspberry Pi 5 – offizielles STEP-CAD'
+     c.execute('INSERT INTO cad_library(id,user_id,name,format,glb,updated) VALUES(?,?,?,?,?,?)',(key,current['id'],name,'step',glb,int(time.time())))
+     return self.send(201,{'id':key,'name':name,'format':'step','size':len(glb),'source':url})
     if path=='/api/library/models' and method=='GET':
      rows=c.execute('SELECT id,name,format,length(glb) size,updated FROM cad_library WHERE user_id=? ORDER BY updated DESC',(current['id'],)).fetchall()
      return self.send(200,{'models':[dict(row) for row in rows]})
