@@ -60,7 +60,7 @@ if(panel&&attachedSlot){
  const widthFactor=Math.max(.07,Math.min(1,(W*.8/cols-.008)/(W+.062)));
  const heightFactor=Math.max(.07,Math.min(1,(panelHeight*.76/rows-.006)/Math.max(h,.01)));
  root.scaling.set(widthFactor,heightFactor,1);
- root.position.z+=isRear?-.065:.065;
+ root.position.z+=isRear?-.13:.13;
 }else if(visualCategory==='pi-cluster'){
  // The standing Pi boards extend into the rack while the cable sockets face outward.
  root.position.z+=isRear?-.12:.12;
