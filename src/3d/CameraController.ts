@@ -12,7 +12,19 @@ export class CameraController {
   if(side==='orbit')this.alpha=this.camera.alpha;
   this.beta=side==='orbit'?this.camera.beta:Math.PI/2;
  }
- home(height:number,depth=.8){this.target=new Vector3(0,height/2,0);this.radius=Math.max(depth/2+.34,height/(2*Math.tan(this.camera.fov/2)*.79));this.alpha=-Math.PI/2+.22;this.beta=Math.PI/2.12}
+ home(height:number,depth=.8){
+  // Frame the whole 3D rack, including its top and feet, at any canvas aspect ratio.
+  const engine=this.camera.getEngine(),size=engine.getRenderWidth()/Math.max(1,engine.getRenderHeight());
+  const vfov=this.camera.fov;
+  const hfov=2*Math.atan(Math.tan(vfov/2)*size);
+  const halfHeight=height*.56,halfWidth=Math.max(.34,depth*.53);
+  const fitVertical=halfHeight/Math.tan(vfov/2);
+  const fitHorizontal=halfWidth/Math.tan(Math.max(.1,hfov)/2);
+  this.target=new Vector3(0,height*.5,0);
+  this.radius=Math.max(depth*.63+.3,fitVertical,fitHorizontal)*1.10;
+  this.alpha=-Math.PI/2+.30;
+  this.beta=Math.PI/2.10;
+ }
  view(side:'front'|'back'|'orbit'){this.alpha=side==='front'?-Math.PI/2+.13:side==='back'?Math.PI/2-.13:-Math.PI/2+.42;this.beta=side==='orbit'?Math.PI/2.12:Math.PI/2.06}
  tick(){
   const k=.12;
