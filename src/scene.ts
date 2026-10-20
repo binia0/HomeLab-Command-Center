@@ -54,7 +54,12 @@ for(const d of c.devices){
  /ups|cyberpower|battery/.test(identity)?'power':
  /dell|server|poweredge/.test(identity)?'server':
  /raspberry|\bpi cluster\b|\bpi rack\b/.test(identity)?'pi-cluster':d.category;
- const h=d.height*U-.006,y=(d.u-1)*U+h/2+.008;if(y>H||y<0)continue;const root=new TransformNode('device '+d.id,scene);const isRear=d.mount==='rear';const host=d.hostDeviceId?c.devices.find(item=>item.id===d.hostDeviceId):undefined;const panel=d.panelId?c.devices.find(item=>item.id===d.panelId):undefined;const attachedSlot=panel?.slots?.find(slot=>slot.id===d.slotId);const slotIndex=attachedSlot&&panel?.slots?panel.slots.indexOf(attachedSlot):-1;const cols=panel?.slots?.length?Math.max(1,Math.min(panel.slots.length,panel.slotColumns||panel.slots.length)):1;const rows=panel?.slots?.length?Math.ceil(panel.slots.length/cols):1;const slotCol=slotIndex>=0?slotIndex%cols:0,slotRow=slotIndex>=0?Math.floor(slotIndex/cols):0;const panelHeight=panel?(panel.height*U-.006):h;const slotX=panel&&attachedSlot?(-W*.4+(slotCol+.5)*W*.8/cols+(attachedSlot.offsetXmm||0)/1000):0;const slotY=panel&&attachedSlot?((panel.u-1)*U+panelHeight/2+.008+panelHeight*.38-(slotRow+.5)*panelHeight*.76/rows+(attachedSlot.offsetYmm||0)/1000):y;const hostY=host?(host.u-1)*U+(host.height*U-.006)/2+.008:y;const faceOffset=host&&d.category==='display'?.12:0;root.position.set(panel&&attachedSlot?slotX:0,panel&&attachedSlot?slotY:(host?hostY:y),isRear?D/2+.01+faceOffset:-D/2-.01-faceOffset);
+ const h=d.height*U-.006,y=(d.u-1)*U+h/2+.008;if(y>H||y<0)continue;const root=new TransformNode('device '+d.id,scene);const isRear=d.mount==='rear';const host=d.hostDeviceId?c.devices.find(item=>item.id===d.hostDeviceId):undefined;const panel=d.panelId?c.devices.find(item=>item.id===d.panelId):undefined;const attachedSlot=panel?.slots?.find(slot=>slot.id===d.slotId);const slotIndex=attachedSlot&&panel?.slots?panel.slots.indexOf(attachedSlot):-1;const cols=panel?.slots?.length?Math.max(1,Math.min(panel.slots.length,panel.slotColumns||panel.slots.length)):1;const rows=panel?.slots?.length?Math.ceil(panel.slots.length/cols):1;const slotCol=slotIndex>=0?slotIndex%cols:0,slotRow=slotIndex>=0?Math.floor(slotIndex/cols):0;const panelHeight=panel?(panel.height*U-.006):h;const slotX=panel&&attachedSlot?(-W*.4+(slotCol+.5)*W*.8/cols+(attachedSlot.offsetXmm||0)/1000):0;const slotY=panel&&attachedSlot?((panel.u-1)*U+panelHeight/2+.008+panelHeight*.38-(slotRow+.5)*panelHeight*.76/rows+(attachedSlot.offsetYmm||0)/1000):y;const hostY=host?(host.u-1)*U+(host.height*U-.006)/2+.008:y;const piHost=!!host&&d.category==='sbc'&&(host.category==='holder'||/raspberry|\bpi\b|sbc/i.test(host.name));
+const hostSiblings=piHost?c.devices.filter(item=>item.hostDeviceId===host!.id&&item.category==='sbc'&&!item.panelId):[];
+const hostIndex=hostSiblings.findIndex(item=>item.id===d.id);
+const hostX=piHost&&hostIndex>=0?(-W*.37+(hostIndex+.5)*W*.74/Math.max(1,hostSiblings.length)):0;
+const faceOffset=host&&d.category==='display'?.12:0;
+root.position.set(panel&&attachedSlot?slotX:hostX,panel&&attachedSlot?slotY:(host?hostY:y),isRear?D/2+.01+faceOffset:-D/2-.01-faceOffset);
 // Inset real equipment into the cage, not as overlapping front-facing full-width panels.
 // For slot-mounted hardware, shrink the entire local assembly to the actual slot opening.
 if(panel&&attachedSlot){
@@ -62,8 +67,8 @@ if(panel&&attachedSlot){
  const heightFactor=Math.max(.07,Math.min(1,(panelHeight*.76/rows-.006)/Math.max(h,.01)));
  root.scaling.set(widthFactor,heightFactor,1);
  root.position.z+=isRear?-.13:.13;
-}else if(visualCategory==='pi-cluster'){
- // The standing Pi boards extend into the rack while the cable sockets face outward.
+}else if(visualCategory==='pi-cluster'||piHost){
+ // Recess Pi holder and individual edge-mounted Pi boards into the cage.
  root.position.z+=isRear?-.12:.12;
 }
 const holderName=((host?.name||'')+' '+(panel?.name||'')).toLowerCase();
@@ -72,7 +77,7 @@ root.rotation.set((d.rotationX||0)*Math.PI/180,(isRear?Math.PI:0)+(defaultPiVert
 const enclosureDepth=Math.min(D-.05,Math.max(.035,(d.depthMm??(d.category==='server'?650:d.category==='storage'?450:180))/1000));const sideBody=material('chassis '+d.id,'#273744');
 if(!['sbc','display','lcd-pi','pi-cluster'].includes(visualCategory||'')&&!d.hostDeviceId)mk('enclosure body '+d.id,Math.min(W*.88,(d.widthMm||W*880)/1000),h*.83,enclosureDepth,0,0,enclosureDepth*.5+.005,sideBody,root,d.id);
 if(!['sbc','display','lcd-pi','pi-cluster'].includes(visualCategory||'')&&!d.hostDeviceId)for(const side of [-1,1]){mk('chassis handle '+side+' '+d.id,.012,Math.max(.012,h*.42),.022,side*W*.37,0,-.045,titanium,root,d.id)}
-if(d.category==='sbc'&&!d.slots?.length){
+if(d.category==='sbc'&&!d.slots?.length&&!host&&!panel){
   mk('open single board computer mounting tray',W*.57,h*.86,.008,0,0,-.023,steel,root,d.id);
   for(const side of [-1,1]){mk('SBC side mounting rail',.009,h*.9,.026,side*W*.30,0,-.028,titanium,root,d.id)}
   mk('mounting tray lower lip',W*.6,.006,.02,0,-h*.43,-.033,steel,root,d.id);
@@ -85,9 +90,9 @@ if(d.category==='sbc'&&!d.slots?.length){
    mk('anodized top edge '+d.id,W*.88,.002,.015,0,h*.44,-.009,titanium,root,d.id);
    mk('anodized lower edge '+d.id,W*.88,.002,.015,0,-h*.44,-.009,titanium,root,d.id);
   }
- }for(const edge of [-1,1]){mk('ear '+edge,.018,h,.007,edge*(W/2+.025),0,-.034,titanium,root,d.id);mk('ear screw '+edge,.004,.004,.009,edge*(W/2+.026),0,-.04,screw,root,d.id)}mk('trim top',W*.93,.002,.004,0,h/2-.005,-.029,steel,root,d.id);mk('trim bottom',W*.93,.002,.004,0,-h/2+.005,-.029,steel,root,d.id);
+ }if(!host&&!panel)for(const edge of [-1,1]){mk('ear '+edge,.018,h,.007,edge*(W/2+.025),0,-.034,titanium,root,d.id);mk('ear screw '+edge,.004,.004,.009,edge*(W/2+.026),0,-.04,screw,root,d.id)}mk('trim top',W*.93,.002,.004,0,h/2-.005,-.029,steel,root,d.id);mk('trim bottom',W*.93,.002,.004,0,-h/2+.005,-.029,steel,root,d.id);
 }
-for(const sx of [-1,1]){mk('rack fastener recessed '+d.id+' '+sx,.009,.009,.004,sx*(W/2+.027),h*.29,-.042,shadow,root,d.id);mk('rack fastener head '+d.id+' '+sx,.004,.004,.006,sx*(W/2+.027),h*.29,-.048,screw,root,d.id)}
+if(!host&&!panel)for(const sx of [-1,1]){mk('rack fastener recessed '+d.id+' '+sx,.009,.009,.004,sx*(W/2+.027),h*.29,-.042,shadow,root,d.id);mk('rack fastener head '+d.id+' '+sx,.004,.004,.006,sx*(W/2+.027),h*.29,-.048,screw,root,d.id)}
 
 const trim=material('metal trim '+d.id,'#91a4ac');const blue=material('usb blue '+d.id,'#2264b0');const green=material('PCB '+d.id,'#216d50');const copper=material('PCB copper '+d.id,'#b68b52');const pale=material('connector '+d.id,'#a9b9bf');const tag=material('status '+d.id,'#e6c464');
 if(d.category==='sbc'&&!d.slots?.length){renderSingleBoardComputer(scene,root,d.id,W,h)}
