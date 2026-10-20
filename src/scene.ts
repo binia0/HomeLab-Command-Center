@@ -81,7 +81,7 @@ if(d.category==='sbc'&&!d.slots?.length&&!host&&!panel){
   mk('open single board computer mounting tray',W*.57,h*.86,.008,0,0,-.023,steel,root,d.id);
   for(const side of [-1,1]){mk('SBC side mounting rail',.009,h*.9,.026,side*W*.30,0,-.028,titanium,root,d.id)}
   mk('mounting tray lower lip',W*.6,.006,.02,0,-h*.43,-.033,steel,root,d.id);
-}else{if(!['display','lcd-pi','pi-cluster'].includes(visualCategory||'')&&!d.hostDeviceId){
+}else{if(!['display','lcd-pi','pi-cluster'].includes(visualCategory||'')&&!host&&!panel){
   // Equipment-specific front faces must stay uncovered by the formerly opaque rack slab.
   const showOriginalFront=!['switch','network','storage','server','power'].includes(visualCategory||'');
   if(showOriginalFront){mk(d.name,W+.062,h,.022,0,0,.010,face,root,d.id);mk('front',W+.052,h-.008,.003,0,0,-.003,black,root,d.id)}
@@ -90,7 +90,7 @@ if(d.category==='sbc'&&!d.slots?.length&&!host&&!panel){
    mk('anodized top edge '+d.id,W*.88,.002,.015,0,h*.44,-.009,titanium,root,d.id);
    mk('anodized lower edge '+d.id,W*.88,.002,.015,0,-h*.44,-.009,titanium,root,d.id);
   }
- }if(!host&&!panel)for(const edge of [-1,1]){mk('ear '+edge,.018,h,.007,edge*(W/2+.025),0,-.034,titanium,root,d.id);mk('ear screw '+edge,.004,.004,.009,edge*(W/2+.026),0,-.04,screw,root,d.id)}mk('trim top',W*.93,.002,.004,0,h/2-.005,-.029,steel,root,d.id);mk('trim bottom',W*.93,.002,.004,0,-h/2+.005,-.029,steel,root,d.id);
+ }if(!host&&!panel){for(const edge of [-1,1]){mk('ear '+edge,.018,h,.007,edge*(W/2+.025),0,-.034,titanium,root,d.id);mk('ear screw '+edge,.004,.004,.009,edge*(W/2+.026),0,-.04,screw,root,d.id)}mk('trim top',W*.93,.002,.004,0,h/2-.005,-.029,steel,root,d.id);mk('trim bottom',W*.93,.002,.004,0,-h/2+.005,-.029,steel,root,d.id);}
 }
 if(!host&&!panel)for(const sx of [-1,1]){mk('rack fastener recessed '+d.id+' '+sx,.009,.009,.004,sx*(W/2+.027),h*.29,-.042,shadow,root,d.id);mk('rack fastener head '+d.id+' '+sx,.004,.004,.006,sx*(W/2+.027),h*.29,-.048,screw,root,d.id)}
 
