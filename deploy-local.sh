@@ -34,4 +34,9 @@ git rev-parse HEAD > "$TARGET/.hcc-source-sha"
 echo "Starting port 8080 from local build: $(cat "$TARGET/.hcc-source-sha")"
 sudo env HCC_STATIC_DIR="$TARGET" docker compose up -d --build
 sudo docker compose ps
-echo "Ready: port 8080 now serves the frontend built from this source commit."
+if command -v curl >/dev/null 2>&1; then
+  echo "Checking web and API on port 8080..."
+  curl --retry 10 --retry-delay 2 --retry-connrefused -fsS -o /dev/null http://127.0.0.1:8080/
+  curl --retry 10 --retry-delay 2 --retry-connrefused -fsS -o /dev/null http://127.0.0.1:8080/api/me
+fi
+echo "Ready: port 8080 now serves the frontend built from source $(cat "$TARGET/.hcc-source-sha")."
