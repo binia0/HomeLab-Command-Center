@@ -10,7 +10,7 @@ import {drawEquipmentDetail} from './3d/DeviceDetails';
 import {addPrecisionRackFixtures} from './3d/RackDetails';
 import {CameraController} from './3d/CameraController';
 import{Engine,Scene,ArcRotateCamera,Vector3,Color3,Color4,HemisphericLight,DirectionalLight,MeshBuilder,PBRMaterial,TransformNode,PointerEventTypes,SceneLoader,StandardMaterial,Mesh,Texture,GlowLayer,ShadowGenerator,Matrix}from'@babylonjs/core';import'@babylonjs/loaders/glTF';
-export type Width=10|19;export type Face='front'|'back'|'orbit';export type Port={id:string;type:string;x:number;y:number;z:number};export type Slot={id:string;name:string;model:string;ip:string;occupied:boolean;deviceIds?:string[];offsetXmm?:number;offsetYmm?:number;rotationDeg?:number;scale?:number};export type DeviceDisplay={id:string;name:string;kind:'lcd'|'oled'|'touch'|'monitor';widthMm:number;heightMm:number;offsetXmm:number;offsetYmm:number;connection:'HDMI'|'USB'|'DSI'|'SPI'|'I2C'|'OTHER'};export type Device={id:string;name:string;u:number;height:number;color:string;mount?:'front'|'rear';category?:string;manufacturer?:string;model?:string;ip?:string;slots?:Slot[];slotColumns?:number;displays?:DeviceDisplay[];imageData?:string;rearImageData?:string;leftImageData?:string;rightImageData?:string;templateId?:string;widthMm?:number;depthMm?:number;rotationX?:number;rotationY?:number;rotationZ?:number;hostDeviceId?:string;panelId?:string;slotId?:string;ports:Port[]};export type Config={width:Width;units:number;depthMm?:number;devices:Device[]};
+export type Width=10|19;export type Face='front'|'back'|'orbit';export type Port={id:string;type:string;x:number;y:number;z:number};export type Slot={id:string;name:string;model:string;ip:string;occupied:boolean;deviceIds?:string[];offsetXmm?:number;offsetYmm?:number;rotationDeg?:number;scale?:number};export type DeviceDisplay={id:string;name:string;kind:'lcd'|'oled'|'touch'|'monitor';widthMm:number;heightMm:number;offsetXmm:number;offsetYmm:number;connection:'HDMI'|'USB'|'DSI'|'SPI'|'I2C'|'OTHER'};export type Device={id:string;name:string;u:number;height:number;color:string;mount?:'front'|'rear';category?:string;manufacturer?:string;model?:string;ip?:string;slots?:Slot[];slotColumns?:number;displays?:DeviceDisplay[];imageData?:string;rearImageData?:string;leftImageData?:string;rightImageData?:string;templateId?:string;widthMm?:number;depthMm?:number;rotationX?:number;rotationY?:number;rotationZ?:number;modelFileName?:string;hostDeviceId?:string;panelId?:string;slotId?:string;ports:Port[]};export type Config={width:Width;units:number;depthMm?:number;devices:Device[]};
 export const U=.04445;
 /** One coordinate mapping for visible sockets and cable attachments. */
 function connectorPosition(port:Port,width:number,height:number,depth:number):Vector3{
@@ -130,11 +130,11 @@ async function restoreModels(){
  for(const device of [...cfg.devices]){
   try{
    let asset=await loadModelAsset(device.id);
-   if(!asset){try{const response=await fetch('/api/models/'+encodeURIComponent(device.id),{credentials:'same-origin'});if(response.ok){asset=await response.blob();await saveModelAsset(device.id,new File([asset],device.id+'.glb',{type:'model/gltf-binary'}))}}catch(error){console.warn('Remote GLB unavailable',error)}}
+   if(!asset){try{const response=await fetch('/api/models/'+encodeURIComponent(device.id),{credentials:'same-origin'});if(response.ok){asset=await response.blob();await saveModelAsset(device.id,new File([asset],device.modelFileName||device.id+'.glb',{type:'model/gltf-binary'}))}}catch(error){console.warn('Remote GLB unavailable',error)}}
    if(!asset&&device.templateId==='rack-nas-4u')asset=await builtInNas();
    if(revision!==restoreRevision)return;
    if(asset&&instances.has(device.id)){
-    const upload=new File([asset],device.id+'.glb',{type:'model/gltf-binary'});
+    const upload=new File([asset],device.modelFileName||(asset instanceof File?asset.name:device.id+'.glb'),{type:'model/gltf-binary'});
     await importGLB(upload,device.id,false);
    }
   }catch(error){console.warn('3D model restore failed',device.id,error)}
