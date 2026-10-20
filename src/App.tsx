@@ -20,23 +20,29 @@ useEffect(()=>{let alive=true;setModelName(null);void modelAssetName(sel).then(n
 const createDisplayAssembly=()=>{const result=createLcdPiAssembly(config,assemblyName,newId('lcd-pi'));if(!result.ok){setAssemblyError(result.error);return}setConfig(v=>({...v,devices:[...v.devices,result.device]}));setSel(result.device.id);setShowAssembly(false);setAssemblyHost('');setAssemblyError('');setStatus('Ein gemeinsames LCD+Raspberry-Pi-Bauteil an U'+result.device.u+' montiert')};
 const loadShowcaseRack=()=>{if(config.devices.length&&!window.confirm('Dieses Showcase ersetzt deinen aktuellen lokalen Rack-Arbeitsstand. Bitte vorher über „Rack exportieren“ sichern. Fortfahren?'))return;
 const jack=(id:string,type:string,x:number):Port=>({id,type,x,y:0,z:-1});
-const showcase:Config={width:19,units:24,depthMm:800,devices:[
-{id:'showcase-ups',name:'Rack UPS 2U',u:1,height:2,category:'power',manufacturer:'Custom',model:'Rack UPS',widthMm:440,depthMm:500,color:'#242d3b',ports:[jack('input','POWER',-.25),jack('output','POWER',.25)]},
-{id:'showcase-nas',name:'8-Bay NAS Storage',u:4,height:3,category:'storage',manufacturer:'Custom',model:'8-Bay Storage',widthMm:440,depthMm:500,color:'#26313f',ports:[jack('eth0','RJ45',-.27),jack('power','POWER',.30)]},
-{id:'showcase-server',name:'2U Rack Server',u:8,height:3,category:'server',manufacturer:'Custom',model:'Rack Server',widthMm:440,depthMm:650,color:'#253343',ports:[jack('eth0','RJ45',-.30),jack('power','POWER',.29)]},
-{id:'showcase-pis',name:'4 Raspberry Pis + Rack LCD',u:12,height:5,category:'pi-cluster',manufacturer:'Raspberry Pi',model:'4x SBC with Telemetry LCD',widthMm:440,depthMm:190,color:'#172735',ports:[jack('eth1','RJ45',-.32),jack('eth2','RJ45',-.14),jack('eth3','RJ45',.04),jack('eth4','RJ45',.21),jack('lcd','HDMI',.36),jack('power','POWER',.42)]},
-{id:'showcase-switch-secondary',name:'24 Port Network Switch',u:18,height:1,category:'switch',manufacturer:'Custom',model:'24 Port Managed Network Switch',widthMm:440,depthMm:270,color:'#1a2736',ports:Array.from({length:16},(_,i)=>jack('lan'+(i+1),'RJ45',-.42+i*.056))},
-{id:'showcase-switch',name:'24 Port Core Switch',u:21,height:1,category:'switch',manufacturer:'Custom',model:'24 Port Core Network',widthMm:440,depthMm:270,color:'#182838',ports:Array.from({length:16},(_,i)=>jack('lan'+(i+1),'RJ45',-.42+i*.056))}
+const showcase:Config={width:19,units:42,depthMm:800,devices:[
+{id:'showcase-ups',name:'Rack UPS 3U',u:1,height:3,category:'power',manufacturer:'Custom',model:'Rack UPS',widthMm:440,depthMm:500,color:'#242d3b',ports:[jack('input','POWER',-.25),jack('output','POWER',.25)]},
+{id:'showcase-nas',name:'8-Bay NAS Storage',u:5,height:3,category:'storage',manufacturer:'Custom',model:'8-Bay Storage',widthMm:440,depthMm:500,color:'#26313f',ports:[jack('eth0','RJ45',-.27),jack('power','POWER',.30)]},
+{id:'showcase-server',name:'2U Rack Server',u:11,height:3,category:'server',manufacturer:'Custom',model:'Rack Server',widthMm:440,depthMm:650,color:'#253343',ports:[jack('eth0','RJ45',-.30),jack('power','POWER',.29)]},
+{id:'showcase-pis',name:'4 Raspberry Pis + Rack LCD',u:19,height:9,category:'pi-cluster',manufacturer:'Raspberry Pi',model:'4x SBC with Telemetry LCD',widthMm:440,depthMm:190,color:'#172735',ports:[jack('eth1','RJ45',-.32),jack('eth2','RJ45',-.14),jack('eth3','RJ45',.04),jack('eth4','RJ45',.21),jack('lcd','HDMI',.36),jack('power','POWER',.42)]},
+...Array.from({length:4},(_,i):Device=>({
+ id:'showcase-pi-'+(i+1),name:'Raspberry Pi 4 ('+(i+1)+')',u:19,height:2,
+ category:'sbc',hostDeviceId:'showcase-pis',manufacturer:'Raspberry Pi',
+ model:'Raspberry Pi 4 Model B',widthMm:85,depthMm:60,color:'#1b6840',
+ ports:[jack('eth0','RJ45',0),jack('usb1','USB-A',-.25)]
+})),
+{id:'showcase-switch-secondary',name:'24 Port Network Switch',u:33,height:1,category:'switch',manufacturer:'Custom',model:'24 Port Managed Network Switch',widthMm:440,depthMm:270,color:'#1a2736',ports:Array.from({length:16},(_,i)=>jack('lan'+(i+1),'RJ45',-.42+i*.056))},
+{id:'showcase-switch',name:'24 Port Core Switch',u:39,height:1,category:'switch',manufacturer:'Custom',model:'24 Port Core Network',widthMm:440,depthMm:270,color:'#182838',ports:Array.from({length:16},(_,i)=>jack('lan'+(i+1),'RJ45',-.42+i*.056))}
 ]};
 setConfig(showcase);setCables([
-{a:'showcase-switch/lan1',b:'showcase-pis/eth1'},
-{a:'showcase-switch/lan2',b:'showcase-pis/eth2'},
-{a:'showcase-switch/lan3',b:'showcase-pis/eth3'},
-{a:'showcase-switch/lan4',b:'showcase-pis/eth4'},
+{a:'showcase-switch/lan1',b:'showcase-pi-1/eth0'},
+{a:'showcase-switch/lan2',b:'showcase-pi-2/eth0'},
+{a:'showcase-switch/lan3',b:'showcase-pi-3/eth0'},
+{a:'showcase-switch/lan4',b:'showcase-pi-4/eth0'},
 {a:'showcase-switch/lan5',b:'showcase-server/eth0'},
 {a:'showcase-switch/lan6',b:'showcase-nas/eth0'},
 {a:'showcase-switch/lan7',b:'showcase-switch-secondary/lan1'}
-]);setUrls({});setSel('');setFace('front');setFirst('');setMode('SELECT');setStatus('Referenz-Showcase geladen · 6 Geräte · 7 farbige Kabel · 4 Pis + LCD');};
+]);setUrls({});setSel('');setFace('front');setFirst('');setMode('SELECT');setStatus('19-Zoll-Referenzrack geladen · 42 HE · 4 separat montierte Raspberry Pi 4 · 7 Kabel');};
 const exportRack=()=>{const data={format:'homelab-rack-v1',exportedAt:new Date().toISOString(),rack:config,cables,services:urls};const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='homelab-rack-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(url);setStatus('Rack exportiert · JSON-Backup gespeichert')};
 const[telemetry,setTelemetry]=useState<{available:boolean;cpu_percent:number|null;ram_percent:number|null;network_kbps?:number|null;uptime_seconds?:number|null;timestamp:number;source:string}|null>(null);
 useEffect(()=>{const device=config.devices.find(d=>d.id===sel);if(!device?.ip){setTelemetry(null);return}let alive=true;const load=async()=>{try{const response=await fetch('/api/telemetry?host='+encodeURIComponent(device.ip||''),{credentials:'same-origin'});const data=await response.json();if(alive)setTelemetry(response.ok?data:{available:false,cpu_percent:null,ram_percent:null,timestamp:0,source:'Netdata'})}catch{if(alive)setTelemetry({available:false,cpu_percent:null,ram_percent:null,timestamp:0,source:'Netdata'})}};setTelemetry(null);void load();const timer=window.setInterval(()=>void load(),15000);return()=>{alive=false;window.clearInterval(timer)}},[sel,config.devices]);
