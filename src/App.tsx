@@ -56,14 +56,17 @@ try{
  const response=await fetch('/api/library/import-raspberry-pi-4',{method:'POST',credentials:'same-origin'});
  const result=await response.json();if(!response.ok)throw Error(result.error||'CAD-Import fehlgeschlagen');
  await refreshLibrary();setChosenLibrary(result.id);
- const label=(dev.name+' '+(dev.model||'')).toLowerCase();
- if(/(?:raspberry\s*pi\s*4|\bpi\s*4\b)/.test(label)){
+ const pi4s=config.devices.filter(item=>/(?:raspberry\s*pi\s*4|\bpi\s*4\b)/i.test(item.name+' '+(item.model||'')));
+ if(pi4s.length){
   const asset=await fetch('/api/library/models/'+result.id,{credentials:'same-origin'});
   if(!asset.ok)throw Error('CAD gespeichert, aber GLB konnte nicht geladen werden');
-  const file=new File([await asset.blob()],'Raspberry-Pi-4-CC0-CAD.glb',{type:'model/gltf-binary'});
-  await engine.current?.load(file,dev.id);setModelName(file.name);
-  setStatus('Pi 4 CAD-Rekonstruktion eingebaut (CC0, kein Herstelleroriginal).');
- }else setStatus('Pi 4 CAD in Bibliothek gespeichert. Gerätetyp prüfen und gezielt zuordnen.');
+  const bytes=await asset.blob();
+  const file=new File([bytes],'Raspberry-Pi-4-CC0-CAD.glb',{type:'model/gltf-binary'});
+  let loaded=0;
+  for(const pi of pi4s){await engine.current?.load(file,pi.id);loaded++}
+  if(pi4s.some(pi=>pi.id===dev.id))setModelName(file.name);
+  setStatus('Pi 4 CAD-Rekonstruktion auf '+loaded+' Pi-4-Gerät(en) eingebaut (CC0).');
+ }else setStatus('Pi 4 CAD in Bibliothek gespeichert. Bitte Pi-4-Geräte korrekt benennen und dann zuordnen.');
 }catch(error){setStatus('Pi 4 CAD-Import: '+String(error))}
 }}>RASPBERRY PI 4 CAD (CC0) IMPORTIEREN</button><button type="button" className="secondary" onClick={async()=>{setStatus('Offizielles Raspberry Pi 5 STEP-CAD wird heruntergeladen und konvertiert – bitte warten.');try{const response=await fetch('/api/library/import-raspberry-pi-5',{method:'POST',credentials:'same-origin'});const result=await response.json();if(!response.ok)throw Error(result.error||'CAD-Import fehlgeschlagen');await refreshLibrary();setChosenLibrary(result.id);
 const deviceIdentity=(dev.name+' '+(dev.model||'')).toLowerCase();
