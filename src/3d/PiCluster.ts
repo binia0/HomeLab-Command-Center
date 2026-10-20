@@ -3,7 +3,7 @@ import {Scene,TransformNode,MeshBuilder,PBRMaterial,Color3,StandardMaterial,Dyna
 /** Four vertically edge-mounted Pi boards: PCB planes run along rack depth.
  * The forward network and USB cages are at negative Z; the boards are not front-facing stickers.
  */
-export function renderPiCluster(scene:Scene,root:TransformNode,id:string,rackWidth:number,rackHeight:number,ethernetPositions:number[]=[],ethernetIds:string[]=[]){
+export function renderPiCluster(scene:Scene,root:TransformNode,id:string,rackWidth:number,rackHeight:number,ethernetPositions:number[]=[],ethernetIds:string[]=[],renderBoards=true){
  const paint=(name:string,hex:string,metallic=.3,emissive=false)=>{
   const m=new PBRMaterial(id+' '+name,scene);m.albedoColor=Color3.FromHexString(hex);
   m.metallic=metallic;m.roughness=metallic>.7?.34:.62;
@@ -45,7 +45,7 @@ export function renderPiCluster(scene:Scene,root:TransformNode,id:string,rackWid
  // Align its Ethernet-facing end with the actual editable physical connector.
  const standard=[-.34,-.125,.09,.305].map(x=>x*bayW);
  const xs=ethernetPositions.length>=4?ethernetPositions.slice(0,4):standard;
- for(let i=0;i<4;i++){
+ if(renderBoards)for(let i=0;i<4;i++){
   const x=Math.max(-bayW*.44,Math.min(bayW*.44,xs[i]));
   boardRoot=new TransformNode('pi-port-carrier:'+id+':'+(ethernetIds[i]||'lan'+i),scene);
   boardRoot.parent=root;boardRoot.position.x=x;boardX=x;
