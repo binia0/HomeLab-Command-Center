@@ -21,3 +21,10 @@ For switch, Synology NAS, Dell server, and CyberPower UPS, obtain the exact mode
 - STEP/STP is tessellated on the server with Gmsh/OpenCASCADE, and the resulting GLB is stored in the authenticated library.
 - Conversion loses parametric/assembly semantics, textures, and some material distinctions. Connector mapping must still be verified per real model.
 - User-provided files are not committed to this public repository.
+
+## Raspberry Pi 4 Model B — CC0 reconstruction
+- Source: https://www.innerscene.com/tools/library/3d-parts/raspberry-pi-4-model-b-layout-821bd96d
+- CAD STEP published under CC0 by Innerscene, original dimension-based reconstruction; **not** an official Raspberry Pi manufacturer CAD file.
+- Server import: POST /api/library/import-raspberry-pi-4 (authenticated).
+- Models must be assigned to individual Pi 4 devices. A four-Pi carrier is a separate mechanical assembly; never interpret one Pi PCB model as the entire carrier.
+- Real rack still requires vendor-specific assets for the switches, NAS, Dell server and UPS and correct mounting/origin transforms.
