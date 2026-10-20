@@ -93,7 +93,7 @@ if(!d.slots?.length&&!['sbc','display','lcd-pi','pi-cluster'].includes(visualCat
 if(d.category==='switch'||d.category==='network'){mk('network status strip',W*.15,.006,.006,W*.3,h*.24,-.036,tag,root,d.id)}
 for(const display of d.displays||[]){const dw=Math.max(.015,Math.min(W*.87,display.widthMm/1000));const dh=Math.max(.012,Math.min(h*.86,display.heightMm/1000));const dx=Math.max(-W*.35,Math.min(W*.35,display.offsetXmm/1000));const dy=Math.max(-h*.3,Math.min(h*.3,display.offsetYmm/1000));const bezel=material('display bezel '+display.id,'#283d48');const glass=material('display glass '+display.id,'#0e3242');glass.emissiveColor=color('#0b4c56');mk('display mount '+display.id,dw+.006,dh+.006,.008,dx,dy,-.055,bezel,root,d.id);mk('display screen '+display.id,dw,dh,.003,dx,dy,-.062,glass,root,d.id);mk('display status bar '+display.id,dw*.67,.002,.002,dx,dy+dh*.27,-.064,accent,root,d.id)}
 if(d.category==='lcd-pi')renderLcdPi(scene,root,d.id,W,h);
-if(visualCategory==='pi-cluster')renderPiCluster(scene,root,d.id,W,h,d.ports.filter(p=>p.type==='RJ45').slice(0,4).map(p=>p.x*W*.435),d.ports.filter(p=>p.type==='RJ45').slice(0,4).map(p=>p.id));
+if(visualCategory==='pi-cluster')renderPiCluster(scene,root,d.id,W,h,d.ports.filter(p=>p.type==='RJ45').slice(0,4).map(p=>p.x*W*.435),d.ports.filter(p=>p.type==='RJ45').slice(0,4).map(p=>p.id),!d.slots?.some(slot=>slot.occupied));
 const photoSurfaces=[
  ['front',d.imageData,W*.85,h*.8,0,0,-.065,0],
  ['rear',d.rearImageData,W*.85,h*.8,0,0,enclosureDepth+.028,Math.PI],
