@@ -65,7 +65,9 @@ if(panel&&attachedSlot){
  // The standing Pi boards extend into the rack while the cable sockets face outward.
  root.position.z+=isRear?-.12:.12;
 }
-root.rotation.set((d.rotationX||0)*Math.PI/180,(isRear?Math.PI:0)+(d.rotationY||0)*Math.PI/180,(d.rotationZ||0)*Math.PI/180);root.parent=rack;root.metadata={id:d.id};instances.set(d.id,root);const face=material('face '+d.id,d.color);/* Full-depth equipment chassis with vents, handles and mounting details. */
+const holderName=((host?.name||'')+' '+(panel?.name||'')).toLowerCase();
+const defaultPiVertical=visualCategory==='sbc'&&/(raspberry|pi rack|pi cluster|pi-halterung)/.test(holderName)&&d.rotationY==null;
+root.rotation.set((d.rotationX||0)*Math.PI/180,(isRear?Math.PI:0)+(defaultPiVertical?Math.PI/2:(d.rotationY||0)*Math.PI/180),(d.rotationZ||0)*Math.PI/180);root.parent=rack;root.metadata={id:d.id};instances.set(d.id,root);const face=material('face '+d.id,d.color);/* Full-depth equipment chassis with vents, handles and mounting details. */
 const enclosureDepth=Math.min(D-.05,Math.max(.035,(d.depthMm??(d.category==='server'?650:d.category==='storage'?450:180))/1000));const sideBody=material('chassis '+d.id,'#273744');
 if(!['sbc','display','lcd-pi','pi-cluster'].includes(visualCategory||'')&&!d.hostDeviceId)mk('enclosure body '+d.id,Math.min(W*.88,(d.widthMm||W*880)/1000),h*.83,enclosureDepth,0,0,enclosureDepth*.5+.005,sideBody,root,d.id);
 if(!['sbc','display','lcd-pi','pi-cluster'].includes(visualCategory||'')&&!d.hostDeviceId)for(const side of [-1,1]){mk('chassis handle '+side+' '+d.id,.012,Math.max(.012,h*.42),.022,side*W*.37,0,-.045,titanium,root,d.id)}
