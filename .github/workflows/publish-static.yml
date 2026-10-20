@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'src/**'
+      - 'server/**'
       - 'package.json'
       - 'package-lock.json'
       - 'index.html'
@@ -37,6 +38,8 @@ jobs:
           else
             npm install --no-audit --no-fund
           fi
+      - name: Test STL to GLB converter
+        run: python3 -m unittest discover -s server -p 'test_model_conversion.py'
       - name: Typecheck and build
         run: npm run build
       - name: Verify bundle
