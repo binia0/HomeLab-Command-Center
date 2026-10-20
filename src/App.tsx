@@ -74,13 +74,13 @@ return <div className="app"><header className="header"><div className="brand"><d
   const categoryFor:{[key:string]:string}={'switch-1u':'switch','server-2u':'server','ups-3u':'power','patch-24':'patch','cables':'cable'};
   const identity=(dev.manufacturer||'').trim().toLowerCase();
   const compatible=categoryFor[key]===dev.category||(key==='switch-1u'&&dev.category==='network');
-  if(compatible&&(!identity||identity==='custom'||identity==='generic')){
+  if(config.width===19&&compatible&&(!identity||identity==='custom'||identity==='generic')){
    const asset=await fetch('/api/library/models/'+data.id,{credentials:'same-origin'});
    if(!asset.ok)throw Error('CAD liegt in Bibliothek, aber GLB ist nicht abrufbar');
    const file=new File([await asset.blob()],key+'-CC0.glb',{type:'model/gltf-binary'});
    await engine.current?.load(file,dev.id);setModelName(file.name);change({modelFileName:file.name});
    setStatus('Generisches CC0-CAD für '+dev.name+' installiert – kein Herstelleroriginal.');
-  }else setStatus('CAD in Bibliothek: '+title+'. Für herstellerspezifische Geräte muss das Modell gezielt geprüft werden.');
+  }else setStatus('CAD in Bibliothek: '+title+'. '+(config.width===10?'Dieses CAD-Bauteil ist 19 Zoll breit und darf nicht automatisch in ein 10-Zoll-Rack gepresst werden.':'Hersteller und Gerätemaße vor Zuordnung prüfen.'));
  }catch(error){setStatus('CAD-Import '+title+': '+String(error))}
 }}>{title} CAD IMPORTIEREN</button>)}</div><button type="button" className="secondary" onClick={async()=>{
 setStatus('Pi 4 CAD-Rekonstruktion (CC0) wird heruntergeladen und in GLB konvertiert.');
