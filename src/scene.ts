@@ -144,7 +144,11 @@ async function importGLB(file:File,id:string,persist:boolean):Promise<'server'|'
   const node=new TransformNode('real-GLB '+id,scene);node.parent=root;
   // Keep interactive port meshes visible but hide only primitive placeholder bodies.
   for(const child of root.getChildMeshes(false)){
-   if(child!==node&&!child.metadata?.port&&!child.name.startsWith('real-GLB ')&&!child.name.includes(' photograph '+id))child.isVisible=false;
+   if(child!==node&&!child.metadata?.port&&!child.name.startsWith('real-GLB ')&&!child.name.includes(' photograph '+id)){
+    // A CAD model replaces the device placeholder, never its mounting mechanics.
+    const preserve=/bezel|mounting|carrier|rail|standoff|rack fastener|\bear\b|\btrim\b|telemetry screen/i.test(child.name);
+    if(!preserve)child.isVisible=false;
+   }
   }
   for(const mesh of result.meshes){if(!mesh.parent)mesh.parent=node;mesh.metadata={...mesh.metadata,id}}
   // Normalize models in their own local axes. Imported assets often have the
