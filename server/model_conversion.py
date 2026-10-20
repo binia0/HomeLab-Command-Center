@@ -3,7 +3,7 @@ STEP requires an explicitly configured CAD tessellator; never fake a conversion.
 """
 import io,json,struct,math
 
-def stl_to_glb(raw:bytes)->bytes:
+def stl_to_glb(raw:bytes,cad_z_up:bool=False)->bytes:
     triangles=[]
     if len(raw)>=84 and (len(raw)-84)==struct.unpack_from('<I',raw,80)[0]*50:
         count=struct.unpack_from('<I',raw,80)[0]
@@ -20,7 +20,11 @@ def stl_to_glb(raw:bytes)->bytes:
         if len(triangles)>900000:raise ValueError('Zu viele Dreiecke')
     if not triangles or len(triangles)%3:raise ValueError('Ungültiges STL-Dreiecksnetz')
     if any(not all(math.isfinite(c) for c in p) for p in triangles):raise ValueError('Ungültige Koordinaten')
-    # STEP and STL CAD dimensions are normally in millimeters; GLB uses meters.
+    # Mechanical STEP models are normally Z-up (X=width,Y=depth,Z=height).
+    # Convert to glTF Y-up: (X,Y,Z)->(X,Z,-Y), a proper 90 degree rotation.
+    # Raw STL uploads keep their native coordinates; do not guess their up axis.
+    if cad_z_up:
+        triangles=[(x,z,-y) for x,y,z in triangles]
     coords=[c/1000.0 for vertex in triangles for c in vertex]
     vertices=struct.pack('<%sf'%len(coords),*coords)
     axismin=[min(v[i] for v in triangles)/1000 for i in range(3)]
@@ -51,4 +55,4 @@ def step_to_glb(raw:bytes)->bytes:
             raise ValueError('STEP-Konvertierung nicht verfügbar oder Zeitlimit überschritten') from exc
         if result.returncode or not output.exists():
             raise ValueError('STEP-Tessellierung fehlgeschlagen: '+result.stderr[-350:])
-        return stl_to_glb(output.read_bytes())
+        return stl_to_glb(output.read_bytes(),cad_z_up=True)
