@@ -131,6 +131,30 @@ class Handler(BaseHTTPRequestHandler):
      network_kbps=round(sum(abs(v) for v in net.values()),1) if net else None
      uptime_seconds=round(max(uptime.values())) if uptime else None
      return self.send(200,{'source':'Netdata','available':any(v is not None for v in readings.values()),'cpu_percent':cpu_percent,'ram_percent':ram_used,'network_kbps':network_kbps,'uptime_seconds':uptime_seconds,'timestamp':int(time.time())})
+    if path.startswith('/api/library/import-reference/') and method=='POST':
+     # Curated CC0 STEP reconstructions; generic equipment, never vendor originals.
+     catalog={
+      'switch-1u':('network-switch-1u-original-mep-cad-7fe1cf16','1U Netzwerk-Switch – generisches CAD (CC0)'),
+      'server-2u':('server-2u-original-mep-cad-d3cafe00','2U Rackserver – generisches CAD (CC0)'),
+      'ups-3u':('rack-ups-original-mep-cad-6727e424','3U Rack-USV – generisches CAD (CC0)'),
+      'patch-24':('patch-panel-24-port-original-mep-cad-1b50ee3b','24-Port Patchpanel – generisches CAD (CC0)'),
+      'cables':('cable-management-original-mep-cad-3f761529','2U Kabelmanagement – generisches CAD (CC0)')}
+     key=path.split('/')[-1]
+     if key not in catalog:return self.send(404,{'error':'Unbekanntes CAD-Modell'})
+     from urllib.request import urlopen
+     slug,name=catalog[key]
+     url='https://www.innerscene.com/api/library/'+slug+'/download'
+     try:
+      with urlopen(url,timeout=30) as source:
+       if source.geturl().split('/')[2] not in ('www.innerscene.com','innerscene.com'):raise ValueError('Nicht zugelassener CAD-Host')
+       raw=source.read(12*1024*1024+1)
+      if len(raw)>12*1024*1024 or b'ISO-10303-21' not in raw[:256]:raise ValueError('Die Quelle hat keine STEP-Datei geliefert')
+      glb=step_to_glb(raw)
+      if len(glb)>50*1024*1024:raise ValueError('Konvertiertes Modell zu groß')
+     except Exception as error:return self.send(422,{'error':'CAD-Modell nicht importierbar: '+str(error)[:250]})
+     new_id=secrets.token_hex(12)
+     c.execute('INSERT INTO cad_library(id,user_id,name,format,glb,updated) VALUES(?,?,?,?,?,?)',(new_id,current['id'],name,'step',glb,int(time.time())))
+     return self.send(201,{'id':new_id,'name':name,'format':'step','size':len(glb),'source':url,'license':'CC0'})
     if path=='/api/library/import-raspberry-pi-4' and method=='POST':
      # CC0 CAD reconstruction by Innerscene; not an official manufacturer STEP.
      from urllib.request import urlopen
