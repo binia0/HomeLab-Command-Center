@@ -45,7 +45,6 @@ setConfig(showcase);setCables([
 ]);setUrls({});setSel('');setFace('front');setFirst('');setMode('SELECT');setStatus('19-Zoll-Referenzrack geladen · 42 HE · 4 separat montierte Raspberry Pi 4 · 7 Kabel');setCadShowcasePending(withCad);};
 useEffect(()=>{
  if(!cadShowcasePending||!config.devices.some(d=>d.id==='showcase-pi-1'))return;
- setCadShowcasePending(false);
  let cancelled=false;
  const process=async()=>{
   const imports=[
@@ -74,6 +73,7 @@ useEffect(()=>{
    }catch(error){failures.push(item.key+': '+String(error))}
   }
   if(cancelled)return;
+  setCadShowcasePending(false);
   setConfig(c=>({...c,devices:c.devices.map(d=>assignments.has(d.id)?{...d,modelFileName:assignments.get(d.id)}:d)}));
   void refreshLibrary();
   const ready=assignments.size;
