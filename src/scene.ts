@@ -197,7 +197,7 @@ async function importGLB(file:File,id:string,persist:boolean):Promise<'server'|'
       // Transform its local center into node-relative coordinates before applying scale.
       const inverse=node.getWorldMatrix().clone().invert();
       const localCenter=Vector3.TransformCoordinates(center,inverse);
-      for(const child of [...node.getChildren()])child.position.subtractInPlace(localCenter);
+      for(const child of [...node.getChildren()])if(child instanceof TransformNode)child.position.subtractInPlace(localCenter);
       node.scaling.setAll(scale);
       node.position.set(0,0,-.056);
     }
