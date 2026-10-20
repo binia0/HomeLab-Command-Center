@@ -131,6 +131,22 @@ class Handler(BaseHTTPRequestHandler):
      network_kbps=round(sum(abs(v) for v in net.values()),1) if net else None
      uptime_seconds=round(max(uptime.values())) if uptime else None
      return self.send(200,{'source':'Netdata','available':any(v is not None for v in readings.values()),'cpu_percent':cpu_percent,'ram_percent':ram_used,'network_kbps':network_kbps,'uptime_seconds':uptime_seconds,'timestamp':int(time.time())})
+    if path=='/api/library/import-raspberry-pi-4' and method=='POST':
+     # CC0 CAD reconstruction by Innerscene; not an official manufacturer STEP.
+     from urllib.request import urlopen
+     url='https://www.innerscene.com/api/library/raspberry-pi-4-model-b-layout-821bd96d/download'
+     try:
+      with urlopen(url,timeout=30) as source:
+       if source.geturl().split('/')[2] not in ('www.innerscene.com','innerscene.com'):raise ValueError('Unbekannter Downloadserver')
+       raw=source.read(12*1024*1024+1)
+      if len(raw)>12*1024*1024 or b'ISO-10303-21' not in raw[:256]:raise ValueError('Keine gültige STEP-Datei')
+      glb=step_to_glb(raw)
+      if len(glb)>50*1024*1024:raise ValueError('CAD-Konvertierung zu groß')
+     except Exception as error:return self.send(422,{'error':'Raspberry Pi 4 STEP-Import fehlgeschlagen: '+str(error)[:250]})
+     key=secrets.token_hex(12)
+     name='Raspberry Pi 4 Model B – CAD-Rekonstruktion (CC0)'
+     c.execute('INSERT INTO cad_library(id,user_id,name,format,glb,updated) VALUES(?,?,?,?,?,?)',(key,current['id'],name,'step',glb,int(time.time())))
+     return self.send(201,{'id':key,'name':name,'format':'step','size':len(glb),'source':url,'license':'CC0'})
     if path=='/api/library/import-raspberry-pi-5' and method=='POST':
      # Official Raspberry Pi Ltd CAD model. Fetch only this fixed HTTPS URL.
      from urllib.request import urlopen
