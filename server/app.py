@@ -48,7 +48,7 @@ class Handler(BaseHTTPRequestHandler):
   path=urlparse(self.path).path
   if not path.startswith('/api/'):return self.send(404,{'error':'Not found'})
   if method!='GET' and not self.csrf_ok():return self.send(403,{'error':'Origin verification failed'})
-  try:data=self.read_body() if method in ('POST','PUT') and not path.startswith('/api/models/') else {}
+  try:data=self.read_body() if method in ('POST','PUT') and not (path.startswith('/api/models/') or path.startswith('/api/library/')) else {}
   except ValueError as e:return self.send(400,{'error':str(e)})
   try:
    with LOCK,connect() as c:
