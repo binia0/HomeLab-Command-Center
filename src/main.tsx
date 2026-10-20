@@ -1,5 +1,1 @@
-import React from 'react';
-import {createRoot} from 'react-dom/client';
-import VisualApp from './VisualApp';
-import './visual.css';
-createRoot(document.getElementById('root')!).render(<React.StrictMode><VisualApp/></React.StrictMode>);
+import React from 'react';import{createRoot}from'react-dom/client';import App from './App';import AppErrorBoundary from './AppErrorBoundary';import './style.css';createRoot(document.getElementById('root')!).render(<React.StrictMode><AppErrorBoundary><App/></AppErrorBoundary></React.StrictMode>);
