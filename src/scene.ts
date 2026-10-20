@@ -72,9 +72,7 @@ if(panel&&attachedSlot){
  // Recess Pi holder and individual edge-mounted Pi boards into the cage.
  root.position.z+=isRear?-.12:.12;
 }
-const holderName=((host?.name||'')+' '+(panel?.name||'')).toLowerCase();
-const defaultPiVertical=visualCategory==='sbc'&&/(raspberry|pi rack|pi cluster|pi-halterung)/.test(holderName)&&d.rotationY==null;
-root.rotation.set((d.rotationX||0)*Math.PI/180,(isRear?Math.PI:0)+(defaultPiVertical?Math.PI/2:(d.rotationY||0)*Math.PI/180),(d.rotationZ||0)*Math.PI/180);root.parent=rack;root.metadata={id:d.id};instances.set(d.id,root);const face=material('face '+d.id,d.color);/* Full-depth equipment chassis with vents, handles and mounting details. */
+root.rotation.set((d.rotationX||0)*Math.PI/180,(isRear?Math.PI:0)+(d.rotationY||0)*Math.PI/180,(d.rotationZ||0)*Math.PI/180);root.parent=rack;root.metadata={id:d.id};instances.set(d.id,root);const face=material('face '+d.id,d.color);/* Full-depth equipment chassis with vents, handles and mounting details. */
 const enclosureDepth=Math.min(D-.05,Math.max(.035,(d.depthMm??(d.category==='server'?650:d.category==='storage'?450:180))/1000));const sideBody=material('chassis '+d.id,'#273744');
 if(!['sbc','display','lcd-pi','pi-cluster'].includes(visualCategory||'')&&!d.hostDeviceId)mk('enclosure body '+d.id,Math.min(W*.88,(d.widthMm||W*880)/1000),h*.83,enclosureDepth,0,0,enclosureDepth*.5+.005,sideBody,root,d.id);
 if(!['sbc','display','lcd-pi','pi-cluster'].includes(visualCategory||'')&&!d.hostDeviceId)for(const side of [-1,1]){mk('chassis handle '+side+' '+d.id,.012,Math.max(.012,h*.42),.022,side*W*.37,0,-.045,titanium,root,d.id)}
@@ -184,6 +182,13 @@ async function importGLB(file:File,id:string,persist:boolean):Promise<'server'|'
       node.scaling.setAll(scale);
       node.position.set(0,0,-.056);
     }
+  }
+  // STEP Pi board convention after Z-up -> Y-up conversion: board lies in X/Z.
+  // Stand only known converted Pi CAD models upright, face toward the aisle.
+  // Keep rack/connector root unrotated so interactive port positions stay fixed.
+  if(device?.category==='sbc' && /Raspberry-Pi-[45].*CAD\\.glb/i.test(file.name) &&
+     (device.panelId||device.hostDeviceId)){
+    node.rotation.set(Math.PI/2,0,Math.PI/2);
   }
   // The supplied 4U NAS asset has its detailed drive bays on local +Z.
   // Babylon's rack front points toward -Z, so face the bays toward the viewer.
