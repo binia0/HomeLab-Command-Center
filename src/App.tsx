@@ -62,7 +62,16 @@ return <div className="app"><header className="header"><div className="brand"><d
   const response=await fetch('/api/library/import-reference/'+key,{method:'POST',credentials:'same-origin'});
   const data=await response.json();if(!response.ok)throw Error(data.error||'Import fehlgeschlagen');
   await refreshLibrary();setChosenLibrary(data.id);
-  setStatus('CAD in Bibliothek: '+title+'. Modell vor Verwendung auf Abmessungen und Gerätetyp prüfen.');
+  const categoryFor:{[key:string]:string}={'switch-1u':'switch','server-2u':'server','ups-3u':'power','patch-24':'patch','cables':'cable'};
+  const identity=(dev.manufacturer||'').trim().toLowerCase();
+  const compatible=categoryFor[key]===dev.category||(key==='switch-1u'&&dev.category==='network');
+  if(compatible&&(!identity||identity==='custom'||identity==='generic')){
+   const asset=await fetch('/api/library/models/'+data.id,{credentials:'same-origin'});
+   if(!asset.ok)throw Error('CAD liegt in Bibliothek, aber GLB ist nicht abrufbar');
+   const file=new File([await asset.blob()],key+'-CC0.glb',{type:'model/gltf-binary'});
+   await engine.current?.load(file,dev.id);setModelName(file.name);
+   setStatus('Generisches CC0-CAD für '+dev.name+' installiert – kein Herstelleroriginal.');
+  }else setStatus('CAD in Bibliothek: '+title+'. Für herstellerspezifische Geräte muss das Modell gezielt geprüft werden.');
  }catch(error){setStatus('CAD-Import '+title+': '+String(error))}
 }}>{title} CAD IMPORTIEREN</button>)}</div><button type="button" className="secondary" onClick={async()=>{
 setStatus('Pi 4 CAD-Rekonstruktion (CC0) wird heruntergeladen und in GLB konvertiert.');
