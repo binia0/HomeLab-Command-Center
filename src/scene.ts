@@ -123,6 +123,14 @@ if(d.slots?.length&&visualCategory!=='pi-cluster'){const count=d.slots.length;co
 if(visualCategory!=='pi-cluster')drawEquipmentDetail(scene,root,visualCategory,d.id,W,h,mk,d.ports.filter(p=>p.type==='RJ45').map(p=>p.x));
 
 if(d.category==='ai'||d.category==='kvm')for(const s of [-1,1])mk('module',W*.34,h*.7,.012,s*W*.23,0,-.037,steel,root,d.id);
+// CAD-only presentation: generated meshes are no longer represented as real devices.
+// Keep editable port markers and cable anchor metadata; actual enclosure is loaded GLB.
+for(const mesh of root.getChildMeshes(false)){
+ if(!mesh.metadata?.port){
+  mesh.isVisible=false;
+  mesh.isPickable=false;
+ }
+}
 }if(!hasFramedRack){cameraControl.home(H,D);hasFramedRack=true}}
 
 let restoreRevision=0;
