@@ -48,7 +48,8 @@ for(const d of c.devices){
  // Existing saved racks often predate category support. Detect their hardware visually.
  const identity=(d.name+' '+(d.model||'')+' '+(d.manufacturer||'')).toLowerCase();
  const hasPiChildren=c.devices.some(child=>(child.panelId===d.id||child.hostDeviceId===d.id)&&(child.category==='sbc'||/raspberry|\bpi\s*[345]\b/i.test(child.name)));
- const visualCategory=d.category==='holder'&&(d.slots?.some(slot=>slot.occupied)||hasPiChildren)?'pi-cluster':d.category&&d.category!=='other'?d.category:
+ const holderIsPi=/raspberry|\bpi\b|\brpi\b|sbc/i.test(identity);
+ const visualCategory=d.category==='holder'&&(hasPiChildren||(holderIsPi&&d.slots?.some(slot=>slot.occupied)))?'pi-cluster':d.category&&d.category!=='other'?d.category:
  /switch|network|ethernet/.test(identity)?'switch':
  /synology|nas|storage/.test(identity)?'storage':
  /ups|cyberpower|battery/.test(identity)?'power':
