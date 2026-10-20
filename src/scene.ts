@@ -186,7 +186,7 @@ async function importGLB(file:File,id:string,persist:boolean):Promise<'server'|'
   // STEP Pi board convention after Z-up -> Y-up conversion: board lies in X/Z.
   // Stand only known converted Pi CAD models upright, face toward the aisle.
   // Keep rack/connector root unrotated so interactive port positions stay fixed.
-  if(device?.category==='sbc' && /Raspberry-Pi-[45].*CAD\\.glb/i.test(file.name) &&
+  if(device?.category==='sbc' && /Raspberry-Pi-[45].*CAD\.glb/i.test(file.name) &&
      (device.panelId||device.hostDeviceId)){
     node.rotation.set(Math.PI/2,0,Math.PI/2);
   }
