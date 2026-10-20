@@ -168,7 +168,9 @@ async function importGLB(file:File,id:string,persist:boolean):Promise<'server'|'
   const device=cfg.devices.find(d=>d.id===id);
   if(device?.category==='sbc' && /Raspberry-Pi-[45].*CAD\.glb/i.test(file.name) &&
      (device.panelId||device.hostDeviceId)){
-    node.rotation.set(0,Math.PI/2,0);
+    // STEP boards start in X/Z after CAD Z-up -> glTF Y-up conversion.
+    // Rotate X into vertical Y so each board stands on its narrow edge in Y/Z.
+    node.rotation.set(0,0,Math.PI/2);
   }
   node.computeWorldMatrix(true);
   const bounds=node.getHierarchyBoundingVectors(true),ext=bounds.max.subtract(bounds.min);
