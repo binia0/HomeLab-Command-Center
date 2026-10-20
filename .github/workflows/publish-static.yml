@@ -9,6 +9,9 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'index.html'
+      - 'visual.html'
+      - 'visual-nginx.conf'
+      - 'docker-compose.visual.yml'
       - 'tsconfig*.json'
       - 'vite.config.*'
       - '.github/workflows/publish-static.yml'
@@ -45,6 +48,7 @@ jobs:
       - name: Verify bundle
         run: |
           test -s dist/index.html
+          test -s dist/visual.html
           test -n "$(find dist/assets -maxdepth 1 -name '*.js' -print -quit)"
       - name: Publish compiled files to static branch
         env:
