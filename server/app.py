@@ -143,6 +143,8 @@ class Handler(BaseHTTPRequestHandler):
      if key not in catalog:return self.send(404,{'error':'Unbekanntes CAD-Modell'})
      from urllib.request import urlopen
      slug,name=catalog[key]
+     existing=c.execute('SELECT id,length(glb) size FROM cad_library WHERE user_id=? AND name=? ORDER BY updated DESC LIMIT 1',(current['id'],name)).fetchone()
+     if existing:return self.send(200,{'id':existing['id'],'name':name,'format':'step','size':existing['size'],'reused':True})
      url='https://www.innerscene.com/api/library/'+slug+'/download'
      try:
       with urlopen(url,timeout=30) as source:
@@ -157,6 +159,9 @@ class Handler(BaseHTTPRequestHandler):
      return self.send(201,{'id':new_id,'name':name,'format':'step','size':len(glb),'source':url,'license':'CC0'})
     if path=='/api/library/import-raspberry-pi-4' and method=='POST':
      # CC0 CAD reconstruction by Innerscene; not an official manufacturer STEP.
+     old_name='Raspberry Pi 4 Model B – CAD-Rekonstruktion (CC0)'
+     cached=c.execute('SELECT id,length(glb) size FROM cad_library WHERE user_id=? AND name=? ORDER BY updated DESC LIMIT 1',(current['id'],old_name)).fetchone()
+     if cached:return self.send(200,{'id':cached['id'],'name':old_name,'format':'step','size':cached['size'],'reused':True})
      from urllib.request import urlopen
      url='https://www.innerscene.com/api/library/raspberry-pi-4-model-b-layout-821bd96d/download'
      try:
@@ -173,6 +178,9 @@ class Handler(BaseHTTPRequestHandler):
      return self.send(201,{'id':key,'name':name,'format':'step','size':len(glb),'source':url,'license':'CC0'})
     if path=='/api/library/import-raspberry-pi-5' and method=='POST':
      # Official Raspberry Pi Ltd CAD model. Fetch only this fixed HTTPS URL.
+     old_name='Raspberry Pi 5 – offizielles STEP-CAD'
+     cached=c.execute('SELECT id,length(glb) size FROM cad_library WHERE user_id=? AND name=? ORDER BY updated DESC LIMIT 1',(current['id'],old_name)).fetchone()
+     if cached:return self.send(200,{'id':cached['id'],'name':old_name,'format':'step','size':cached['size'],'reused':True})
      from urllib.request import urlopen
      from zipfile import ZipFile
      from io import BytesIO
