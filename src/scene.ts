@@ -167,7 +167,7 @@ async function importGLB(file:File,id:string,persist:boolean):Promise<'server'|'
   // STEP tessellation creates geometry without PBR materials. Give only the
   // explicitly imported generic CAD catalog models physically plausible metal.
   // User-supplied textured GLBs keep their original materials unchanged.
-  if(/^(switch-1u|server-2u|ups-3u|patch-24|cables)-CC0\\.glb$/i.test(file.name)){
+  if(/^(switch-1u|server-2u|ups-3u|patch-24|cables)-CC0\.glb$/i.test(file.name)){
     const finish=new PBRMaterial('generic CAD brushed metal '+id,scene);
     finish.albedoColor=color('#344350');
     finish.metallic=.72;finish.roughness=.42;
