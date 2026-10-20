@@ -18,14 +18,15 @@ function connectorPosition(port:Port,width:number,height:number,depth:number):Ve
  const x=clamp(port.x,-1,1)*width*.435;
  const y=clamp(port.y,-1,1)*height*.37;
  // Negative Z is the visible face; positive Z places a socket on the back of the chassis.
- const z=port.z>0?Math.min(depth-.025,port.z*depth):-.105;
+ const normalizedZ=clamp(port.z??-1,-1,1);
+ const z=-.105+((normalizedZ+1)/2)*(depth+.080);
  return new Vector3(x,y,z);
 }
 export const spacing=(w:Width)=>w===10?.254:.4826;const group=(n:number):Port[]=>Array.from({length:n},(_,i)=>({id:String(i+1),type:'RJ45',x:-.43+i*(.86/Math.max(n-1,1)),y:0,z:-1}));
 export const demo:Config={width:10,units:20,devices:[{id:'router',name:'NETWORK GATEWAY',u:19,height:1,color:'#365969',ports:group(4)},{id:'switch1',name:'MANAGED SWITCH 01',u:17,height:1,color:'#253a42',ports:group(8)},{id:'switch2',name:'MANAGED SWITCH 02',u:16,height:1,color:'#253a42',ports:group(8)},{id:'switch3',name:'MANAGED SWITCH 03',u:15,height:1,color:'#253a42',ports:group(8)},{id:'patch',name:'12-PORT PATCH PANEL',u:13,height:1,color:'#334850',ports:group(12)},{id:'pis',name:'8 VERTICAL PI SLOTS',u:10,height:2,color:'#23504c',category:'holder',slots:Array.from({length:8},(_,i)=>({id:'slot-'+(i+1),name:'Pi '+(i+1),model:'',ip:'',occupied:i<4})),ports:[]},{id:'jetson',name:'2 JETSON SLOTS',u:7,height:2,color:'#345765',ports:[]},{id:'kvm',name:'2 JETKVM SLOTS',u:5,height:1,color:'#3e4c57',ports:[]},{id:'nas',name:'STORAGE ARRAY',u:1,height:3,color:'#364653',ports:[]}]};
 export const initial:Config={width:10,units:20,depthMm:600,devices:[]};
 const color=(s:string)=>Color3.FromHexString(s);
-export function build(canvas:HTMLCanvasElement,config:Config,onDevice:(id:string)=>void,onPort:(a:string)=>void,onPlacePort?:(id:string,port:string,x:number,y:number)=>void){const eng=new Engine(canvas,true);eng.setHardwareScalingLevel(Math.min(2,Math.max(1,devicePixelRatio/1.5)));const scene=new Scene(eng);const illumination=new GlowLayer('LED and cable bloom',scene,{blurKernelSize:24});illumination.intensity=.34;scene.clearColor=new Color4(.016,.024,.036,1);const cam=new ArcRotateCamera('camera',-Math.PI/2+.17,Math.PI/2.08,1.72,new Vector3(0,.4,0),scene);cam.attachControl(canvas,true);cam.lowerRadiusLimit=.4;cam.upperRadiusLimit=6;cam.wheelPrecision=60;cam.minZ=.01;const cameraControl=new CameraController(cam);const onManualCamera=()=>cameraControl.cancel();canvas.addEventListener('wheel',onManualCamera,{passive:true});canvas.addEventListener('pointerdown',onManualCamera);
+export function build(canvas:HTMLCanvasElement,config:Config,onDevice:(id:string)=>void,onPort:(a:string)=>void,onPlacePort?:(id:string,port:string,x:number,y:number,z:number)=>void){const eng=new Engine(canvas,true);eng.setHardwareScalingLevel(Math.min(2,Math.max(1,devicePixelRatio/1.5)));const scene=new Scene(eng);const illumination=new GlowLayer('LED and cable bloom',scene,{blurKernelSize:24});illumination.intensity=.34;scene.clearColor=new Color4(.016,.024,.036,1);const cam=new ArcRotateCamera('camera',-Math.PI/2+.17,Math.PI/2.08,1.72,new Vector3(0,.4,0),scene);cam.attachControl(canvas,true);cam.lowerRadiusLimit=.4;cam.upperRadiusLimit=6;cam.wheelPrecision=60;cam.minZ=.01;const cameraControl=new CameraController(cam);const onManualCamera=()=>cameraControl.cancel();canvas.addEventListener('wheel',onManualCamera,{passive:true});canvas.addEventListener('pointerdown',onManualCamera);
 const hemi=new HemisphericLight('soft ambient',new Vector3(0,1,0),scene);hemi.intensity=.83;
 const light=new DirectionalLight('large key',new Vector3(-.7,-1,.9),scene);light.intensity=1.8;light.diffuse=color('#dcecff');const rackShadows=new ShadowGenerator(1024,light);rackShadows.usePercentageCloserFiltering=true;rackShadows.bias=.0008;
 const rim=new DirectionalLight('edge rim',new Vector3(.8,-.4,-.7),scene);rim.intensity=.66;rim.diffuse=color('#459afa');
@@ -281,15 +282,23 @@ const setPlacement=(id:string,port:string)=>{
 };
 redraw(config);void restoreModels();scene.onPointerObservable.add(e=>{if(e.type!==PointerEventTypes.POINTERDOWN)return;
  if(placement){
-  const hit=scene.pick(scene.pointerX,scene.pointerY,m=>m===placement?.plane);
+  const {id,port,plane}=placement;
+  const deviceRoot=instances.get(id);
+  const realModel=deviceRoot?.getChildren().find(child=>child.name==='real-GLB '+id);
+  // Raycast the real CAD shell, not the old flat facade, when a CAD model exists.
+  const cadHit=realModel?scene.pick(scene.pointerX,scene.pointerY,m=>m.isPickable&&m.isDescendantOf(realModel)):null;
+  const onCad=!!cadHit?.hit&&!!cadHit.pickedPoint;
+  const hit=onCad?cadHit:scene.pick(scene.pointerX,scene.pointerY,m=>m===plane);
   if(hit?.hit&&hit.pickedPoint){
-   const {id,port,plane}=placement;
-   const w=spacing(cfg.width),h=(cfg.devices.find(d=>d.id===id)?.height||1)*U-.006;
+   const device=cfg.devices.find(d=>d.id===id);
+   const w=spacing(cfg.width),h=(device?.height||1)*U-.006;
+   const depth=Math.min((cfg.depthMm??800)/1000-.05,Math.max(.035,(device?.depthMm??180)/1000));
    const inverse=plane.parent!.getWorldMatrix().clone().invert();
    const local=Vector3.TransformCoordinates(hit.pickedPoint,inverse);
    const x=Math.max(-1,Math.min(1,local.x/(w*.435)));
    const y=Math.max(-1,Math.min(1,local.y/(h*.37)));
-   stopPlacement();onPlacePort?.(id,port,Math.round(x*1000)/1000,Math.round(y*1000)/1000);
+   const z=onCad?Math.max(-1,Math.min(1,2*(local.z+.105)/(depth+.080)-1)):-1;
+   stopPlacement();onPlacePort?.(id,port,Math.round(x*1000)/1000,Math.round(y*1000)/1000,Math.round(z*1000)/1000);
    return;
   }
   return;
