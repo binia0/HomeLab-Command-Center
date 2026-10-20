@@ -162,9 +162,16 @@ async function importGLB(file:File,id:string,persist:boolean):Promise<'server'|'
   // Normalize models in their own local axes. Imported assets often have the
   // origin at a corner or use centimeters/millimeters instead of meters.
   // Never include connector meshes or the parent rack in these bounds.
+  // CAD Pi-4/Pi-5 boards must be oriented before size fitting and centering.
+  // Otherwise the model is fitted as a flat board and only rotated afterwards,
+  // making its final dimensions collide with the neighbouring mounted Pis.
+  const device=cfg.devices.find(d=>d.id===id);
+  if(device?.category==='sbc' && /Raspberry-Pi-[45].*CAD\.glb/i.test(file.name) &&
+     (device.panelId||device.hostDeviceId)){
+    node.rotation.set(0,Math.PI/2,0);
+  }
   node.computeWorldMatrix(true);
   const bounds=node.getHierarchyBoundingVectors(true),ext=bounds.max.subtract(bounds.min);
-  const device=cfg.devices.find(d=>d.id===id);
   // STEP tessellation creates geometry without PBR materials. Give only the
   // explicitly imported generic CAD catalog models physically plausible metal.
   // User-supplied textured GLBs keep their original materials unchanged.
@@ -192,13 +199,6 @@ async function importGLB(file:File,id:string,persist:boolean):Promise<'server'|'
       node.scaling.setAll(scale);
       node.position.set(0,0,-.056);
     }
-  }
-  // STEP Pi board convention after Z-up -> Y-up conversion: board lies in X/Z.
-  // Stand only known converted Pi CAD models upright, face toward the aisle.
-  // Keep rack/connector root unrotated so interactive port positions stay fixed.
-  if(device?.category==='sbc' && /Raspberry-Pi-[45].*CAD\.glb/i.test(file.name) &&
-     (device.panelId||device.hostDeviceId)){
-    node.rotation.set(Math.PI/2,0,Math.PI/2);
   }
   // The supplied 4U NAS asset has its detailed drive bays on local +Z.
   // Babylon's rack front points toward -Z, so face the bays toward the viewer.
