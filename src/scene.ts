@@ -138,7 +138,7 @@ async function importGLB(file:File,id:string,persist:boolean):Promise<'server'|'
  const url=URL.createObjectURL(file);
  try{
   const result=await SceneLoader.ImportMeshAsync('','',url,scene,undefined,'.glb');
-  if(instances.get(id)!==root){for(const m of result.meshes)m.dispose();return}
+  if(instances.get(id)!==root){for(const m of result.meshes)m.dispose();return 'preview'}
   // Re-import after redraw or model change must not pile up duplicate GLBs.
   for(const child of root.getChildren())if(child.name.startsWith('real-GLB '+id))child.dispose(false,true);
   const node=new TransformNode('real-GLB '+id,scene);node.parent=root;
