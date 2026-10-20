@@ -43,6 +43,45 @@ setConfig(showcase);setCables([
 {a:'showcase-switch/lan6',b:'showcase-nas/eth0'},
 {a:'showcase-switch/lan7',b:'showcase-switch-secondary/lan1'}
 ]);setUrls({});setSel('');setFace('front');setFirst('');setMode('SELECT');setStatus('19-Zoll-Referenzrack geladen · 42 HE · 4 separat montierte Raspberry Pi 4 · 7 Kabel');setCadShowcasePending(withCad);};
+useEffect(()=>{
+ if(!cadShowcasePending||!config.devices.some(d=>d.id==='showcase-pi-1'))return;
+ setCadShowcasePending(false);
+ let cancelled=false;
+ const process=async()=>{
+  const imports=[
+   {key:'switch-1u',url:'/api/library/import-reference/switch-1u',ids:['showcase-switch','showcase-switch-secondary'],filename:'switch-1u-CC0.glb'},
+   {key:'server-2u',url:'/api/library/import-reference/server-2u',ids:['showcase-server'],filename:'server-2u-CC0.glb'},
+   {key:'ups-3u',url:'/api/library/import-reference/ups-3u',ids:['showcase-ups'],filename:'ups-3u-CC0.glb'},
+   {key:'pi4',url:'/api/library/import-raspberry-pi-4',ids:['showcase-pi-1','showcase-pi-2','showcase-pi-3','showcase-pi-4'],filename:'Raspberry-Pi-4-CC0-CAD.glb'}
+  ];
+  const assignments=new Map<string,string>(),failures:string[]=[];
+  for(const item of imports){
+   if(cancelled)return;
+   setStatus('CAD-SHOWCASE: '+item.key+' wird importiert / konvertiert...');
+   try{
+    const response=await fetch(item.url,{method:'POST',credentials:'same-origin'});
+    const detail=await response.json();
+    if(!response.ok)throw Error(detail.error||'CAD-Import fehlgeschlagen');
+    const result=await fetch('/api/library/models/'+detail.id,{credentials:'same-origin'});
+    if(!result.ok)throw Error('Konvertiertes CAD-Modell nicht abrufbar');
+    const file=new File([await result.blob()],item.filename,{type:'model/gltf-binary'});
+    for(const id of item.ids){
+     if(cancelled)return;
+     if(!engine.current)throw Error('3D-Renderer nicht bereit');
+     await engine.current.load(file,id);
+     assignments.set(id,item.filename);
+    }
+   }catch(error){failures.push(item.key+': '+String(error))}
+  }
+  if(cancelled)return;
+  setConfig(c=>({...c,devices:c.devices.map(d=>assignments.has(d.id)?{...d,modelFileName:assignments.get(d.id)}:d)}));
+  void refreshLibrary();
+  const ready=assignments.size;
+  setStatus('CAD-SHOWCASE: '+ready+' von 8 Geräte-CADs geladen. '+(failures.length?'Nicht verfügbar: '+failures.join(' | '):'Alle verfügbaren generischen CADs importiert.')+' NAS bleibt bis zu einem passenden CAD-Modell schematisch.');
+ };
+ void process();
+ return()=>{cancelled=true};
+},[cadShowcasePending,config.devices]);
 const exportRack=()=>{const data={format:'homelab-rack-v1',exportedAt:new Date().toISOString(),rack:config,cables,services:urls};const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='homelab-rack-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(url);setStatus('Rack exportiert · JSON-Backup gespeichert')};
 const[telemetry,setTelemetry]=useState<{available:boolean;cpu_percent:number|null;ram_percent:number|null;network_kbps?:number|null;uptime_seconds?:number|null;timestamp:number;source:string}|null>(null);
 useEffect(()=>{const device=config.devices.find(d=>d.id===sel);if(!device?.ip){setTelemetry(null);return}let alive=true;const load=async()=>{try{const response=await fetch('/api/telemetry?host='+encodeURIComponent(device.ip||''),{credentials:'same-origin'});const data=await response.json();if(alive)setTelemetry(response.ok?data:{available:false,cpu_percent:null,ram_percent:null,timestamp:0,source:'Netdata'})}catch{if(alive)setTelemetry({available:false,cpu_percent:null,ram_percent:null,timestamp:0,source:'Netdata'})}};setTelemetry(null);void load();const timer=window.setInterval(()=>void load(),15000);return()=>{alive=false;window.clearInterval(timer)}},[sel,config.devices]);
