@@ -29,3 +29,21 @@
 .v-rack.rear .v-rj45{background:#060f15;border-color:#507486}
 .v-cable-layer{position:absolute;inset:0;pointer-events:none}.v-cable-layer svg{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 0 2px #26a3ef)}
 @media(max-width:1100px){.v-rack-scale{height:86%}}
+
+/* Empty premium 19-inch rack: depth, rear struts, structural cross members and realistic lighting. */
+.v-rack-viewport{background:radial-gradient(ellipse 42% 65% at 52% 43%,#1b3d57 0%,#102739 30%,#06121f 65%,#02070c 100%)}
+.v-rack-scale{aspect-ratio:.48}
+.v-rack{border:10px ridge #394a57;background:linear-gradient(90deg,#0b141c,#3b4a53 2%,#101b23 6%,#192732 93%,#63727d 98%,#0a1118);box-shadow:inset 0 0 11px #8caabd3b,inset 6px 0 14px #020910,inset -6px 0 15px #02070d,14px 14px 25px #000c,0 0 0 3px #0a1118}
+.v-rack-interior{grid-template-columns:18px 15px minmax(0,1fr) 18px;border:3px solid #172631;background:linear-gradient(90deg,#03080c 0%,#0a1c2a 13%,#09111b 50%,#112534 88%,#02070a 100%);box-shadow:inset 15px 0 30px #000b,inset -16px 0 24px #000b}
+.v-rack-bays{background:linear-gradient(90deg,#07111b 0%,#11283b 7%,#08131f 24%,#0c1c29 72%,#152b39 93%,#030b11 100%);box-shadow:inset 16px 0 16px #0008,inset -16px 0 16px #0008}
+.v-unit-guide{border-bottom:1px solid #53718720}
+.v-empty-rack-back{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,transparent 0 9%,#23394b28 9% 11%,transparent 11% 89%,#23394b28 89% 91%,transparent 91%),linear-gradient(180deg,#a1cde20b 0%,transparent 14%,transparent 83%,#739fb810 100%)}
+.v-rear-braces{position:absolute;inset:4% 9%;display:flex;justify-content:space-between}
+.v-rear-braces span{display:block;width:7px;height:100%;background:linear-gradient(90deg,#050e16,#32485c 48%,#142632 70%,#050b11);box-shadow:3px 0 7px #0009}
+.v-rear-top-beam{position:absolute;top:2%;height:12px;left:4%;right:4%;background:linear-gradient(#2c4050,#091620 55%,#162b3b);border:1px solid #3a4d5b;box-shadow:0 4px 9px #0009}
+.v-rear-floor{position:absolute;bottom:2%;left:4%;right:4%;height:14px;background:linear-gradient(#101d2a,#3d5363 33%,#06111b);border:1px solid #223948}
+.v-empty-rack-label{position:absolute;bottom:8%;left:0;right:0;text-align:center;color:#9eb5c077;font-size:9px;letter-spacing:2px;text-shadow:0 1px 3px #000}
+.v-rack-rail{box-shadow:2px 0 5px #000b;z-index:1}
+.v-rack-rail.right{box-shadow:-2px 0 5px #000b}
+.v-rack-cap{background:linear-gradient(180deg,#66747e,#243541 40%,#0a131b);border-bottom:1px solid #76879455}
+.v-rack-base{box-shadow:0 8px 12px #000a}
