@@ -47,3 +47,24 @@
 .v-rack-rail.right{box-shadow:-2px 0 5px #000b}
 .v-rack-cap{background:linear-gradient(180deg,#66747e,#243541 40%,#0a131b);border-bottom:1px solid #76879455}
 .v-rack-base{box-shadow:0 8px 12px #000a}
+
+
+/* Enlarged rack presentation and in-place module building */
+.v-rack-viewport{inset:15px 0 36px;background:radial-gradient(ellipse 52% 76% at 50% 43%,#1f3b52 0%,#0b2031 44%,#020811 95%)}
+.v-rack-scale{height:min(99%,1050px);aspect-ratio:.52}
+.v-rack{box-shadow:inset 0 0 11px #8caabd3b,inset 6px 0 14px #020910,inset -6px 0 15px #02070d,21px 14px 36px #000d,0 0 0 3px #0a1118}
+.v-empty-rack-label{font-size:8px}
+.v-built-device{position:absolute;left:2%;width:96%;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:6px;padding:2px 5px;background:linear-gradient(180deg,#384957,#141f29 55%,#0e161f);color:#e1ebf4;border:1px solid #62788a;border-left:3px solid #6e899d;border-right:3px solid #6e899d;border-radius:2px;box-shadow:0 2px 7px #000e;font-size:clamp(7px,.7vw,11px);overflow:hidden}
+.v-built-device.chosen{border-color:#32aeff;outline:1px solid #32aeff;box-shadow:0 0 13px #119bf866}
+.v-built-device>span:first-child{max-width:40%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.v-built-device small{font-size:8px;color:#b0c4d4}
+.v-built-ports{display:flex;flex-wrap:wrap;align-content:center;justify-content:flex-end;gap:2px;flex:1;height:100%}
+.v-built-ports i{width:8px;height:8px;background:#09121a;border:1px solid #5b7a89;box-shadow:inset 1px 1px 1px #000}
+.v-designer textarea{width:100%;margin:8px 0 10px;resize:vertical;background:#081522;color:#e8f4ff;border:1px solid #2c5268;border-radius:7px;padding:10px;font-size:13px}
+.v-designer button{background:#126eae;border:1px solid #2a98dc;color:white;border-radius:7px;padding:9px 10px;margin-top:5px;width:100%}
+.v-designer small{display:block;margin-top:10px;font-size:11px;line-height:1.5;color:#a9c7d9}
+.v-draft{margin-top:10px;padding:10px;border:1px solid #31516a;border-radius:8px;display:grid;gap:8px}
+.v-draft strong{font-size:12px}
+.v-draft label{display:flex;align-items:center;justify-content:space-between;font-size:12px}
+.v-draft input{width:65px;padding:6px;background:#091827;color:#e5f6ff;border:1px solid #31546d;border-radius:5px}
+.v-designer .v-remove{background:#3c1b2a;border-color:#8d4255}
