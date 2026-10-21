@@ -152,21 +152,44 @@
 @media(max-width:800px){.v-main-viewport .v-rack-scale{height:calc(100dvh - 104px)}}
 
 
-/* Front viewport, reference framing: rack dominates the entire central display.
-   Fit both axes at 100%; zoom grows from this fit, never smaller. */
-.v-main-viewport{display:flex;align-items:center;justify-content:center;overflow-y:auto;overflow-x:hidden;padding:3px 0;scrollbar-gutter:stable}
+/* Reference framing: this is a window into a taller rack, not a fitted poster.
+   Preserve metalwork proportions and scroll the entire rack vertically. */
+.v-main-viewport{
+  display:block;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:0 0 22px;
+  scroll-behavior:smooth;
+  scrollbar-width:thin;
+  scrollbar-color:#38556e #07111c;
+  scrollbar-gutter:stable;
+  overscroll-behavior:contain;
+  perspective:1700px;
+}
 .v-main-viewport .v-rack-scale{
   box-sizing:border-box;
-  flex:0 0 auto;
-  width:clamp(0px,92%,1600px);
-  height:calc(100% - 6px);
+  display:block;
+  position:relative;
+  flex:none;
+  width:min(94%, calc((100dvh - 60px) * .88));
+  height:auto;
+  aspect-ratio:.60;
   max-height:none;
   max-width:none;
-  aspect-ratio:auto;
-  margin:auto;
-  transform:none!important;
-  transform-origin:center top;
+  margin:0 auto;
+  transform:rotateY(-3deg) rotateX(1deg)!important;
+  transform-origin:50% 12%;
+  transition:zoom .15s ease;
 }
 .v-main-viewport .v-rack{width:100%;height:100%}
+.v-main-viewport .v-rack-ambient,
+.v-main-viewport .v-rack-ground,
+.v-main-viewport .v-ceiling-depth,
+.v-main-viewport .v-floor-reflection{pointer-events:none}
 .v-build-viewport .v-rack-scale{height:97%;aspect-ratio:.66}
-@media(max-width:1000px){.v-main-viewport .v-rack-scale{width:96%;height:calc(100% - 6px)}}
+@media(max-width:1000px){
+  .v-main-viewport .v-rack-scale{
+    width:min(96%,calc((100dvh - 60px) * .88));
+    height:auto;
+  }
+}
