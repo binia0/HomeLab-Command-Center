@@ -1,0 +1,195 @@
+*{box-sizing:border-box}html,body,#root{margin:0;width:100%;height:100%;font-family:Inter,Arial,sans-serif;background:#07111c;color:#e9f2ff}button,input{font:inherit}button{cursor:pointer}.visual-shell{height:100vh;display:grid;grid-template-columns:212px minmax(500px,1fr) 390px;grid-template-rows:60px minmax(0,1fr);background:#07121e}.v-header{grid-column:1/4;display:flex;align-items:center;gap:17px;padding:0 22px;border-bottom:1px solid #1c2938;background:#08111d}.v-brand{display:flex;align-items:center;gap:12px;font-size:19px;min-width:360px;letter-spacing:-.3px}.v-brand svg,.v-brand b{color:#1899ff}.v-brand b{font-weight:600}.v-search{margin-left:auto;display:flex;align-items:center;gap:10px;width:440px;padding:11px 14px;background:#111f2e;border:1px solid #162b40;border-radius:8px;color:#859db4}.v-search input{border:0;background:transparent;outline:0;color:white;width:100%;font-size:13px}.v-icon,.v-admin{background:#101d2c;border:1px solid #162c40;color:#daeafa;border-radius:9px;padding:10px}.v-icon{border:0}.v-admin{display:flex;align-items:center;gap:9px}.v-left{border-right:1px solid #1b2c3d;display:flex;flex-direction:column;min-height:0;background:linear-gradient(120deg,#081320,#0b1826)}.v-left nav{padding:10px 8px;display:grid;gap:3px}.v-left nav button{display:flex;align-items:center;gap:17px;color:#bacbde;border:0;background:transparent;text-align:left;font-size:15px;border-radius:8px;padding:11px 14px}.v-left nav button.active,.v-left nav button:hover{color:#2fa9ff;background:#103356}.v-sidebottom{margin-top:auto;padding:18px 20px 24px;color:#f0f5ff;font-size:14px}.v-viewgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}.v-viewgrid button,.v-old{color:#c4d6e6;background:#142438;border:0;border-radius:7px;padding:10px}.v-viewgrid button.active{background:#138df0;color:white}.v-zoomtitle{display:flex;align-items:center;justify-content:space-between;margin-top:20px}.v-zoomtitle button{background:none;border:0;color:#abc6e3}.v-sidebottom input[type=range]{width:100%;accent-color:#239dff;margin:13px 0 3px}.v-sidebottom small{display:block;color:#88a1b7;text-align:right}.v-old{margin-top:17px;width:100%;font-size:12px}.v-center{min-width:0;min-height:0;position:relative;background:#02070d;overflow:hidden}.v-stage{width:100%;height:100%;position:relative;overflow:hidden;background:#02080f}.v-stage-top{position:absolute;top:12px;left:18px;right:18px;display:flex;justify-content:space-between;z-index:3;color:#82b6d6;font-size:11px;letter-spacing:1.3px;pointer-events:none}.v-photo{position:absolute;inset:0;transition:transform .15s ease;transform-origin:center center;display:flex;align-items:center;justify-content:center}.v-photo img{width:100%;height:100%;object-fit:contain;user-select:none}.v-noimage{width:min(560px,78%);background:linear-gradient(145deg,#10283a,#0b1826);border:1px solid #2c475d;border-radius:17px;text-align:center;padding:52px 44px;color:#b7cada;box-shadow:0 24px 95px #000a}.v-noimage svg{color:#42aafe}.v-noimage h2{color:#fff}.v-noimage p{line-height:1.6}.v-noimage button,.v-placeholder button{background:#168bef;border:0;padding:12px 22px;border-radius:8px;color:white}.v-overlay{position:absolute;bottom:13px;left:16px;right:18px;display:flex;align-items:center;justify-content:space-between;pointer-events:none}.v-overlay button{pointer-events:auto;background:#112d44cc;color:#d9f0ff;display:flex;gap:9px;align-items:center;border:1px solid #3c6478;border-radius:8px;padding:10px}.v-overlay span{font-size:11px;color:#87a2bb}.v-hotspots{position:absolute;inset:0;pointer-events:none}.v-hotspots button{position:absolute;left:20%;width:60%;height:7%;pointer-events:auto;background:transparent;border:1px solid transparent}.v-hotspots button:hover,.v-hotspots button.selected{border-color:#329bf8aa;background:#239fff19;border-radius:4px}.v-right{min-height:0;overflow:auto;background:#0b1826;border-left:1px solid #1c2c3a;padding:14px 15px;display:flex;flex-direction:column;gap:12px}.v-right>h3{font-size:18px;margin:4px}.v-device,.v-panel{background:#101f2e;border:1px solid #1c3447;border-radius:12px;padding:16px}.v-device{display:flex;align-items:center;gap:15px}.v-devicepic{width:98px;height:77px;display:grid;place-items:center;color:#b6cadd;border-radius:7px;background:#183047}.v-device strong{font-size:15px}.v-device p{margin:9px 0;color:#48d18c;font-size:13px}.v-online{display:inline-block;width:9px;height:9px;border-radius:50%;background:#38d78c;margin-right:5px}.v-device small{background:#203043;border-radius:6px;padding:5px 8px;color:#bacfe2}.v-tabs{display:flex;border-bottom:1px solid #223548;justify-content:space-between;gap:6px}.v-tabs button{background:transparent;border:0;color:#92a7bb;padding:10px 7px;font-size:12px}.v-tabs button.active{background:#0f3452;color:#31b2ff;border-bottom:2px solid #139fff;border-radius:7px 7px 0 0}.v-panel h3{font-size:17px;margin:0 0 12px}.v-panel dl{display:grid;grid-template-columns:1fr 1.15fr;gap:13px 10px;font-size:13px;margin:0}.v-panel dt{color:#d5e5f1}.v-panel dd{margin:0;color:#f5f7fe}.v-panel p{font-size:13px;line-height:1.5;color:#a8bfce}.v-device-row{display:flex;width:100%;align-items:center;justify-content:space-between;border:0;background:transparent;color:#b9cce0;padding:9px 3px;text-align:left;border-bottom:1px solid #233447;font-size:12px}.v-device-row.active{color:#37b8ff}.v-device-row small{color:#7c9bbb}.v-gauges{display:flex;justify-content:space-between;gap:8px}.v-gauges>span{height:67px;width:67px;border-radius:50%;border:5px solid #24415a;display:flex;flex-direction:column;justify-content:center;align-items:center;font-size:15px}.v-gauges small{font-size:10px;color:#8caabf}.v-gauges i{font-style:normal}.v-placeholder{padding:75px;text-align:center;color:#c3d3df}@media(max-width:1100px){.visual-shell{grid-template-columns:170px minmax(0,1fr) 305px}.v-brand{min-width:235px;font-size:15px}.v-search{width:270px}.v-left nav button{font-size:12px;gap:9px}.v-right{padding:10px}}@media(max-width:800px){.visual-shell{grid-template-columns:65px minmax(0,1fr);grid-template-rows:60px minmax(0,1fr)}.v-header{grid-column:1/3}.v-brand{min-width:0}.v-brand span{display:none}.v-search{width:100%}.v-left nav button{font-size:0;justify-content:center;padding:12px}.v-left nav button svg{min-width:20px}.v-sidebottom{display:none}.v-right{display:none}}
+
+
+/* Rack frontend: independently rendered scalable rack, no screenshot or stock image. */
+.v-rack-viewport{position:absolute;inset:30px 8px 55px;display:flex;align-items:center;justify-content:center;perspective:1200px;overflow:hidden;background:radial-gradient(ellipse 42% 65% at 50% 48%,#234660 0%,#0d1d2d 48%,#030b14 100%)}
+.v-rack-viewport:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0,transparent 35px,#83b8e007 36px),linear-gradient(90deg,transparent 0%,#4288b109 49%,transparent 100%)}
+.v-rack-scale{height:min(95%,850px);aspect-ratio:0.51;transition:transform .25s;transform-style:preserve-3d;filter:drop-shadow(24px 24px 22px #000d)}
+.v-rack{position:relative;width:100%;height:100%;padding:3.8% 7% 4%;border:8px ridge #354553;border-radius:8px 8px 13px 13px;background:linear-gradient(90deg,#15222c 0%,#334452 3%,#101c26 8%,#101a24 93%,#43505d 99%);box-shadow:inset 5px 0 10px #060e16,inset -5px 0 12px #03080d,0 0 0 2px #101720,0 18px 35px #0009}
+.v-rack-cap{position:absolute;top:0;left:8%;right:8%;height:3.2%;display:flex;align-items:center;justify-content:space-between;padding:0 10px;background:linear-gradient(#3b4b56,#0b131c);font-size:9px;letter-spacing:2px;color:#bad1de;text-shadow:0 1px #000}
+.v-rack-interior{height:100%;display:grid;grid-template-columns:15px 14px minmax(0,1fr) 15px;position:relative;border:3px solid #0b1116;box-shadow:inset 0 0 25px 12px #000a;background:linear-gradient(90deg,#030b11,#152632 16%,#0b151f 85%,#02080e)}
+.v-rack-rail{height:100%;display:flex;flex-direction:column;justify-content:space-around;gap:1px;background:linear-gradient(90deg,#667781,#111c24,#8996a0);padding:5px 2px}
+.v-rack-rail span{width:5px;height:4px;background:#01080c;border-radius:1px;box-shadow:1px 1px 1px #b5c6d0}
+.v-rack-units{display:flex;flex-direction:column;color:#627785;justify-content:space-around;text-align:center;font-size:7px;line-height:1}
+.v-rack-bays{position:relative;min-width:0;overflow:hidden;background:repeating-linear-gradient(90deg,#101c26 0 1px,transparent 1px 8px)}
+.v-unit-guide{height:calc(100% / 42);border-bottom:1px solid #3b53602b}
+.v-rack-device{position:absolute;left:1%;width:98%;height:4.7%;z-index:1;padding:3px 8px;display:flex;align-items:center;gap:6px;overflow:hidden;color:#a9cbd8;background:linear-gradient(175deg,#34434d,#131e27 28%,#202d36 58%,#0b1319 100%);border:1px solid #5b6b73;border-left:4px solid #64727c;border-right:4px solid #64727c;border-radius:2px;box-shadow:0 3px 7px #000d,inset 0 1px 2px #9babb044;text-shadow:1px 1px 2px black}
+.v-rack-device.focused{outline:2px solid #2caaff;z-index:3;box-shadow:0 0 13px #0f9dff88}
+.v-rack-device.sw1,.v-rack-device.sw2{height:2.35%}.v-rack-device.pis{height:16.5%;display:flex;flex-direction:column;align-items:stretch;justify-content:space-around}.v-rack-device.server{height:4.7%}.v-rack-device.nas{height:9.4%;}.v-rack-device.ups{height:7.05%}
+.v-device-name{font-size:clamp(6px,.7vw,10px);font-weight:800;white-space:nowrap;letter-spacing:.3px;min-width:27%;color:#cedbe2}
+.v-device-details{flex:1;display:flex;flex-wrap:wrap;align-items:center;align-content:center;gap:2px;justify-content:flex-end;height:100%;min-width:0}
+.v-rj45{width:7%;max-width:11px;height:30%;min-height:4px;background:linear-gradient(#070d12,#1f3e3c);border:1px solid #57777e;box-shadow:inset 1px 2px #000}.v-vent{width:4%;height:70%;background:repeating-linear-gradient(90deg,#03090d 0 2px,#43515a 2px 3px)}
+.v-drive{width:10%;height:85%;border:2px solid #445a62;border-radius:2px;background:linear-gradient(90deg,#090e13,#2c3d46 30%,#18232c);box-shadow:inset 1px 1px 3px #000}
+.v-rack-led{width:5px;height:5px;border-radius:50%;background:#4aec9c;box-shadow:0 0 8px #4aec9c;margin-left:auto;flex-shrink:0}
+.v-ups-screen{font-size:11px;background:#032e42;color:#4bf0fe;padding:3px 8px;box-shadow:0 0 8px #00a7f044}
+.v-pi-title{display:flex;justify-content:space-between;font-size:9px;letter-spacing:.2px;color:#a7c4d3}
+.v-pi-cards{height:74%;display:flex;justify-content:space-around;gap:3px}.v-pi-cards i{position:relative;flex:1;background:linear-gradient(145deg,#327259,#173f37);border:1px solid #4c9372;transform:perspective(200px) rotateY(-9deg);border-radius:2px;box-shadow:3px 2px 4px #000a;display:flex;flex-direction:column;justify-content:space-around;align-items:center}.v-pi-cards i:before{content:"";width:55%;height:22%;background:linear-gradient(90deg,#acb3b7,#42494d);box-shadow:inset 1px 1px #e4e9ea}.v-pi-cards em{width:48%;height:23%;background:linear-gradient(#19242a,#0c1217);border:2px solid #476252}.v-pi-cards small{font-size:8px;color:#d5e7dd;font-style:normal}
+.v-rack-base{position:absolute;height:3%;bottom:0;left:-3%;right:-3%;display:flex;justify-content:space-between;padding:0 12%;background:linear-gradient(#111a23,#273741,#071018);border-radius:0 0 6px 6px}.v-rack-base span{height:100%;width:15%;background:#0b1117}
+.v-rack.rear .v-rack-device{background:linear-gradient(160deg,#202a32,#0a141c 60%,#293842);flex-direction:row-reverse}
+.v-rack.rear .v-rj45{background:#060f15;border-color:#507486}
+.v-cable-layer{position:absolute;inset:0;pointer-events:none}.v-cable-layer svg{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 0 2px #26a3ef)}
+@media(max-width:1100px){.v-rack-scale{height:86%}}
+
+/* Empty premium 19-inch rack: depth, rear struts, structural cross members and realistic lighting. */
+.v-rack-viewport{background:radial-gradient(ellipse 42% 65% at 52% 43%,#1b3d57 0%,#102739 30%,#06121f 65%,#02070c 100%)}
+.v-rack-scale{aspect-ratio:.48}
+.v-rack{border:10px ridge #394a57;background:linear-gradient(90deg,#0b141c,#3b4a53 2%,#101b23 6%,#192732 93%,#63727d 98%,#0a1118);box-shadow:inset 0 0 11px #8caabd3b,inset 6px 0 14px #020910,inset -6px 0 15px #02070d,14px 14px 25px #000c,0 0 0 3px #0a1118}
+.v-rack-interior{grid-template-columns:18px 15px minmax(0,1fr) 18px;border:3px solid #172631;background:linear-gradient(90deg,#03080c 0%,#0a1c2a 13%,#09111b 50%,#112534 88%,#02070a 100%);box-shadow:inset 15px 0 30px #000b,inset -16px 0 24px #000b}
+.v-rack-bays{background:linear-gradient(90deg,#07111b 0%,#11283b 7%,#08131f 24%,#0c1c29 72%,#152b39 93%,#030b11 100%);box-shadow:inset 16px 0 16px #0008,inset -16px 0 16px #0008}
+.v-unit-guide{border-bottom:1px solid #53718720}
+.v-empty-rack-back{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,transparent 0 9%,#23394b28 9% 11%,transparent 11% 89%,#23394b28 89% 91%,transparent 91%),linear-gradient(180deg,#a1cde20b 0%,transparent 14%,transparent 83%,#739fb810 100%)}
+.v-rear-braces{position:absolute;inset:4% 9%;display:flex;justify-content:space-between}
+.v-rear-braces span{display:block;width:7px;height:100%;background:linear-gradient(90deg,#050e16,#32485c 48%,#142632 70%,#050b11);box-shadow:3px 0 7px #0009}
+.v-rear-top-beam{position:absolute;top:2%;height:12px;left:4%;right:4%;background:linear-gradient(#2c4050,#091620 55%,#162b3b);border:1px solid #3a4d5b;box-shadow:0 4px 9px #0009}
+.v-rear-floor{position:absolute;bottom:2%;left:4%;right:4%;height:14px;background:linear-gradient(#101d2a,#3d5363 33%,#06111b);border:1px solid #223948}
+.v-empty-rack-label{position:absolute;bottom:8%;left:0;right:0;text-align:center;color:#9eb5c077;font-size:9px;letter-spacing:2px;text-shadow:0 1px 3px #000}
+.v-rack-rail{box-shadow:2px 0 5px #000b;z-index:1}
+.v-rack-rail.right{box-shadow:-2px 0 5px #000b}
+.v-rack-cap{background:linear-gradient(180deg,#66747e,#243541 40%,#0a131b);border-bottom:1px solid #76879455}
+.v-rack-base{box-shadow:0 8px 12px #000a}
+
+
+/* Enlarged rack presentation and in-place module building */
+.v-rack-viewport{inset:15px 0 36px;background:radial-gradient(ellipse 52% 76% at 50% 43%,#1f3b52 0%,#0b2031 44%,#020811 95%)}
+.v-rack-scale{height:min(99%,1050px);aspect-ratio:.52}
+.v-rack{box-shadow:inset 0 0 11px #8caabd3b,inset 6px 0 14px #020910,inset -6px 0 15px #02070d,21px 14px 36px #000d,0 0 0 3px #0a1118}
+.v-empty-rack-label{font-size:8px}
+.v-built-device{position:absolute;left:2%;width:96%;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:6px;padding:2px 5px;background:linear-gradient(180deg,#384957,#141f29 55%,#0e161f);color:#e1ebf4;border:1px solid #62788a;border-left:3px solid #6e899d;border-right:3px solid #6e899d;border-radius:2px;box-shadow:0 2px 7px #000e;font-size:clamp(7px,.7vw,11px);overflow:hidden}
+.v-built-device.chosen{border-color:#32aeff;outline:1px solid #32aeff;box-shadow:0 0 13px #119bf866}
+.v-built-device>span:first-child{max-width:40%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.v-built-device small{font-size:8px;color:#b0c4d4}
+.v-built-ports{display:flex;flex-wrap:wrap;align-content:center;justify-content:flex-end;gap:2px;flex:1;height:100%}
+.v-built-ports i{width:8px;height:8px;background:#09121a;border:1px solid #5b7a89;box-shadow:inset 1px 1px 1px #000}
+.v-designer textarea{width:100%;margin:8px 0 10px;resize:vertical;background:#081522;color:#e8f4ff;border:1px solid #2c5268;border-radius:7px;padding:10px;font-size:13px}
+.v-designer button{background:#126eae;border:1px solid #2a98dc;color:white;border-radius:7px;padding:9px 10px;margin-top:5px;width:100%}
+.v-designer small{display:block;margin-top:10px;font-size:11px;line-height:1.5;color:#a9c7d9}
+.v-draft{margin-top:10px;padding:10px;border:1px solid #31516a;border-radius:8px;display:grid;gap:8px}
+.v-draft strong{font-size:12px}
+.v-draft label{display:flex;align-items:center;justify-content:space-between;font-size:12px}
+.v-draft input{width:65px;padding:6px;background:#091827;color:#e5f6ff;border:1px solid #31546d;border-radius:5px}
+.v-designer .v-remove{background:#3c1b2a;border-color:#8d4255}
+
+
+/* REFERENCE LOOK / EMPTY RACK: oversized enclosure, black anodised steel, side glows and 42U cavity */
+.visual-shell{grid-template-columns:212px minmax(520px,1fr) 410px;background:#07101b}
+.v-header{background:linear-gradient(90deg,#07111b,#0b1826);box-shadow:0 3px 20px #0005;z-index:4}
+.v-left{background:linear-gradient(110deg,#07111e,#0b1929)}
+.v-right{background:linear-gradient(95deg,#0a1522,#091725);gap:10px;padding:12px 12px 18px}
+.v-right .v-panel,.v-right .v-device{background:linear-gradient(125deg,#122334,#0b1928);border:1px solid #1e3346;box-shadow:inset 0 1px #6da5cd0c,0 8px 20px #0003}
+.v-right .v-panel{padding:15px}
+.v-stage{background:#020911}
+.v-rack-viewport{inset:0;overflow:hidden;background:radial-gradient(ellipse 64% 84% at 50% 54%,#19384a 0%,#0b2134 35%,#03121d 67%,#02070c 100%)}
+.v-rack-viewport:before{background:linear-gradient(90deg,#0009,transparent 18%,transparent 82%,#000b),radial-gradient(ellipse 67% 85% at 50% 49%,#1c38553d,transparent 84%)}
+.v-rack-ambient{position:absolute;top:3%;bottom:4%;width:12%;z-index:1;filter:blur(12px);pointer-events:none;opacity:.85}
+.v-rack-ambient.left{left:9%;background:linear-gradient(90deg,transparent,#cf8f4a25,#ffd39811,transparent)}
+.v-rack-ambient.right{right:9%;background:linear-gradient(90deg,transparent,#007dfe21,#00a6ff32,transparent)}
+.v-rack-ground{position:absolute;left:8%;right:8%;bottom:0;height:13%;background:radial-gradient(ellipse at 52% 87%,#248ac53b,transparent 66%),linear-gradient(180deg,transparent,#18232b 91%,#101923);border-bottom:2px solid #314957;box-shadow:inset 0 -4px 12px #0007}
+.v-rack-scale{height:min(98%,1080px);aspect-ratio:.64;z-index:2;transform-style:preserve-3d;filter:drop-shadow(28px 13px 27px #000b)}
+.v-rack{border:11px ridge #364754;border-radius:4px 4px 8px 8px;padding:3.8% 6.2% 3.6%;background:linear-gradient(90deg,#081018 0%,#52606b 2%,#131f29 5%,#142331 93%,#77838c 97%,#07121b 100%);box-shadow:inset 3px 0 6px #b3c7d320,inset -4px 0 8px #bdcdd519,0 0 0 3px #09121a,0 0 0 5px #2c4050,0 28px 40px #000e}
+.v-rack-roof{position:absolute;top:1.8%;height:2.5%;left:8%;right:8%;display:flex;justify-content:space-around;overflow:hidden;background:linear-gradient(#131e2a,#050c13);border:1px solid #344858;box-shadow:0 5px 9px #000}
+.v-rack-roof i{width:18%;background:repeating-linear-gradient(90deg,#101c27 0 4px,#263d4b 4px 6px,#061019 6px 9px);transform:skewX(-24deg)}
+.v-rack-sidewall{position:absolute;top:5%;height:91%;width:4%;z-index:1;background:linear-gradient(90deg,#01070d,#1f3a4b,#030a12);box-shadow:inset 0 0 10px #000}
+.v-rack-sidewall.left{left:2%}.v-rack-sidewall.right{right:2%;background:linear-gradient(90deg,#071119,#224055,#02070c)}
+.v-rack-interior{grid-template-columns:19px 19px minmax(0,1fr) 19px;background:linear-gradient(90deg,#00060c 0%,#142b3d 14%,#091622 30%,#0b1926 74%,#17354a 92%,#020810);border:3px solid #050c12;box-shadow:inset 19px 0 26px #000c,inset -18px 0 27px #000c,inset 0 20px 25px #000b}
+.v-rack-rail{background:linear-gradient(90deg,#c3cbd1 0%,#273b4a 13%,#0c1821 52%,#667b88 90%,#a9b7c0);border-left:1px solid #b6c4cd44;border-right:1px solid #b6c4cd33}
+.v-rack-rail span{width:8px;height:5px;border:1px solid #7e99a6;border-radius:1px;background:radial-gradient(circle,#01060a 20%,#121d25 55%,#657d8a 80%,#111922 99%);box-shadow:0 1px 1px #dbe7ecaa}
+.v-rack-units{color:#b5c2cc;font-size:9px;text-shadow:0 1px 2px #000}
+.v-rack-bays{box-shadow:inset 24px 0 24px #0008,inset -25px 0 26px #000a,inset 0 24px 35px #000b;background:radial-gradient(ellipse at 50% 35%,#1a3041,#06121c 65%,#03090e)}
+.v-unit-guide{border-bottom:1px solid #63839415}
+.v-rear-braces{inset:3% 7%}
+.v-rear-braces span{width:10px;background:linear-gradient(90deg,#050a0e,#415667 19%,#1c3547 40%,#0d1b28 74%,#697b86);box-shadow:4px 0 9px #000a}
+.v-rear-top-beam{height:16px;background:linear-gradient(#455b6b,#08131d 53%,#172b3b);box-shadow:0 9px 17px #000b}
+.v-rear-floor{height:18px;background:linear-gradient(#06121c,#495f6a 35%,#09111a);box-shadow:0 -5px 13px #000b}
+.v-rack-back-grid{position:absolute;inset:10% 8% 11%;opacity:.25;background:repeating-linear-gradient(0deg,transparent 0 22px,#5b7787 22px 23px,transparent 23px 44px),repeating-linear-gradient(90deg,transparent 0 41px,#668090 41px 42px,transparent 42px 84px);mask-image:linear-gradient(90deg,transparent,#000 20%,#000 80%,transparent)}
+.v-rack-lightstrip{position:absolute;top:2%;bottom:2%;width:3px;background:linear-gradient(180deg,#1499fb44,#2cc5ffdd 24%,#097cf866 60%,#1cc0ffb0 95%);box-shadow:0 0 9px 3px #088df844,0 0 30px #007eff44}
+.v-rack-lightstrip.left{left:4%;background:linear-gradient(180deg,#cda574aa,#ffc97b9c 50%,#a16b3c4d);box-shadow:0 0 15px #f2aa4c44}
+.v-rack-lightstrip.right{right:4%}
+.v-rack-cap{color:#dce5e7;text-shadow:0 1px 2px #000;font-size:9px;height:3.7%;letter-spacing:1.3px;background:linear-gradient(#657b87,#1a2934 24%,#060c12 74%,#3d5260);border-bottom:1px solid #70859455}
+.v-rack-base{height:3.6%;background:linear-gradient(#1b2b36,#465865 22%,#101a24 54%,#081018);border:1px solid #536671;box-shadow:0 10px 20px #000c}
+.v-empty-rack-label{font-size:8px;letter-spacing:1.4px;opacity:.38}
+.v-overlay{bottom:17px}
+@media(max-width:1100px){.visual-shell{grid-template-columns:170px minmax(0,1fr) 305px}.v-rack-scale{height:94%;aspect-ratio:.6}}
+@media(max-width:800px){.visual-shell{grid-template-columns:65px minmax(0,1fr)}.v-rack-scale{height:94%;aspect-ratio:.6}}
+
+
+/* Reference alignment pass: tall full-height front elevation and dimensional enclosure */
+.visual-shell{grid-template-columns:208px minmax(480px,1fr) 402px}
+.v-header{height:60px;border-bottom-color:#203242}
+.v-stage-top{top:15px;left:21px;right:21px;color:#8db8d4;text-shadow:0 1px 2px #000}
+.v-rack-viewport{background:radial-gradient(ellipse 55% 75% at 50% 52%,#1b3b53 0%,#091c2d 55%,#02080f 100%);perspective:1500px}
+.v-ceiling-depth{position:absolute;z-index:1;top:0;left:14%;right:14%;height:13%;background:linear-gradient(175deg,#091827 0%,#142c3b 25%,#07131d 56%,transparent 100%);clip-path:polygon(0 0,100% 0,85% 100%,15% 100%);opacity:.72;display:flex;justify-content:space-around;padding:0 10%}
+.v-ceiling-depth i{width:4px;height:95%;background:linear-gradient(180deg,#009cff55,transparent);transform:rotate(12deg);box-shadow:0 0 12px #0085ff88}
+.v-rack-scale{height:min(98%,1080px);aspect-ratio:.60;filter:drop-shadow(12px 10px 23px #000c)}
+.v-rack{padding:4% 6% 4%;border:8px solid #263846;border-left-color:#516673;border-right-color:#556b7a;box-shadow:inset 0 1px 4px #fff2,inset 14px 0 9px #0009,inset -14px 0 9px #0009,0 0 0 2px #04090e,0 0 0 5px #172936,0 0 0 7px #060e16,18px 18px 34px #000e}
+.v-rack-sidewall{width:5%;top:5%;height:91%;background:linear-gradient(90deg,#02070b,#1c3446 43%,#0a141d 76%,#020609)}
+.v-depth-wall{position:absolute;pointer-events:none;z-index:0;top:5%;bottom:5%;width:15%;opacity:.73;background:repeating-linear-gradient(180deg,transparent 0 30px,#6a879515 30px 31px),linear-gradient(90deg,#020811,#1f3a4c,#050d15);box-shadow:inset 0 0 18px #000}
+.v-depth-left{left:6%;clip-path:polygon(0 0,100% 5%,100% 95%,0 100%)}
+.v-depth-right{right:6%;clip-path:polygon(0 5%,100% 0,100% 100%,0 95%);background:linear-gradient(90deg,#091623,#173649,#01070c)}
+.v-rack-interior{position:relative;z-index:2;background:linear-gradient(90deg,#02070c 0%,#18384b 7%,#050d15 25%,#091725 77%,#214457 94%,#01070b)}
+.v-rack-bays{background:radial-gradient(ellipse at 44% 27%,#172d3c,#071420 58%,#030a10);box-shadow:inset 19px 0 30px #000a,inset -19px 0 30px #000a,inset 0 16px 24px #000b}
+.v-mounting-rear-rail{position:absolute;top:3%;bottom:3%;width:8px;z-index:1;background:repeating-linear-gradient(180deg,#182d3b 0 8px,#08131d 8px 12px),linear-gradient(90deg,#758b98,#1d2c37);box-shadow:2px 0 7px #000a;border-left:1px solid #80929c33}
+.v-mounting-rear-left{left:11%}.v-mounting-rear-right{right:11%}
+.v-rack-lightstrip.right{width:2px;right:3%;box-shadow:0 0 8px 4px #008aff44,0 0 20px 7px #008aff22}
+.v-rack-lightstrip.left{width:2px;left:3%;box-shadow:0 0 9px 4px #ecb3784a}
+.v-rack-rail{background:linear-gradient(90deg,#647784,#12202d 25%,#060d15 55%,#8395a0)}
+.v-rack-rail span{height:5px;min-height:2px;border-radius:2px}
+.v-floor-reflection{position:absolute;bottom:0;left:12%;right:12%;height:10%;background:radial-gradient(ellipse at 50% 100%,#7fa8bf27,transparent 68%);filter:blur(9px);pointer-events:none}
+.v-rack-ground{bottom:0;height:10%;background:linear-gradient(180deg,transparent,#26313b 96%);border-bottom:2px solid #395262}
+.v-rack-roof{top:2%;height:2%;border-color:#5d6b7840}
+.v-rack-cap{letter-spacing:1px}
+.v-rack-base{background:linear-gradient(#182734,#66717b 20%,#131c27 50%,#050b12)}
+.v-empty-rack-label{opacity:.18;letter-spacing:1px}
+@media(max-width:1250px){.visual-shell{grid-template-columns:180px minmax(0,1fr) 315px}.v-rack-scale{aspect-ratio:.57}}
+
+
+/* Main screen: fit complete rack at 100%; wheel scrolls vertically only after magnification. */
+.v-main-viewport{overflow-y:auto;overflow-x:hidden;align-items:safe center;scrollbar-width:thin;scrollbar-color:#42637c #09131d;overscroll-behavior:contain}
+.v-main-viewport .v-rack-scale{flex-shrink:0;height:calc(100dvh - 104px);max-height:none;margin:auto;transition:zoom .15s ease}
+.v-main-viewport .v-rack-ambient,.v-main-viewport .v-rack-ground,.v-main-viewport .v-ceiling-depth,.v-main-viewport .v-floor-reflection{position:fixed}
+.v-build-viewport{overflow:hidden}
+.v-viewgrid button:disabled{opacity:.4;cursor:not-allowed}
+.v-viewgrid button:disabled.active{opacity:.75}
+@media(max-width:800px){.v-main-viewport .v-rack-scale{height:calc(100dvh - 104px)}}
+
+
+/* Reference framing: this is a window into a taller rack, not a fitted poster.
+   Preserve metalwork proportions and scroll the entire rack vertically. */
+.v-main-viewport{
+  display:block;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:0 0 22px;
+  scroll-behavior:smooth;
+  scrollbar-width:thin;
+  scrollbar-color:#38556e #07111c;
+  scrollbar-gutter:stable;
+  overscroll-behavior:contain;
+  perspective:1700px;
+}
+.v-main-viewport .v-rack-scale{
+  box-sizing:border-box;
+  display:block;
+  position:relative;
+  flex:none;
+  width:98%;
+  height:auto;
+  aspect-ratio:.60;
+  max-height:none;
+  max-width:none;
+  margin:0 auto;
+  transform:rotateY(-3deg) rotateX(1deg)!important;
+  transform-origin:50% 12%;
+  transition:zoom .15s ease;
+}
+.v-main-viewport .v-rack{width:100%;height:100%}
+.v-main-viewport .v-rack-ambient,
+.v-main-viewport .v-rack-ground,
+.v-main-viewport .v-ceiling-depth,
+.v-main-viewport .v-floor-reflection{pointer-events:none}
+.v-build-viewport .v-rack-scale{height:97%;aspect-ratio:.66}
+@media(max-width:1000px){
+  .v-main-viewport .v-rack-scale{
+    width:98%;
+    height:auto;
+  }
+}
