@@ -22,15 +22,15 @@ function App(){
  <aside className="v-left"><nav>{menus.map(([name,Icon])=><button key={name} className={section===name?'active':''} onClick={()=>setSection(name)}><Icon size={20}/>{name}</button>)}</nav><div className="v-sidebottom"><div>Rack-Ansicht</div><div className="v-viewgrid">{['Vorne','Hinten','Links','Rechts'].map(v=><button key={v} className={view===v?'active':''} onClick={()=>setView(v)}>{v}</button>)}</div><div className="v-zoomtitle"><span>Zoom</span><button title="Zoom zurücksetzen" onClick={()=>setZoom(100)}><RotateCcw size={16}/></button></div><input aria-label="Zoom" type="range" min="60" max="240" value={zoom} onChange={e=>setZoom(Number(e.target.value))}/><small>{zoom}%</small><button className="v-old" onClick={()=>{setSection(section==='Building'?'3D Rack':'Building');setView('Vorne')}}>{section==='Building'?'Hauptansicht':'Building öffnen'}</button></div></aside>
  <main className="v-center">{(section==='3D Rack'||section==='Building')?<div className="v-stage" onWheel={wheel}>
  <div className="v-stage-top"><span>RACK 1 / {section==='Building'?'BUILDING':'HAUPTANSICHT'} / {view.toUpperCase()}</span><span>42 HE · {section==='Building'?'VERKABELUNG & MONTAGE':'RACK ÜBERSICHT'}</span></div>
- <div className="v-rack-viewport"><div className="v-rack-scale" style={{transform:'scale('+zoom/100+') rotateY('+(section==='Building'?angle:0)+'deg)'}}>
+ <div className="v-rack-viewport"><div className="v-rack-ambient left"/><div className="v-rack-ambient right"/><div className="v-rack-ground"/><div className="v-rack-scale" style={{transform:'scale('+zoom/100+') rotateY('+(section==='Building'?angle:0)+'deg)'}}>
  <div className={'v-rack '+(view==='Hinten'?'rear':'')}>
- <div className="v-rack-cap"><span>HOMELAB</span><span>42 U</span></div>
+ <div className="v-rack-cap"><span>HOMELAB</span><span>42 U · 19″</span></div><div className="v-rack-roof"><i/><i/><i/></div><div className="v-rack-sidewall left"/><div className="v-rack-sidewall right"/>
  <div className="v-rack-interior">
  <div className="v-rack-rail left">{Array.from({length:42},(_,i)=><span key={i}/>)}</div>
  <div className="v-rack-units">{Array.from({length:42},(_,i)=><span key={i}>{42-i}</span>)}</div>
  <div className="v-rack-bays">
  {Array.from({length:42},(_,i)=><div key={i} className="v-unit-guide"/>)}
- <div className="v-empty-rack-back"><div className="v-rear-top-beam"/><div className="v-rear-braces"><span/><span/></div><div className="v-rear-floor"/></div>
+ <div className="v-empty-rack-back"><div className="v-rear-top-beam"/><div className="v-rear-braces"><span/><span/></div><div className="v-rear-floor"/><div className="v-rack-back-grid"/><div className="v-rack-lightstrip left"/><div className="v-rack-lightstrip right"/></div>
  {items.map(d=><button key={d.id} className={'v-built-device '+(d.id===selected?'chosen':'')} title={d.name} style={{bottom:(d.u-1)/42*100+'%',height:d.height/42*100+'%'}} onClick={()=>setSelected(d.id)}>
  <span>{d.name}</span><span className="v-built-ports">{Array.from({length:Math.min(48,d.ports)},(_,i)=><i key={i}/>)}</span><small>{d.height}U</small></button>)}
  {items.length===0&&<div className="v-empty-rack-label">42U · 19″ · BEREIT ZUM BESTÜCKEN</div>}
