@@ -150,3 +150,23 @@
 .v-viewgrid button:disabled{opacity:.4;cursor:not-allowed}
 .v-viewgrid button:disabled.active{opacity:.75}
 @media(max-width:800px){.v-main-viewport .v-rack-scale{height:calc(100dvh - 104px)}}
+
+
+/* Front viewport, reference framing: rack dominates the entire central display.
+   Fit both axes at 100%; zoom grows from this fit, never smaller. */
+.v-main-viewport{display:flex;align-items:center;justify-content:center;overflow-y:auto;overflow-x:hidden;padding:3px 0;scrollbar-gutter:stable}
+.v-main-viewport .v-rack-scale{
+  box-sizing:border-box;
+  flex:0 0 auto;
+  width:clamp(0px,92%,1600px);
+  height:calc(100% - 6px);
+  max-height:none;
+  max-width:none;
+  aspect-ratio:auto;
+  margin:auto;
+  transform:none!important;
+  transform-origin:center top;
+}
+.v-main-viewport .v-rack{width:100%;height:100%}
+.v-build-viewport .v-rack-scale{height:97%;aspect-ratio:.66}
+@media(max-width:1000px){.v-main-viewport .v-rack-scale{width:96%;height:calc(100% - 6px)}}
