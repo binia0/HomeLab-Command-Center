@@ -10,7 +10,20 @@ function App(){
  const [description,setDescription]=useState('24 Port Netzwerk Switch 1U');
  const [draft,setDraft]=useState<Item|null>(null);
  const [designMessage,setDesignMessage]=useState('Beschreibe dein Modul. Die lokale Vorlagenerkennung erstellt eine editierbare Vorschau; keine KI ist verbunden.');
- const propose=()=>{const words=description.trim();if(!words)return;const lower=words.toLowerCase();const h=Math.max(1,Math.min(12,Number(lower.match(/(\d+)\s*(?:u|he)\b/)?.[1]||(/server|nas|storage/.test(lower)?2:1)));const ports=Math.max(0,Math.min(96,Number(lower.match(/(\d+)\s*(?:port|anschluss|rj45)/)?.[1]||(/switch/.test(lower)?24:4)));const kind=/switch|netzwerk/.test(lower)?'Netzwerk':/pi|raspberry/.test(lower)?'Raspberry Pi':/nas|storage/.test(lower)?'Storage':/ups|usv/.test(lower)?'Strom':'Server';setDraft({id:'module-'+Date.now(),name:words.slice(0,70),u:1,height:h,kind,ports});setDesignMessage('Vorlage erstellt. Prüfe Höheneinheiten, Ports und Montageposition vor dem Einbau.');};
+ const propose=()=>{
+  const words=description.trim();
+  if(!words)return;
+  const lower=words.toLowerCase();
+  const heightMatch=lower.match(/(\d+)\s*(?:u|he)\b/);
+  const portsMatch=lower.match(/(\d+)\s*(?:port|anschluss|rj45)/);
+  const defaultHeight=/server|nas|storage/.test(lower)?2:1;
+  const defaultPorts=/switch/.test(lower)?24:4;
+  const h=Math.max(1,Math.min(12,Number(heightMatch?.[1]??defaultHeight)));
+  const ports=Math.max(0,Math.min(96,Number(portsMatch?.[1]??defaultPorts)));
+  const kind=/switch|netzwerk/.test(lower)?'Netzwerk':/pi|raspberry/.test(lower)?'Raspberry Pi':/nas|storage/.test(lower)?'Storage':/ups|usv/.test(lower)?'Strom':'Server';
+  setDraft({id:'module-'+Date.now(),name:words.slice(0,70),u:1,height:h,kind,ports});
+  setDesignMessage('Vorlage erstellt. Prüfe Höheneinheiten, Ports und Montageposition vor dem Einbau.');
+ };
  const install=()=>{if(!draft)return;const used=new Set<number>();items.forEach(x=>{for(let u=x.u;u<x.u+x.height;u++)used.add(u)});let bottom=0;for(let u=1;u<=43-draft.height;u++){if(Array.from({length:draft.height},(_,n)=>u+n).every(x=>!used.has(x))){bottom=u;break}}if(!bottom){setDesignMessage('Kein passender freier Rackplatz gefunden.');return}const next={...draft,u:bottom};setItems(prev=>{const list=[...prev,next];localStorage.setItem('hcc-building-modules-v1',JSON.stringify(list));return list});setSelected(next.id);setDraft(null);setDesignMessage('Modul bei U'+bottom+' eingebaut.');};
  const remove=()=>{const next=items.filter(x=>x.id!==selected);setItems(next);localStorage.setItem('hcc-building-modules-v1',JSON.stringify(next));setSelected('');};
 
