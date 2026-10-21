@@ -21,19 +21,20 @@ export class CameraController {
   this.beta=side==='orbit'?this.camera.beta:Math.PI/2;
  }
  home(height:number,depth=.8){
-  // Frame the whole 3D rack, including its top and feet, at any canvas aspect ratio.
-  const engine=this.camera.getEngine(),size=engine.getRenderWidth()/Math.max(1,engine.getRenderHeight());
-  const vfov=this.camera.fov;
-  const hfov=2*Math.atan(Math.tan(vfov/2)*size);
-  const halfHeight=height*.56,halfWidth=Math.max(.34,depth*.53);
-  const fitVertical=halfHeight/Math.tan(vfov/2);
-  const fitHorizontal=halfWidth/Math.tan(Math.max(.1,hfov)/2);
-  this.target=new Vector3(0,height*.5,0);
-  this.radius=Math.max(depth*.63+.3,fitVertical,fitHorizontal)*1.10;
-  this.alpha=-Math.PI/2+.30;
+  // Reference view: rack fills the viewport WIDTH, not the full height.
+  // The rack may extend above/below the visible area; users can pan vertically.
+  const engine=this.camera.getEngine();
+  const aspect=engine.getRenderWidth()/Math.max(1,engine.getRenderHeight());
+  const horizontalFov=2*Math.atan(Math.tan(this.camera.fov/2)*aspect);
+  const rackHalfWidth=.4826/2; // 19-inch rack outer width; do not derive width from depth.
+  // Aim at the front plane so the perspective scales from its visible face.
+  this.target=new Vector3(0,height*.5,-depth*.5);
+  this.radius=Math.max(.34,rackHalfWidth/(Math.tan(horizontalFov/2)*.42));
+  // Camera slightly to the LEFT: the RIGHT rack corner recedes a little.
+  this.alpha=-Math.PI/2-.10;
   this.beta=Math.PI/2.10;
  }
- view(side:'front'|'back'|'orbit'){this.alpha=side==='front'?-Math.PI/2+.13:side==='back'?Math.PI/2-.13:-Math.PI/2+.42;this.beta=side==='orbit'?Math.PI/2.12:Math.PI/2.06}
+ view(side:'front'|'back'|'orbit'){this.alpha=side==='front'?-Math.PI/2-.10:side==='back'?Math.PI/2-.13:-Math.PI/2-.10;this.beta=side==='orbit'?Math.PI/2.12:Math.PI/2.06}
  tick(){
   const k=.12;
   if(this.target){this.camera.setTarget(Vector3.Lerp(this.camera.target,this.target,k));this.camera.radius+=(this.radius-this.camera.radius)*k;if(Vector3.Distance(this.camera.target,this.target)<.0002&&Math.abs(this.camera.radius-this.radius)<.0002)this.target=null}
