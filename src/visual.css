@@ -171,7 +171,7 @@
   display:block;
   position:relative;
   flex:none;
-  width:min(94%, calc((100dvh - 60px) * .88));
+  width:98%;
   height:auto;
   aspect-ratio:.60;
   max-height:none;
@@ -189,7 +189,7 @@
 .v-build-viewport .v-rack-scale{height:97%;aspect-ratio:.66}
 @media(max-width:1000px){
   .v-main-viewport .v-rack-scale{
-    width:min(96%,calc((100dvh - 60px) * .88));
+    width:98%;
     height:auto;
   }
 }
