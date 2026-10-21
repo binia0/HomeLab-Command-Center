@@ -3,17 +3,9 @@ import {createRoot} from 'react-dom/client';
 import {Home,Search,LayoutDashboard,Server,Cable,Network,MapPin,Zap,Activity,Settings,Bell,Sun,RotateCcw,ChevronDown} from 'lucide-react';
 import './visual.css';
 type Item={id:string;name:string;u:number;height:number;kind:string;ports:number;ip?:string};
-const samples:Item[]=[
-{id:'sw1',name:'TP-Link Core Switch',u:39,kind:'Netzwerk',ports:24},
-{id:'sw2',name:'UniFi Network Switch',u:33,kind:'Netzwerk',ports:24},
-{id:'pis',name:'4 Raspberry Pi 4 + Display',u:24,kind:'Raspberry Pi',ports:12,ip:'192.168.1.50'},
-{id:'server',name:'Dell Rackserver',u:14,kind:'Server',ports:4},
-{id:'nas',name:'Synology NAS',u:9,kind:'Storage',ports:2},
-{id:'ups',name:'CyberPower USV',u:3,kind:'Strom',ports:2}
-];
 const menus=[['Building',Server],['3D Rack',LayoutDashboard],['Dashboard',Home],['Geräte',Server],['Kabel',Cable],['Netzwerk',Network],['IP-Management',Network],['Standorte',MapPin],['Energie',Zap],['Monitoring',Activity],['Einstellungen',Settings]] as const;
 function App(){
- const [selected,setSelected]=useState('pis'),[section,setSection]=useState('3D Rack'),[tab,setTab]=useState('Übersicht'),[zoom,setZoom]=useState(100),[view,setView]=useState('Vorne'),[query,setQuery]=useState(''),[angle,setAngle]=useState(0),[cableStart,setCableStart]=useState<string|null>(null),[connections,setConnections]=useState<[string,string][]>([]);
+ const [selected,setSelected]=useState(''),[section,setSection]=useState('3D Rack'),[tab,setTab]=useState('Übersicht'),[zoom,setZoom]=useState(100),[view,setView]=useState('Vorne'),[query,setQuery]=useState(''),[angle,setAngle]=useState(0),[cableStart,setCableStart]=useState<string|null>(null),[connections,setConnections]=useState<[string,string][]>([]);
  const [items,setItems]=useState<Item[]>(()=>{try{return JSON.parse(localStorage.getItem('hcc-building-modules-v1')||'[]') as Item[]}catch{return []}});
  const [description,setDescription]=useState('24 Port Netzwerk Switch 1U');
  const [draft,setDraft]=useState<Item|null>(null);
