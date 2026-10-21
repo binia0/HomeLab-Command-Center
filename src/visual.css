@@ -140,3 +140,13 @@
 .v-rack-base{background:linear-gradient(#182734,#66717b 20%,#131c27 50%,#050b12)}
 .v-empty-rack-label{opacity:.18;letter-spacing:1px}
 @media(max-width:1250px){.visual-shell{grid-template-columns:180px minmax(0,1fr) 315px}.v-rack-scale{aspect-ratio:.57}}
+
+
+/* Main screen: fit complete rack at 100%; wheel scrolls vertically only after magnification. */
+.v-main-viewport{overflow-y:auto;overflow-x:hidden;align-items:safe center;scrollbar-width:thin;scrollbar-color:#42637c #09131d;overscroll-behavior:contain}
+.v-main-viewport .v-rack-scale{flex-shrink:0;height:calc(100dvh - 104px);max-height:none;margin:auto;transition:zoom .15s ease}
+.v-main-viewport .v-rack-ambient,.v-main-viewport .v-rack-ground,.v-main-viewport .v-ceiling-depth,.v-main-viewport .v-floor-reflection{position:fixed}
+.v-build-viewport{overflow:hidden}
+.v-viewgrid button:disabled{opacity:.4;cursor:not-allowed}
+.v-viewgrid button:disabled.active{opacity:.75}
+@media(max-width:800px){.v-main-viewport .v-rack-scale{height:calc(100dvh - 104px)}}
